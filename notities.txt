@@ -1,8 +1,8 @@
 TAAKVERDELING EN NOTITIES
 
 Brede onderwerpen
-	Voormgeving
-	Beattracking algorithme
+	Vormgeving
+	Beat-tracking algorithme
 	user interaction
 
 
