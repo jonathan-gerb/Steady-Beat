@@ -1,0 +1,25 @@
+TAAKVERDELING EN NOTITIES
+
+Brede onderwerpen
+	Voormgeving
+	Beattracking algorithme
+	user interaction
+
+
+Minor taken
+	logboek bijhouden
+	meetings plannen
+	presentatie voorbereiden
+
+
+Taken
+	Youtube api implementeren (zorgen dat we de audiofiles kunnen streamen/downloaden)
+
+
+
+
+Checklist voor het einde van de dag
+	Logboek is bijgewerkt
+	doorgenomen verrichtte werk van de dag
+	globale planning volgende dag
+	
