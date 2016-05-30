@@ -3,6 +3,31 @@
 <html>
 <body>
 <h1>Press the spacebar when the beat dropssssss</h1>
+		<script>
+			function getYoutubeId() {
+			  var query = window.location.search.substring(1);
+			  var id = query.split("=");
+		    return id[1];
+		  }
+		</script>
+
+
+		<button id="beatTracker" onclick="logTimeStamp()">Click me!</button>
+
+		<script>
+
+			var keyPressTimes;
+
+			function start() {
+				keyPressTimes = [];	
+				started = true;
+			}
+			function logTimeStamp() {
+				keyPressTimes.push(player.getCurrentTime());
+				document.getElementById('showthings').innerHTML = keyPressTimes.toString();
+			}
+		</script>
+
     <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
     <div id="player"></div>
 
@@ -21,7 +46,7 @@
         player = new YT.Player('player', {
           height: '390',
           width: '640',
-          videoId: urlVidId,
+          videoId: getYoutubeId(),
           events: {
             'onReady': onPlayerReady,
             'onStateChange': onPlayerStateChange
@@ -32,21 +57,21 @@
       // 4. The API will call this function when the video player is ready.
       function onPlayerReady(event) {
         event.target.playVideo();
+
       }
 
       // 5. The API calls this function when the player's state changes.
       //    The function indicates that when playing a video (state=1),
       //    the player should play for six seconds and then stop.
       var done = false;
+      var pause = false;
       function onPlayerStateChange(event) {
         if (event.data == YT.PlayerState.PLAYING && !done) {
-        	beatTracker.start();
+        	start();
           done = true;
         }
       }
-      function stopVideo() {
-        player.stopVideo();
-      }
     </script>
+    <p id="showthings"></p>>
 </body>
 </html>
