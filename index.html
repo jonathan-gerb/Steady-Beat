@@ -1,10 +1,32 @@
 <!-- The home page where the user pastes the Youtube URL --> 
 <html>
 <body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+
+<script>
+	// Checks if input is a youtube url
+	function validateInput() {
+		var inputStr = $("#url").val();
+		var ytStr1 = 'youtube'; 
+		var ytStr2 = 'youtu.be';
+		if (inputStr.match(ytStr1) == ytStr1) {
+			var idIdx = inputStr.search(/\?v=/);
+		} else if (inputStr.match('youtu.be') == 'youtu.be') {
+			var idIdx = inputStr.search(/be\//);
+		} else {
+			window.alert("You didn't input a Youtube URL.");
+			return;
+		}
+		// Youtube id's are always 11 characters.
+		var ytID = inputStr.substring(idIdx+3, idIdx+14);	
+		window.location.assign('trackbeat.html?yt_ID='+ytID);
+  };
+</script>
+
 <h1>Please paste the Youtube URL below</h1>
-<form action="trackbeat.html" method = "GET">
-<input type="text" name="yt_id">
-<input type="submit" value="Go">
+<form id='inputForm' onsubmit="return false">
+<input type="text" id="url">
+<input type="submit" id="submitBtn" onclick="validateInput()" value="Go">
 </form>
 </body>
 </html>
