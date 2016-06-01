@@ -17,7 +17,10 @@
 
 
 		<button id="beatTracker" onclick="logTimeStamp()">Click me to log the beat!</button>
-    <button id="toPHP" onclick="writeToFile()">Click me to save the result</button>
+
+    <button id="reset" onclick="resetTimeStamps()">Click me to reset the beat!</button>
+
+    <button id="toPHP" onclick="writeToFile()">Click me to save the result!</button>
 
 		<script>
 
@@ -26,8 +29,9 @@
       function writeToFile() {
         console.log(keyPressTimes);
         st = keyPressTimes.toString();
-        st.replace(",","\n");
-        $.post('wrotefile.php', {ID:"AAAAAA", string: st});
+        st.replace("," , "\n");
+        $.post('wrotefile.php', {ID:getYoutubeId(), string: st});
+
       }
 
 			function start() {
@@ -38,6 +42,10 @@
 				keyPressTimes.push(player.getCurrentTime());
 				document.getElementById('showthings').innerHTML = keyPressTimes.toString();
 			}
+      function resetTimeStamps() {
+        keyPressTimes = [];
+        document.getElementById('showthings').innerHTML = keyPressTimes.toString();
+      }
 		</script>
 
     <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
