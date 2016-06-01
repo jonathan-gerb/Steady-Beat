@@ -43,8 +43,11 @@
 				document.getElementById('showthings').innerHTML = keyPressTimes.toString();
 			}
       function resetTimeStamps() {
-        keyPressTimes = [];
-        document.getElementById('showthings').innerHTML = keyPressTimes.toString();
+        if(window.confirm("Are you sure you want to delete all your progress?")){
+          keyPressTimes = [];
+          document.getElementById('showthings').innerHTML = keyPressTimes.toString();
+        }
+
       }
 		</script>
 
