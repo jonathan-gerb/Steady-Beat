@@ -183,23 +183,23 @@
 
     wavesurfer.load('Brains.mp3');
 
-    // var slider = document.querySelector('#slider');
+    var slider = document.querySelector('#slider');
 
-    // slider.oninput = function() {
-    //     var zoomLevel = Number(slider.value);
-    //     wavesurfer.zoom(zoomLevel);
-    // };
+    slider.oninput = function() {
+        var zoomLevel = Number(slider.value);
+        wavesurfer.zoom(zoomLevel);
+    };
 
     wavesurfer.on('ready', function() {
         // Enable creating regions by dragging
         // wavesurfer.enableDragSelection();
-        var timeline = Object.create(WaveSurfer.Timeline);
+        // var timeline = Object.create(WaveSurfer.Timeline);
         beep = new Audio('beep.mp3');
 
-        timeline.init({
-            wavesurfer: wavesurfer,
-            container: '#waveform-timeline'
-        });
+        // timeline.init({
+        //     wavesurfer: wavesurfer,
+        //     container: '#waveform-timeline'
+        // });
 
         wavesurfer.addRegion({
             start: 10,
