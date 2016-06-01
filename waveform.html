@@ -49,6 +49,9 @@
                     <div id="waveform"></div>
                     <div id="waveform-timeline"></div>
                     <div style="text-align: center">
+       <!--                   <button class="btn btn-primary" onclick="wavesurfer.playPause()">
+                            <i class="glyphicon glyphicon-play"></i> Play
+                        </button>
                         <p class="row">
                             <div class="col-xs-1">
                                 <i class="glyphicon glyphicon-zoom-in"></i>
@@ -59,9 +62,9 @@
                             <div class="col-xs-1">
                                 <i class="glyphicon glyphicon-zoom-out"></i>
                             </div>
-                        </p>
+                        </p> -->
                     </div>
-                    <p class="lead">This waveform is generated from a random song that I made once....</p>
+                    <p class="lead">Please press the letter 'b' at the beat! (oid ^^)</p>
                     <p class="lead">
                         <!--<a href="#" class="btn btn-lg btn-default" id="beatTracker" onmousedown="logTimeStamp()">Record Beat</a>-->
                         <a href="#" class="btn btn-lg btn-default" id="reset" onclick="resetTimeStamps()">Reset Recording</a>
@@ -203,14 +206,8 @@
 
     wavesurfer.load('Brains.mp3');
 
-    var slider = document.querySelector('#slider');
-
-    slider.oninput = function() {
-        var zoomLevel = Number(slider.value);
-        wavesurfer.zoom(zoomLevel);
-    };
-
     wavesurfer.on('ready', function() {
+        wavesurfer.zoom(50);
         // Enable creating regions by dragging
         // wavesurfer.enableDragSelection();
         // var timeline = Object.create(WaveSurfer.Timeline);
