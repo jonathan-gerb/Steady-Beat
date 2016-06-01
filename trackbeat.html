@@ -29,7 +29,7 @@
       function writeToPage() {
         keyPressTimes = keyPressTimes.sort(sortNumber);
         console.log(keyPressTimes);
-        inner = "";
+        inner = getYoutubeId()+"<br>";
         for(i=0; i<keyPressTimes.length; i++){
           inner += keyPressTimes[i] +"<br>";
         }
