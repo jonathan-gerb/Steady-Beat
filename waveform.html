@@ -92,16 +92,16 @@
 
     wavesurfer.load('the_Leader.mp3');
 
-    var slider = document.querySelector('#slider');
+    // var slider = document.querySelector('#slider');
 
-    slider.oninput = function() {
-        var zoomLevel = Number(slider.value);
-        wavesurfer.zoom(zoomLevel);
-    };
+    // slider.oninput = function() {
+    //     var zoomLevel = Number(slider.value);
+    //     wavesurfer.zoom(zoomLevel);
+    // };
 
     wavesurfer.on('ready', function() {
         // Enable creating regions by dragging
-        wavesurfer.enableDragSelection();
+        // wavesurfer.enableDragSelection();
         var timeline = Object.create(WaveSurfer.Timeline);
 
         timeline.init({
@@ -111,21 +111,32 @@
 
         wavesurfer.addRegion({
             start: 10,
-            end: 12,
+            end: 11,
+            resize: false,
             color: 'hsla(356, 69%, 49%, 0.66)'
         });
 
         wavesurfer.addRegion({
             start: 14,
-            end: 16,
+            end: 15,
+            resize: false,
             color: 'hsla(356, 69%, 49%, 0.66)'
         });
 
         wavesurfer.addRegion({
             start: 18,
-            end: 20,
+            end: 19,
+            resize: false,
             color: 'hsla(356, 69%, 49%, 0.66)'
         });
+
+        wavesurfer.addRegion({
+            start: 24,
+            end: 25,
+            resize: false,
+            color: 'hsla(356, 69%, 49%, 0.66)'
+        });
+
     });
     </script>
     <script>
