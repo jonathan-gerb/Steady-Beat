@@ -106,11 +106,15 @@
 
     function start() {
         keyPressTimes = [];
+        wavesurfer.play(player.getCurrentTime);
+        wavesurfer.setVolume(0);
         started = true;
     }
 
     function logTimeStamp() {
-        keyPressTimes.push(player.getCurrentTime());
+        currentTime = player.getCurrentTime();
+        keyPressTimes.push(currentTime);
+        beep.play();
         document.getElementById('showthings').innerHTML = keyPressTimes.toString();
     }
 
@@ -148,12 +152,9 @@
     // 4. The API will call this function when the video player is ready.
     function onPlayerReady(event) {
         event.target.playVideo();
-
     }
 
     // 5. The API calls this function when the player's state changes.
-    //    The function indicates that when playing a video (state=1),
-    //    the player should play for six seconds and then stop.
     var done = false;
     var pause = false;
 
@@ -161,6 +162,10 @@
         if (event.data == YT.PlayerState.PLAYING && !done) {
             start();
             done = true;
+        } else if (event.data != YT.PlayerState.PLAYING) {
+            wavesurfer.pause();
+        } else if (event.data == YT.PlayerState.PLAYING) {
+            wavesurfer.play(player.getCurrentTime());
         }
     }
     var wavesurfer = WaveSurfer.create({
