@@ -47,12 +47,11 @@
 			}
 			function logTimeStamp() {
 				keyPressTimes.push(player.getCurrentTime());
-//				document.getElementById('showthings').innerHTML = keyPressTimes.toString();
 			}
       function resetTimeStamps() {
         if(window.confirm("Are you sure you want to delete all your progress?")){
           keyPressTimes = [];
-//          document.getElementById('showthings').innerHTML = keyPressTimes.toString();
+         document.getElementById('showthings').innerHTML = keyPressTimes.toString();
         }
 
       }

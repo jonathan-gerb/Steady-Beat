@@ -66,6 +66,8 @@
                     <p class="lead">This waveform is generated from a random song that I made once....</p>
                     <p class="lead">
                         <a href="#" class="btn btn-lg btn-default" id="beatTracker" onmousedown="logTimeStamp()">Record Beat</a>
+                        <a href="#" class="btn btn-lg btn-default" id="reset" onclick="resetTimeStamps()">Reset Recording</a>
+                        <a href="#" class="btn btn-lg btn-default" id="toPHP" onclick="writeToPage()">Update Tracking info</a>
                     </p>
                     <p id="showthings"></p>>
                 </div>
@@ -93,15 +95,18 @@
 
     var keyPressTimes;
 
-    function writeToFile() {
+    function writeToPage() {
+        keyPressTimes = keyPressTimes.sort(sortNumber);
         console.log(keyPressTimes);
-        st = keyPressTimes.toString();
-        st.replace(",", "\n");
-        $.post('wrotefile.php', {
-            ID: getYoutubeId(),
-            string: st
-        });
+        inner = "";
+        for (i = 0; i < keyPressTimes.length; i++) {
+            inner += keyPressTimes[i] + "<br>";
+        }
+        document.getElementById('showthings').innerHTML = inner;
+    }
 
+    function sortNumber(a, b) {
+        return a - b;
     }
 
     function start() {
@@ -117,7 +122,6 @@
         currentTime = player.getCurrentTime();
         keyPressTimes.push(currentTime);
         beep.play();
-        document.getElementById('showthings').innerHTML = keyPressTimes.toString();
     }
 
     function resetTimeStamps() {
@@ -168,6 +172,7 @@
             wavesurfer.pause();
         } else if (event.data == YT.PlayerState.PLAYING) {
             wavesurfer.play(player.getCurrentTime());
+            wavesurfer.setVolume(0);
         }
     }
     var wavesurfer = WaveSurfer.create({
@@ -176,7 +181,7 @@
         progressColor: 'DarkGray'
     });
 
-    wavesurfer.load('the_Leader.mp3');
+    wavesurfer.load('Brains.mp3');
 
     // var slider = document.querySelector('#slider');
 
