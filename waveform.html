@@ -103,6 +103,7 @@
         // Enable creating regions by dragging
         // wavesurfer.enableDragSelection();
         var timeline = Object.create(WaveSurfer.Timeline);
+        beep = new Audio('beep.mp3');
 
         timeline.init({
             wavesurfer: wavesurfer,
@@ -137,6 +138,10 @@
             color: 'hsla(356, 69%, 49%, 0.66)'
         });
 
+    });
+
+    wavesurfer.on('region-in', function() {
+        beep.play();
     });
     </script>
     <script>
