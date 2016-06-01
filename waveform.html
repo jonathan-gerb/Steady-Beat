@@ -106,10 +106,8 @@
 
     function start() {
         keyPressTimes = [];
-        wavesurfer.on('ready', function() {
-            wavesurfer.play(player.getCurrentTime);
-            wavesurfer.setVolume(0);
-        });
+        wavesurfer.play(player.getCurrentTime);
+        wavesurfer.setVolume(0);
         started = true;
     }
 
