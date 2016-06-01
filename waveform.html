@@ -66,7 +66,7 @@
                     </div>
                     <p class="lead">This waveform is generated from a random song that I made once....</p>
                     <p class="lead">
-                        <a href="#" class="btn btn-lg btn-default" id="beatTracker" onmousedown="logTimeStamp()">Record Beat</a>
+                        <!--<a href="#" class="btn btn-lg btn-default" id="beatTracker" onmousedown="logTimeStamp()">Record Beat</a>-->
                         <a href="#" class="btn btn-lg btn-default" id="reset" onclick="resetTimeStamps()">Reset Recording</a>
                         <a href="#" class="btn btn-lg btn-default" id="toPHP" onclick="writeToPage()">Update Tracking info</a>
                     </p>
@@ -117,6 +117,15 @@
             wavesurfer.setVolume(0);
         });
         started = true;
+    }
+
+    window.addEventListener("keydown", checkKeyPressed, false);
+ 
+    // check if the 'b' key is pressed
+    function checkKeyPressed(e) {
+        if (e.keyCode == "66") {
+            logTimeStamp();
+        }
     }
 
     function logTimeStamp() {
