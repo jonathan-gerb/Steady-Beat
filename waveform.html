@@ -42,10 +42,10 @@
                         </nav>
                     </div>
                 </div>
-                <div id="player"></div>
                 <div class="inner cover">
-
-                    <h1 class="cover-heading">The waveform should appear somewhere here.</h1>
+                    <h1 class="cover-heading"></h1>
+                    <br>
+                    <div id="player"></div>
                     <div id="waveform"></div>
                     <div id="waveform-timeline"></div>
                     <div style="text-align: center">
@@ -96,15 +96,15 @@
 
     var keyPressTimes;
 
-      function writeToPage() {
+    function writeToPage() {
         keyPressTimes = keyPressTimes.sort(sortNumber);
         console.log(keyPressTimes);
-        inner = getYoutubeId()+"<br>";
-        for(i=0; i<keyPressTimes.length; i++){
-          inner += keyPressTimes[i] +"<br>";
+        inner = getYoutubeId() + "<br>";
+        for (i = 0; i < keyPressTimes.length; i++) {
+            inner += keyPressTimes[i] + "<br>";
         }
         document.getElementById('showthings').innerHTML = inner;
-      }
+    }
 
     function sortNumber(a, b) {
         return a - b;
@@ -122,11 +122,13 @@
     function logTimeStamp() {
         currentTime = player.getCurrentTime();
         keyPressTimes.push(currentTime);
+        drawRegion(currentTime);
         beep.play();
     }
 
     function resetTimeStamps() {
         if (window.confirm("Are you sure you want to delete all your progress?")) {
+            wavesurfer.clearRegions();
             keyPressTimes = [];
             document.getElementById('showthings').innerHTML = keyPressTimes.toString();
         }
@@ -176,6 +178,16 @@
             wavesurfer.setVolume(0);
         }
     }
+
+    function drawRegion(begin) {
+            wavesurfer.addRegion({
+            start: begin,
+            end: begin + 0.1,
+            resize: false,
+            color: 'hsla(356, 69%, 49%, 0.66)'
+        });
+    }
+
     var wavesurfer = WaveSurfer.create({
         container: '#waveform',
         waveColor: 'Azure',
@@ -203,29 +215,8 @@
         // });
 
         wavesurfer.addRegion({
-            start: 10,
-            end: 11,
-            resize: false,
-            color: 'hsla(356, 69%, 49%, 0.66)'
-        });
-
-        wavesurfer.addRegion({
-            start: 14,
-            end: 15,
-            resize: false,
-            color: 'hsla(356, 69%, 49%, 0.66)'
-        });
-
-        wavesurfer.addRegion({
-            start: 18,
-            end: 19,
-            resize: false,
-            color: 'hsla(356, 69%, 49%, 0.66)'
-        });
-
-        wavesurfer.addRegion({
-            start: 24,
-            end: 25,
+            start: 1,
+            end: 2,
             resize: false,
             color: 'hsla(356, 69%, 49%, 0.66)'
         });
@@ -236,10 +227,9 @@
         beep.play();
     });
 
-    wavesurfer.on('seek', function(){
+    wavesurfer.on('seek', function() {
         player.seekTo(wavesurfer.getCurrentTime(), true)
     })
-
     </script>
     <script>
     window.jQuery || document.write('<script src="bootstrap/docs/assets/js/vendor/jquery.min.js"><\/script>')
