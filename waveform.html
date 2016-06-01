@@ -42,8 +42,9 @@
                         </nav>
                     </div>
                 </div>
+                <div id="player"></div>
                 <div class="inner cover">
-                    <div id="player"></div>
+
                     <h1 class="cover-heading">The waveform should appear somewhere here.</h1>
                     <div id="waveform"></div>
                     <div id="waveform-timeline"></div>
@@ -71,7 +72,7 @@
                     </p>
                     <p id="showthings"></p>>
                 </div>
-                <div class="mastfoot">
+                <div>
                     <div class="inner">
                         <p>Waveform generation by <a href="http://http://wavesurfer-js.org/">wavesurfer</a>, pagestuff by <a href="#">@rockforr</a>, <a href="#">@blane</a>, <a href="#">@nindia</a>, <a href="#">@clarayeah__</a>, <a href="#">@adrivri</a>.</p>
                     </div>
@@ -95,15 +96,15 @@
 
     var keyPressTimes;
 
-    function writeToPage() {
+      function writeToPage() {
         keyPressTimes = keyPressTimes.sort(sortNumber);
         console.log(keyPressTimes);
-        inner = "";
-        for (i = 0; i < keyPressTimes.length; i++) {
-            inner += keyPressTimes[i] + "<br>";
+        inner = getYoutubeId()+"<br>";
+        for(i=0; i<keyPressTimes.length; i++){
+          inner += keyPressTimes[i] +"<br>";
         }
         document.getElementById('showthings').innerHTML = inner;
-    }
+      }
 
     function sortNumber(a, b) {
         return a - b;
