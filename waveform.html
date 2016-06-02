@@ -113,8 +113,8 @@
 
     function start() {
         keyPressTimes = [];
-        wavesurfer.setVolume(30);
-        wavesurfer.play(0);
+        wavesurfer.setVolume(0.7);
+        wavesurfer.play(player.getCurrentTime());
         started = true;
     }
 
@@ -123,6 +123,18 @@
     // check if the 'b' key is pressed
     function checkKeyPressed(e) {
         if (e.keyCode == "66") {
+            logTimeStamp();
+        }
+    }
+
+    function checkKeyPressed(e) {
+        if (e.keyCode == "32") {
+            if (player.getPlayerState() == 1) {
+                player.pauseVideo();
+            } else {
+                player.playVideo();
+            }
+        } else if (e.keyCode == "66") {
             logTimeStamp();
         }
     }
@@ -179,7 +191,7 @@
             wavesurfer.pause();
         } else if (event.data == YT.PlayerState.PLAYING) {
             wavesurfer.play(player.getCurrentTime());
-            wavesurfer.setVolume(30);
+            wavesurfer.setVolume(0.7);
         }
     }
 
@@ -229,7 +241,6 @@
 
     wavesurfer.on('region-in', function() {
         beep.play();
-        // document.getElementById('beep.mp3').play();
     });
 
     wavesurfer.on('seek', function() {
