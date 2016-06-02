@@ -119,7 +119,7 @@
     }
 
     function focusOnPage() {
-        document.getElementById("wavesurfer").focus();
+        document.getElementById("waveform").focus();
     }
 
     window.addEventListener("keydown", checkKeyPressed, false);
@@ -222,17 +222,41 @@
 
     var beep = new Audio('beep.mp3');
 
-    wavesurfer.on('region-dblclick', function(regionID, mouseEvent) {
-        regionID.remove();
+    wavesurfer.on('region-dblclick', function(regionObj, mouseEvent) {
+        timeIdx = getTimeIdx(regionObj.start);
+        keyPressTimes.splice(timeIdx,1);
+        regionObj.remove();
     });
 
     wavesurfer.on('region-in', function() {
         beep.play();
     });
 
+    var originalTime;
+
+    wavesurfer.on('region-click', function(regionObj) {
+        originalTime = regionObj.start;
+    });
+
+    wavesurfer.on('region-update-end', function(regionObj) {
+        prevTimeIdx = getTimeIdx(originalTime);
+        newTime = regionObj.start;
+        keyPressTimes[prevTimeIdx] = newTime;
+    });
+
     wavesurfer.on('seek', function() {
         player.seekTo(wavesurfer.getCurrentTime(), true)
     })
+
+    // This function exists because the start times are rounded in the waveform regions
+    function getTimeIdx(time) {
+        var roundedKeyPress = keyPressTimes.slice();
+        for (i = 0;i<keyPressTimes.length;i++) {
+            roundedKeyPress[i] = Math.round(keyPressTimes[i] * 1000) / 1000;
+        };
+        var roundedTime = Math.round(time * 1000) / 1000;
+        return roundedKeyPress.indexOf(roundedTime);
+    }
     </script>
     <script>
     window.jQuery || document.write('<script src="bootstrap/docs/assets/js/vendor/jquery.min.js"><\/script>')

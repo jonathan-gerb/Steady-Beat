@@ -74,7 +74,7 @@
         },
         bindEvents: function() {
             var a = this;
-            this.element.addEventListener("mouseenter", function(b) { a.fireEvent("mouseenter", b), a.wavesurfer.fireEvent("region-mouseenter", a, b) }), this.element.addEventListener("mouseleave", function(b) { a.fireEvent("mouseleave", b), a.wavesurfer.fireEvent("region-mouseleave", a, b) }), this.element.addEventListener("click", function(b) { b.preventDefault(), a.fireEvent("click", b), a.wavesurfer.fireEvent("region-click", a, b) }), this.element.addEventListener("dblclick", function(b) { b.stopPropagation(), b.preventDefault(), a.fireEvent("dblclick", b), a.wavesurfer.fireEvent("region-dblclick", a, b) }), (this.drag || this.resize) && function() {
+            this.element.addEventListener("mouseenter", function(b) { a.fireEvent("mouseenter", b), a.wavesurfer.fireEvent("region-mouseenter", a, b) }), this.element.addEventListener("mouseleave", function(b) { a.fireEvent("mouseleave", b), a.wavesurfer.fireEvent("region-mouseleave", a, b) }), this.element.addEventListener("mousedown", function(b) { b.preventDefault(), a.fireEvent("mousedown", b), a.wavesurfer.fireEvent("region-click", a, b) }), this.element.addEventListener("dblclick", function(b) { b.stopPropagation(), b.preventDefault(), a.fireEvent("dblclick", b), a.wavesurfer.fireEvent("region-dblclick", a, b) }), (this.drag || this.resize) && function() {
                 var b, c, d, e = a.wavesurfer.getDuration(),
                     f = function(f) { f.stopPropagation(), d = a.wavesurfer.drawer.handleEvent(f) * e, "handle" == f.target.tagName.toLowerCase() ? c = f.target.classList.contains("wavesurfer-handle-start") ? "start" : "end" : b = !0 },
                     g = function(d) {
