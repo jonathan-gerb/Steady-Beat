@@ -46,10 +46,10 @@
                     <h1 class="cover-heading"></h1>
                     <br>
                     <div id="player"></div>
-                    <div id="waveform"></div>
+                    <div class="waveform-box" id="waveform"></div>
                     <div id="waveform-timeline"></div>
                     <div style="text-align: center">
-                        <button class="btn btn-primary" onclick="playOrPause()">
+                        <button class="btn btn-primary" id="playButton" onclick="playOrPause()">
                             <i class="glyphicon glyphicon-play"></i> Play
                         </button>
                         <!--
@@ -71,7 +71,7 @@
                         <a href="#" class="btn btn-lg btn-default" id="reset" onclick="resetTimeStamps()">Reset Recording</a>
                         <a href="#" class="btn btn-lg btn-default" id="toPHP" onclick="writeToPage()">Update Tracking info</a>
                     </p>
-                    <p id="showthings"></p>>
+                    <p id="showthings"></p>
                 </div>
                 <div>
                     <div class="inner">
@@ -118,6 +118,10 @@
         started = true;
     }
 
+    function focusOnPage() {
+        document.getElementById("wavesurfer").focus();
+    }
+
     window.addEventListener("keydown", checkKeyPressed, false);
 
     // check if the 'b' key or spacebar is pressed
@@ -139,7 +143,6 @@
 
     function logTimeStamp() {
         currentTime = wavesurfer.getCurrentTime()
-            // currentTime = player.getCurrentTime();
         keyPressTimes.push(currentTime);
         drawRegion(currentTime);
         beep.play();
@@ -170,7 +173,7 @@
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('player', {
             height: '195',
-            width: '640',
+            width: '662',
             videoId: getYoutubeId(),
             events: {
                 'onStateChange': onPlayerStateChange
@@ -191,6 +194,7 @@
             wavesurfer.play(player.getCurrentTime());
             wavesurfer.setVolume(0.7);
         }
+        focusOnPage();
     }
 
     function drawRegion(begin) {
