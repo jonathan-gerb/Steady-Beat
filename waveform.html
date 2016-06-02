@@ -159,20 +159,10 @@
             width: '640',
             videoId: getYoutubeId(),
             events: {
-//                'onReady': onPlayerReady,
                 'onStateChange': onPlayerStateChange
             }
         });
     }
-
-    // The API will call this function when the video player is ready.
-//    function onPlayerReady(event) {
-//        if (wfReady) {
-//            event.target.playVideo();
-//        } else {
-//            ytReady = true;
-//        }
-//    }
 
     // The API calls this function when the player's state changes.
     var done = false;
@@ -211,7 +201,6 @@
         // Enable creating regions by dragging
         // wavesurfer.enableDragSelection();
         // var timeline = Object.create(WaveSurfer.Timeline);
-        beep = new Audio('beep.mp3');
 
         // timeline.init({
         //     wavesurfer: wavesurfer,
@@ -225,6 +214,12 @@
             color: 'hsla(356, 69%, 49%, 0.66)'
         });
 
+    });
+
+    var beep = new Audio('beep.mp3');
+
+    wavesurfer.on('region-dblclick', function(regionID, mouseEvent) {
+        regionID.remove();
     });
 
     wavesurfer.on('region-in', function() {
