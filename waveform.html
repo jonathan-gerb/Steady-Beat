@@ -49,9 +49,10 @@
                     <div id="waveform"></div>
                     <div id="waveform-timeline"></div>
                     <div style="text-align: center">
-       <!--                   <button class="btn btn-primary" onclick="wavesurfer.playPause()">
+                        <button class="btn btn-primary" onclick="wavesurfer.playPause()">
                             <i class="glyphicon glyphicon-play"></i> Play
                         </button>
+                        <!--
                         <p class="row">
                             <div class="col-xs-1">
                                 <i class="glyphicon glyphicon-zoom-in"></i>
@@ -64,7 +65,7 @@
                             </div>
                         </p> -->
                     </div>
-                    <p class="lead">Please press the letter 'b' at the beat! (oid ^^)</p>
+                    <p class="lead">Please press b to record the beat!</p>
                     <p class="lead">
                         <!--<a href="#" class="btn btn-lg btn-default" id="beatTracker" onmousedown="logTimeStamp()">Record Beat</a>-->
                         <a href="#" class="btn btn-lg btn-default" id="reset" onclick="resetTimeStamps()">Reset Recording</a>
@@ -112,13 +113,13 @@
 
     function start() {
         keyPressTimes = [];
+        wavesurfer.setVolume(30);
         wavesurfer.play(0);
-        wavesurfer.setVolume(0);
         started = true;
     }
 
     window.addEventListener("keydown", checkKeyPressed, false);
- 
+
     // check if the 'b' key is pressed
     function checkKeyPressed(e) {
         if (e.keyCode == "66") {
@@ -127,7 +128,8 @@
     }
 
     function logTimeStamp() {
-        currentTime = player.getCurrentTime();
+        currentTime = wavesurfer.getCurrentTime()
+            // currentTime = player.getCurrentTime();
         keyPressTimes.push(currentTime);
         drawRegion(currentTime);
         beep.play();
@@ -153,6 +155,8 @@
     // after the API code downloads.
     var player;
 
+    // player.mute()
+
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('player', {
             height: '195',
@@ -175,17 +179,18 @@
             wavesurfer.pause();
         } else if (event.data == YT.PlayerState.PLAYING) {
             wavesurfer.play(player.getCurrentTime());
-            wavesurfer.setVolume(0);
+            wavesurfer.setVolume(30);
         }
     }
 
     function drawRegion(begin) {
-            wavesurfer.addRegion({
+        wavesurfer.addRegion({
             start: begin,
             end: begin + 0.1,
             resize: false,
             color: 'hsla(356, 69%, 49%, 0.66)'
         });
+        // document.getElementById('beep.mp3').play();
     }
 
     var wavesurfer = WaveSurfer.create({
@@ -224,6 +229,7 @@
 
     wavesurfer.on('region-in', function() {
         beep.play();
+        // document.getElementById('beep.mp3').play();
     });
 
     wavesurfer.on('seek', function() {
