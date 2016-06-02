@@ -137,6 +137,7 @@
         if (player.getPlayerState() == 1) {
             player.pauseVideo();
         } else {
+            player.seekTo(wavesurfer.getCurrentTime(), true)
             player.playVideo();
         }
     }
@@ -200,7 +201,7 @@
     function drawRegion(begin) {
         wavesurfer.addRegion({
             start: begin,
-            end: begin + 0.1,
+            end: begin + 0.06,
             resize: false,
             color: 'hsla(356, 69%, 49%, 0.66)'
         });
@@ -217,22 +218,6 @@
 
     wavesurfer.on('ready', function() {
         wavesurfer.zoom(50);
-        // Enable creating regions by dragging
-        // wavesurfer.enableDragSelection();
-        // var timeline = Object.create(WaveSurfer.Timeline);
-
-        // timeline.init({
-        //     wavesurfer: wavesurfer,
-        //     container: '#waveform-timeline'
-        // });
-
-        wavesurfer.addRegion({
-            start: 1,
-            end: 2,
-            resize: false,
-            color: 'hsla(356, 69%, 49%, 0.66)'
-        });
-
     });
 
     var beep = new Audio('beep.mp3');
