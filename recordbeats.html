@@ -89,9 +89,10 @@
     <script src="timeline.js"></script>
     <script>
 
+    var barThickness = 0.06;
+
     // Initialization 
     function start() {
-        timeStamps = [];
         wavesurfer.setVolume(0);
         wavesurfer.play();
         player.seekTo(wavesurfer.getCurrentTime(), true);
@@ -160,27 +161,43 @@
 
     // check if the spacebar or 'b' key is pressed and respectively plays/pauses the video, or records a timestamp
     function checkKeyPressed(e) {
+        var evtobj = window.event? event : e
         if (e.keyCode == "32") {
             e.preventDefault();
             playOrPause();
             return false;
         } else if (e.keyCode == "66") {
-            recordTimeStamp();
+            var regionObj = recordTimeStamp();
             if (metronome) {
                 clickSound.play();
             }
+            lastActions.push([1,regionObj]);
+            lastUndos = [];
+        } else if (evtobj.keyCode == "90" && evtobj.ctrlKey) {
+            undoAction();
+        } else if (evtobj.keyCode == "89" && evtobj.ctrlKey) {
+            redoAction();
         }
     }
 
     // The variable in which the recorded timestamps are saved
-    var timeStamps;
+    var timeStamps = [];
+    var lastActions = [];
+    var lastUndos = [];
 
     // Saves the current playtime in timeStamps and visualizes it using a wavesurfer region
     function recordTimeStamp() {
-        currentTime = wavesurfer.getCurrentTime()
+        var currentTime = wavesurfer.getCurrentTime()
         timeStamps.push(currentTime);
-        drawRegion(currentTime);
+        var regionObj = drawRegion(currentTime);
+        return regionObj;
     }
+
+    function removeTimeStamp(regionObj) {
+        var timeIdx = getTimeIdx(regionObj.start);
+        timeStamps.splice(timeIdx,1);
+        regionObj.remove();
+    };
 
     // Deletes all recorded timeStamps and associated wavesurfer regions
     function resetTimeStamps() {
@@ -193,12 +210,13 @@
 
     // Creates a wavesurfer region corresponding to a timestamp
     function drawRegion(begin) {
-        wavesurfer.addRegion({
+        var regionObj = wavesurfer.addRegion({
             start: begin,
-            end: begin + 0.06,
+            end: begin + barThickness,
             resize: false,
             color: 'hsla(356, 69%, 49%, 0.66)'
         });
+        return regionObj;
     }
 
     // Toggles the metronome
@@ -213,12 +231,11 @@
         }
     }
 
-
     // Shows the recorded timeStamps on the web page
     function writeToPage() {
         timeStamps = timeStamps.sort(sortNumber);
         console.log(timeStamps);
-        inner = getYoutubeId() + "<br>";
+        var inner = getYoutubeId() + "<br>";
         for (i = 0; i < timeStamps.length; i++) {
             inner += timeStamps[i] + "<br>";
         }
@@ -239,6 +256,60 @@
         progressColor: 'DarkGray'
     });
 
+    // Undos the last action (i.e. register, delete or modify a timestamp)
+    function undoAction() {
+        if (lastActions.length == 0) {
+            return;
+        }
+        var action = lastActions.pop();
+        // undo ADD (so remove it again)
+        if (action[0] == 1) {
+            var time = action[1].start;
+            removeTimeStamp(action[1]);
+            lastUndos.push([1,time]);
+        // undo REMOVE (so add it again)
+        } else if (action[0] == 2) {
+            timeStamps.push(action[1]);
+            var regionObj = drawRegion(action[1]);
+            lastUndos.push([2,regionObj]);
+        // undo MOVE (move it back again)
+        } else {
+            var regionObj = action[0];
+            var time = regionObj.start;
+            var timeStampIdx = getTimeIdx(time);
+            timeStamps[timeStampIdx] = action[1];
+            regionObj.update({start: action[1], end: action[1]+barThickness});
+            lastUndos.push([regionObj,time])
+        }
+    }
+
+    // Same as above, but redos it
+    function redoAction() {
+        if (lastUndos.length == 0) {
+            return;
+        }
+        var action = lastUndos.pop();
+        // redo ADD
+        if (action[0] == 1) {
+            timeStamps.push(action[1]);
+            var regionObj = drawRegion(action[1]);
+            lastActions.push([1,regionObj]);
+        // redo REMOVE
+        } else if (action[0] == 2) {
+            var time = action[1].start;
+            removeTimeStamp(action[1]);
+            lastActions.push([2,time]);
+        // redo MOVE
+        } else {
+            var regionObj = action[0];
+            var time = regionObj.start;
+            var timeStampIdx = getTimeIdx(time);
+            timeStamps[timeStampIdx] = action[1];
+            regionObj.update({start: action[1], end: action[1]+barThickness});
+            lastActions.push([regionObj,time]);
+        }
+    }
+
     var ytMp3 = 'https://dl.dropboxusercontent.com/s/08b4q7att1gwtrv/Brains.mp3';
     wavesurfer.load(ytMp3);
 
@@ -254,9 +325,10 @@
 
     // When user double clicks a region, deletes it and its associated timeStamp
     wavesurfer.on('region-dblclick', function(regionObj, mouseEvent) {
-        timeIdx = getTimeIdx(regionObj.start);
-        timeStamps.splice(timeIdx,1);
-        regionObj.remove();
+        var time = regionObj.start;
+        removeTimeStamp(regionObj);
+        lastActions.push([2,time]);
+        lastUndos = [];
     });
 
     // Plays the click when entering a region
@@ -274,9 +346,11 @@
 
     // When a user modifies a region, updates its associated timestamp 
     wavesurfer.on('region-update-end', function(regionObj) {
-        prevTimeIdx = getTimeIdx(originalTime);
-        newTime = regionObj.start;
+        var prevTimeIdx = getTimeIdx(originalTime);
+        var newTime = regionObj.start;
         timeStamps[prevTimeIdx] = newTime;
+        lastActions.push([regionObj,originalTime]);
+        lastUndos = [];
     });
 
     // Returns the index of a timestamp in the timeStamps array
