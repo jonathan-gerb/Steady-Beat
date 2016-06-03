@@ -27,7 +27,7 @@
 </head>
 
 <body>
-    <div class="site-wrapper">
+    <div class="site-wrapper" id="pageAnchor">
         <div class="site-wrapper-inner">
             <div class="cover-container">
                 <div class="masthead clearfix">
@@ -52,6 +52,7 @@
                         <button class="btn btn-primary" id="playButton" onclick="playOrPause()">
                             <i class="glyphicon glyphicon-play"></i> Play
                         </button>
+                        <button class="btn btn-primary" id="clickToggle" onclick="toggleClick()">Click ON</button>
                         <!-- This is the removed zoom functionality:
                         <p class="row">
                             <div class="col-xs-1">
@@ -67,11 +68,11 @@
                     </div>
                     <p class="lead">Press the 'b' key on the beat</p>
                     <p class="lead">
-                        <!--<a href="#" class="btn btn-lg btn-default" id="beatTracker" onmousedown="logTimeStamp()">Record Beat</a>-->
+                        <!--<a href="#" class="btn btn-lg btn-default" id="beatTracker" onmousedown="recordTimeStamp()">Record Beat</a>-->
                         <a href="#" class="btn btn-lg btn-default" id="reset" onclick="resetTimeStamps()">Reset Recording</a>
                         <a href="#" class="btn btn-lg btn-default" id="toPHP" onclick="writeToPage()">Update Tracking info</a>
                     </p>
-                    <p id="showthings"></p>
+                    <p id="showTimeStamps"></p>
                 </div>
                 <div>
                     <div class="inner">
@@ -89,76 +90,24 @@
     <script src="regions.js"></script>
     <script src="timeline.js"></script>
     <script>
+
+    // Initialization 
+    function start() {
+        timeStamps = [];
+        wavesurfer.setVolume(0);
+        wavesurfer.play();
+        player.seekTo(wavesurfer.getCurrentTime(), true);
+        started = true;
+    }
+
+    // Gets the Youtube video-ID from the URL
     function getYoutubeId() {
         var query = window.location.search.substring(1);
         var id = query.split("=");
         return id[1];
     }
 
-    var keyPressTimes;
-
-    function writeToPage() {
-        keyPressTimes = keyPressTimes.sort(sortNumber);
-        console.log(keyPressTimes);
-        inner = getYoutubeId() + "<br>";
-        for (i = 0; i < keyPressTimes.length; i++) {
-            inner += keyPressTimes[i] + "<br>";
-        }
-        document.getElementById('showthings').innerHTML = inner;
-    }
-
-    function sortNumber(a, b) {
-        return a - b;
-    }
-
-    function start() {
-        keyPressTimes = [];
-        wavesurfer.setVolume(0.7);
-        wavesurfer.play(player.getCurrentTime());
-        started = true;
-    }
-
-    function focusOnPage() {
-        document.getElementById("waveform").focus();
-    }
-
-    window.addEventListener("keydown", checkKeyPressed, false);
-
-    // check if the 'b' key or spacebar is pressed
-    function checkKeyPressed(e) {
-        if (e.keyCode == "32") {
-            playOrPause();
-        } else if (e.keyCode == "66") {
-            logTimeStamp();
-        }
-    }
-
-    function playOrPause() {
-        if (player.getPlayerState() == 1) {
-            player.pauseVideo();
-        } else {
-            player.seekTo(wavesurfer.getCurrentTime(), true)
-            player.playVideo();
-        }
-    }
-
-    function logTimeStamp() {
-        currentTime = wavesurfer.getCurrentTime()
-        keyPressTimes.push(currentTime);
-        drawRegion(currentTime);
-        beep.play();
-    }
-
-    function resetTimeStamps() {
-        if (window.confirm("Are you sure you want to delete all your progress?")) {
-            wavesurfer.clearRegions();
-            keyPressTimes = [];
-            document.getElementById('showthings').innerHTML = keyPressTimes.toString();
-        }
-
-    }
-
-    // From here one is the code for the Youtube and Waveform players
+    // Implementation of the Youtube API, retrieved and modified from: https://developers.google.com/youtube/iframe_api_reference
     var tag = document.createElement('script');
     tag.src = "https://www.youtube.com/iframe_api";
 
@@ -168,8 +117,6 @@
     // This function creates an <iframe> (and YouTube player)
     // after the API code downloads.
     var player;
-
-    // player.mute()
 
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('player', {
@@ -182,7 +129,7 @@
         });
     }
 
-    // The API calls this function when the player's state changes.
+    // When the yt player's state changes, synchronizes the wavesurfer player
     var done = false;
 
     function onPlayerStateChange(event) {
@@ -193,11 +140,60 @@
             wavesurfer.pause();
         } else if (event.data == YT.PlayerState.PLAYING) {
             wavesurfer.play(player.getCurrentTime());
-            wavesurfer.setVolume(0.7);
         }
         focusOnPage();
     }
 
+    // Pauses the YT video when it's playing and starts playback when it's paused.
+    function playOrPause() {
+        if (player.getPlayerState() == 1) {
+            player.pauseVideo();
+            document.getElementById('playButton').innerHTML = '<i class="glyphicon glyphicon-play"></i> Play'
+        } else {
+            player.seekTo(wavesurfer.getCurrentTime(), true)
+            player.playVideo();
+            document.getElementById('playButton').innerHTML = '<i class="glyphicon glyphicon-pause"></i> Pause';
+        }
+    }
+
+    var clickSound = new Audio('click.mp3');
+
+    window.addEventListener("keydown", checkKeyPressed, false);
+
+    // check if the spacebar or 'b' key is pressed and respectively plays/pauses the video, or records a timestamp
+    function checkKeyPressed(e) {
+        if (e.keyCode == "32") {
+            e.preventDefault();
+            playOrPause();
+            return false;
+        } else if (e.keyCode == "66") {
+            recordTimeStamp();
+            if (metronome) {
+                clickSound.play();
+            }
+        }
+    }
+
+    // The variable in which the recorded timestamps are saved
+    var timeStamps;
+
+    // Saves the current playtime in timeStamps and visualizes it using a wavesurfer region
+    function recordTimeStamp() {
+        currentTime = wavesurfer.getCurrentTime()
+        timeStamps.push(currentTime);
+        drawRegion(currentTime);
+    }
+
+    // Deletes all recorded timeStamps and associated wavesurfer regions
+    function resetTimeStamps() {
+        if (window.confirm("Are you sure you want to delete all your progress?")) {
+            wavesurfer.clearRegions();
+            timeStamps = [];
+            document.getElementById('showTimeStamps').innerHTML = timeStamps.toString();
+        }
+    }
+
+    // Creates a wavesurfer region corresponding to a timestamp
     function drawRegion(begin) {
         wavesurfer.addRegion({
             start: begin,
@@ -205,7 +201,38 @@
             resize: false,
             color: 'hsla(356, 69%, 49%, 0.66)'
         });
-        // document.getElementById('beep.mp3').play();
+    }
+
+    // Toggles the metronome
+    var metronome = true;
+    function toggleClick() {
+        if (metronome) {
+            metronome = false;
+            document.getElementById('clickToggle').innerHTML = 'Click OFF'
+        } else {
+            metronome = true;
+            document.getElementById('clickToggle').innerHTML = 'Click ON'
+        }
+    }
+
+
+    // Shows the recorded timeStamps on the web page
+    function writeToPage() {
+        timeStamps = timeStamps.sort(sortNumber);
+        console.log(timeStamps);
+        inner = getYoutubeId() + "<br>";
+        for (i = 0; i < timeStamps.length; i++) {
+            inner += timeStamps[i] + "<br>";
+        }
+        document.getElementById('showTimeStamps').innerHTML = inner;
+    }
+
+    function sortNumber(a, b) {
+        return a - b;
+    }
+
+    function focusOnPage() {
+        document.getElementById("pageAnchor").focus();
     }
 
     var wavesurfer = WaveSurfer.create({
@@ -214,22 +241,30 @@
         progressColor: 'DarkGray'
     });
 
-    wavesurfer.load('https://dl.dropboxusercontent.com/s/08b4q7att1gwtrv/Brains.mp3');
+    var ytMp3 = 'https://dl.dropboxusercontent.com/s/08b4q7att1gwtrv/Brains.mp3';
+    wavesurfer.load(ytMp3);
 
     wavesurfer.on('ready', function() {
         wavesurfer.zoom(50);
     });
 
-    var beep = new Audio('beep.mp3');
+    // Synchronizes the wavesurfer and youtube player
+    wavesurfer.on('seek', function() {
+        player.seekTo(wavesurfer.getCurrentTime(), true)
+    })
 
+    // When user double clicks a region, deletes it and its associated timeStamp
     wavesurfer.on('region-dblclick', function(regionObj, mouseEvent) {
         timeIdx = getTimeIdx(regionObj.start);
-        keyPressTimes.splice(timeIdx,1);
+        timeStamps.splice(timeIdx,1);
         regionObj.remove();
     });
 
+    // Plays the click when entering a region
     wavesurfer.on('region-in', function() {
-        beep.play();
+        if (metronome) {
+            clickSound.play();
+        }
     });
 
     var originalTime;
@@ -238,25 +273,23 @@
         originalTime = regionObj.start;
     });
 
+    // When a user modifies a region, updates its associated timestamp 
     wavesurfer.on('region-update-end', function(regionObj) {
         prevTimeIdx = getTimeIdx(originalTime);
         newTime = regionObj.start;
-        keyPressTimes[prevTimeIdx] = newTime;
+        timeStamps[prevTimeIdx] = newTime;
     });
 
-    wavesurfer.on('seek', function() {
-        player.seekTo(wavesurfer.getCurrentTime(), true)
-    })
-
-    // This function exists because the start times are rounded in the waveform regions
+    // Returns the index of a timestamp in the timeStamps array
     function getTimeIdx(time) {
-        var roundedKeyPress = keyPressTimes.slice();
-        for (i = 0;i<keyPressTimes.length;i++) {
-            roundedKeyPress[i] = Math.round(keyPressTimes[i] * 1000) / 1000;
+        var roundedKeyPress = timeStamps.slice();
+        for (i = 0;i<timeStamps.length;i++) {
+            roundedKeyPress[i] = Math.round(timeStamps[i] * 1000) / 1000;
         };
         var roundedTime = Math.round(time * 1000) / 1000;
         return roundedKeyPress.indexOf(roundedTime);
     }
+
     </script>
     <script>
     window.jQuery || document.write('<script src="bootstrap/docs/assets/js/vendor/jquery.min.js"><\/script>')
