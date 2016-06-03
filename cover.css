@@ -74,8 +74,8 @@ body {
   margin-left: 20px;
 }
 .masthead-nav > li > a {
-  padding-right: 0;
-  padding-left: 0;
+  position:fixed;
+  top:0px;
   font-size: 16px;
   font-weight: bold;
   color: #fff; /* IE8 proofing */
@@ -100,7 +100,7 @@ body {
     float: left;
   }
   .masthead-nav {
-    float: right;
+    float: left;
   }
 }
 

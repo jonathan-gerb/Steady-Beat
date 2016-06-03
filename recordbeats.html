@@ -33,11 +33,9 @@
                 <div class="masthead clearfix">
                     <div class="inner">
                         <h3 class="masthead-brand"></h3>
-                        <nav>
+                        <nav class="fixed-header">
                             <ul class="nav masthead-nav">
-                                <li class="active"><a href="#">Waveform</a></li>
                                 <li><a href="index.html">Song selection</a></li>
-                                <li><a href="trackbeat.html">Annotation stuff</a></li>
                             </ul>
                         </nav>
                     </div>
@@ -46,8 +44,8 @@
                     <h1 class="cover-heading"></h1>
                     <br>
                     <div id="player"></div>
+                    <div class="lead" id="loading">Loading...</div>
                     <div class="waveform-box" id="waveform"></div>
-                    <div id="waveform-timeline"></div>
                     <div style="text-align: center">
                         <button class="btn btn-primary" id="playButton" onclick="playOrPause()">
                             <i class="glyphicon glyphicon-play"></i> Play
@@ -246,6 +244,7 @@
 
     wavesurfer.on('ready', function() {
         wavesurfer.zoom(50);
+        document.getElementById('loading').innerHTML = '';
     });
 
     // Synchronizes the wavesurfer and youtube player
