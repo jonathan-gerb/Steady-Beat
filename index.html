@@ -35,7 +35,7 @@
 	// Checks if input is a youtube url
 	function validateInput() {
 		var inputStr = $("#yt-url").val();
-		var ytStr1 = 'youtube'; 
+		var ytStr1 = 'youtube';
 		var ytStr2 = 'youtu.be';
 		if (inputStr.match(ytStr1) == ytStr1) {
 			var idIdx = inputStr.search(/\?v=/);
@@ -46,7 +46,7 @@
 			return;
 		}
 		// Youtube id's are always 11 characters.
-		var ytID = inputStr.substring(idIdx+3, idIdx+14);	
+		var ytID = inputStr.substring(idIdx+3, idIdx+14);
 		window.location.assign('waveform.html?yt_ID='+ytID);
   };
 </script>
@@ -77,7 +77,7 @@
                         </form>
                     </p>
                 </div>
-                Project BEAT is a project supported by Chordify, it's aim is to enable users to annotate beats and improve beattracking for songs. Beattracking isn't always perfect and by incorporating user feedback we can improve the performance drastically. The project is currently under construction and is scheduled for completion on the 24th of June.
+                Project BEAT is a project supported by Chordify, its aim is to enable users to annotate beats and improve beattracking for songs. Beattracking isn't always perfect and by incorporating user feedback we can improve the performance drastically. The project is currently under construction and is scheduled for completion on the 24th of June.
                 <div class="mastfoot">
                     <div class="inner">
                         <p>Waveform generation by <a href="http://http://wavesurfer-js.org/">wavesurfer</a>, pagestuff by <a href="#">@rockforr</a>.</p>
