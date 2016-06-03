@@ -52,7 +52,7 @@
                         <button class="btn btn-primary" id="playButton" onclick="playOrPause()">
                             <i class="glyphicon glyphicon-play"></i> Play
                         </button>
-                        <!--
+                        <!-- This is the removed zoom functionality:
                         <p class="row">
                             <div class="col-xs-1">
                                 <i class="glyphicon glyphicon-zoom-in"></i>
@@ -173,7 +173,7 @@
 
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('player', {
-            height: '195',
+            height: '400',
             width: '662',
             videoId: getYoutubeId(),
             events: {
@@ -214,7 +214,7 @@
         progressColor: 'DarkGray'
     });
 
-    wavesurfer.load('Brains.mp3');
+    wavesurfer.load('https://dl.dropboxusercontent.com/s/08b4q7att1gwtrv/Brains.mp3');
 
     wavesurfer.on('ready', function() {
         wavesurfer.zoom(50);
