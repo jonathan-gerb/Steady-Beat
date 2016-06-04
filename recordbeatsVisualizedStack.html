@@ -72,7 +72,13 @@
                             </div>
                         </p> -->
                     </div>
-                    
+                    <button class="btn btn-primary" id="printscreen0" onclick="toggleClick()">test0</button>
+                    <button class="btn btn-primary" id="printscreen1" onclick="toggleClick()">test1</button>
+                    <button class="btn btn-primary" id="printscreen2" onclick="toggleClick()">test2</button>
+                    <button class="btn btn-primary" id="printscreen3" onclick="toggleClick()">test3</button>
+                    <button class="btn btn-primary" id="printscreen4" onclick="toggleClick()">test4</button>
+                    <button class="btn btn-primary" id="printscreen5" onclick="toggleClick()">test5</button>
+                    <button class="btn btn-primary" id="comesLast" onclick="toggleClick()">comesLast</button>
                     <p class="lead">Press the 'b' key on the beat to add a beat annotation. 
                     <a href="#" id="infotext1" data-toggle="tooltip" data-placement="right" title="Drag a beat marker to move it, or double click to delete it."> 
                         <img id="infobutton1" src="info.png" alt="Info" style="width:18px;height:18px;">
@@ -182,6 +188,12 @@
     function checkKeyPressed(e) {
         var evtobj = window.event? event : e
         if (e.keyCode == "32") {
+        	document.getElementById("printscreen0").innerHTML = ('value at index [' + 0 + '] is: [' + lastActions[0] + '] <br>');
+    		document.getElementById("printscreen1").innerHTML = ('value at index [' + 1 + '] is: [' + lastActions[1] + '] <br>');
+    		document.getElementById("printscreen2").innerHTML = ('value at index [' + 2 + '] is: [' + lastActions[2] + '] <br>');
+    		document.getElementById("printscreen3").innerHTML = ('value at index [' + 3 + '] is: [' + lastActions[3] + '] <br>');
+    		document.getElementById("printscreen4").innerHTML = ('value at index [' + 4 + '] is: [' + lastActions[4] + '] <br>');
+    		document.getElementById("printscreen5").innerHTML = ('value at index [' + 5 + '] is: [' + lastActions[5] + '] <br>');
             e.preventDefault();
             playOrPause();
             return false;
@@ -344,6 +356,7 @@
 
     // When user double clicks a region, deletes it and its associated timeStamp
     wavesurfer.on('region-dblclick', function(regionObj, mouseEvent) {
+    	document.getElementById("comesLast").innerHTML = 'double click - delete';
         var time = regionObj.start;
         removeTimeStamp(regionObj);
         lastActions.push([2,time]);
@@ -365,6 +378,8 @@
 
     // When a user modifies a region, updates its associated timestamp 
     wavesurfer.on('region-update-end', function(regionObj) {
+    	// var actionBefore = lastActions.pop();
+    	document.getElementById("comesLast").innerHTML = 'click - move';
         var prevTimeIdx = getTimeIdx(originalTime);
         var newTime = regionObj.start;
         timeStamps[prevTimeIdx] = newTime;
