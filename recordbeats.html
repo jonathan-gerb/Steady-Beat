@@ -24,6 +24,14 @@
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+    <style>
+    #infotext1{
+        float: right;
+    }
+    #infobutton2, #infobutton1 {
+        float: bottom-right;
+    }
+    </style>
 </head>
 
 <body>
@@ -64,11 +72,18 @@
                             </div>
                         </p> -->
                     </div>
-                    <p class="lead">Press the 'b' key on the beat</p>
+                    
+                    <p class="lead">Press the 'b' key on the beat to add a beat annotation. <br> 
+                    <a href="#" id="infotext1" data-toggle="tooltip" data-placement="right" title="Drag a beat marker to move it, or double click to delete it."> 
+                        <img id="infobutton1" src="info.png" alt="Info" style="width:18px;height:18px;">
+                    </a>
+                    Afterwards you can move and delete beats to your satisfaction. </p> 
                     <p class="lead">
-                        <!--<a href="#" class="btn btn-lg btn-default" id="beatTracker" onmousedown="recordTimeStamp()">Record Beat</a>-->
                         <a href="#" class="btn btn-lg btn-default" id="reset" onclick="resetTimeStamps()">Reset Recording</a>
                         <a href="#" class="btn btn-lg btn-default" id="toPHP" onclick="writeToPage()">Update Tracking info</a>
+                        <a href="#" id="infotext2" data-toggle="tooltip" data-placement="right" title="The Tracking info is a list which contains the beat annotations you made. This list appears below when this button is clicked."> 
+                            <img id="infobutton2" src="info.png" alt="Info" style="width:18px;height:18px;">
+                        </a>
                     </p>
                     <p id="showTimeStamps"></p>
                 </div>
@@ -106,6 +121,11 @@
         return id[1];
     }
 
+    // hover script for info button
+    $(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip(); 
+    });
+
     // Implementation of the Youtube API, retrieved and modified from: https://developers.google.com/youtube/iframe_api_reference
     var tag = document.createElement('script');
     tag.src = "https://www.youtube.com/iframe_api";
@@ -119,8 +139,8 @@
 
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('player', {
-            height: '400',
-            width: '662',
+            height: '300',
+            width: '496.5',
             videoId: getYoutubeId(),
             events: {
                 'onStateChange': onPlayerStateChange
