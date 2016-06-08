@@ -2,14 +2,16 @@
 <html>
 <body>
 
-<h1>My first PHP page</h1>
+<h1>Youtube Downloader</h1>
 
 <?php
-	echo "Hello World!";
-	$cmd = 'youtube-dl --extract-audio --audio-format mp3';
-	shell_exec($cmd) or die("unable to execute command");
+	ini_set('display_errors',1);
+	error_reporting(E_ALL);
+    $yturl = 'https://www.youtube.com/watch?v=v04H7_fFC90';
+	$cmd = 'youtube-dl --extract-audio --audio-format mp3 -o "./mp3files/%(title)s.%(ext)s" ' . $yturl;
+	exec($cmd, $output) or die("cannot download video using youtube-dl");
+    var_export($output);
 ?>
 
 </body>
-<!-- --output '/mp3files/%(title)s.%(ext)s' -->
 </html>
