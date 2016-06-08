@@ -6,15 +6,177 @@
     <script src="./waves-ui-master/waves-ui.umd.js"></script>
     <script src="./waves-audio-master/examples/assets/prism.js"></script>
     <script src="./waves-audio-master/examples/assets/waves-loaders.min.js"></script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="bootstrap/docs/favicon.ico">
+    <title>Waveform generation page</title>
+    <!-- Bootstrap core CSS -->
+    <link href="bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="bootstrap/docs/assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="cover.css" rel="stylesheet">
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="bootstrap/docs/assets/js/ie-emulation-modes-warning.js"></script>
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style>
+    #infotext1,
+    #infobutton1 {
+        float: bottom-right;
+    }
+    
+    #infobutton2 {
+        float: bottom-right;
+    }
+    </style>
 </head>
 
 <body>
-    <h1>Axis Layer</h1>
-    <div class="track" id="track-1"></div>
+    <script>
+    window.jQuery || document.write('<script src="bootstrap/docs/assets/js/vendor/jquery.min.js"><\/script>')
+    </script>
+    <div class="site-wrapper" id="pageAnchor">
+        <div class="site-wrapper-inner">
+            <div class="cover-container">
+                <div class="masthead clearfix">
+                    <div class="inner">
+                        <h3 class="masthead-brand"></h3>
+                        <nav class="fixed-header">
+                            <ul class="nav masthead-nav">
+                                <li><a href="index.html">Song selection</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+                <div class="inner cover">
+                    <h1 class="cover-heading"></h1>
+                    <br>
+                    <div id="player"></div>
+                    <div class="track" id="track-1"></div>
+                    <div class="lead" id="loading">Loading...</div>
+                    <div class="waveform-box" id="waveform"></div>
+                    <div style="text-align: center">
+                        <button class="btn btn-primary" id="playButton" onclick="playOrPause()">
+                            <i class="glyphicon glyphicon-play"></i> Play
+                        </button>
+                        <button class="btn btn-primary" id="clickToggle" onclick="toggleClick()">Click ON</button>
+                        <!-- This is the removed zoom functionality:
+                        <p class="row">
+                            <div class="col-xs-1">
+                                <i class="glyphicon glyphicon-zoom-in"></i>
+                            </div>
+                            <div class="col-xs-10">
+                                <input id="slider" type="range" min="1" max="200" value="1" style="width: 100%" />
+                            </div>
+                            <div class="col-xs-1">
+                                <i class="glyphicon glyphicon-zoom-out"></i>
+                            </div>
+                        </p> -->
+                    </div>
+                    <p class="lead">Press the 'b' key on the beat to add a beat annotation.
+                        <a href="#" id="infotext1" data-toggle="tooltip" data-placement="right" title="Drag a beat marker to move it, or double click to delete it.">
+                            <img id="infobutton1" src="info.png" alt="Info" style="width:18px;height:18px;">
+                        </a>
+                    </p>
+                    <p class="lead">
+                        <a href="#" class="btn btn-lg btn-default" id="reset" onclick="resetTimeStamps()">Reset Recording</a>
+                        <a href="#" class="btn btn-lg btn-default" id="toPHP" onclick="writeToPage()">Update Tracking info</a>
+                        <a href="#" id="infotext2" data-toggle="tooltip" data-placement="right" title="The Tracking info is a list which contains the beat annotations you made.">
+                            <img id="infobutton2" src="info.png" alt="Info" style="width:18px;height:18px;">
+                        </a>
+                    </p>
+                    <p id="showTimeStamps"></p>
+                </div>
+                <div>
+                    <div class="inner">
+                        <p>Waveform generation by <a href="http://http://wavesurfer-js.org/">wavesurfer</a>, pagestuff by <a href="#">@rockforr</a>, <a href="#">@blane</a>, <a href="#">@nindia</a>, <a href="#">@clarayeah__</a>, <a href="#">@adrivri</a>.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <script class="example" rel="track-1">
-    var loader = new wavesLoaders.AudioBufferLoader();
+    // Gets the Youtube video-ID from the URL
+    function getYoutubeId() {
+        var query = window.location.search.substring(1);
+        var id = query.split("=");
+        return id[1];
+    }
 
-    loader.load('toymarch.wav').then(function(buffer) {
+    // hover script for info button
+    $(document).ready(function() {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+
+    // Implementation of the Youtube API, retrieved and modified from: https://developers.google.com/youtube/iframe_api_reference
+    var tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+
+    var firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+    // This function creates an <iframe> (and YouTube player)
+    // after the API code downloads.
+    var player;
+
+    function onYouTubeIframeAPIReady() {
+        player = new YT.Player('player', {
+            height: '300',
+            width: '496.5',
+            videoId: getYoutubeId(),
+            events: {
+                'onStateChange': onPlayerStateChange
+            }
+        });
+    }
+
+    // When the yt player's state changes, synchronizes the wavesurfer player
+    var done = false;
+
+    function onPlayerStateChange(event) {
+        if (event.data == YT.PlayerState.PLAYING && !done) {
+            done = true;
+        } else if (event.data != YT.PlayerState.PLAYING) {
+            playSong = false;
+        } else if (event.data == YT.PlayerState.PLAYING) {
+            playSong = true;
+        }
+        focusOnPage();
+    }
+
+    // Pauses the YT video when it's playing and starts playback when it's paused.
+    function playOrPause() {
+        if (player.getPlayerState() == 1) {
+            player.pauseVideo();
+            document.getElementById('playButton').innerHTML = '<i class="glyphicon glyphicon-play"></i> Play'
+        } else {
+            player.seekTo(wavesurfer.getCurrentTime(), true)
+            player.playVideo();
+            document.getElementById('playButton').innerHTML = '<i class="glyphicon glyphicon-pause"></i> Pause';
+        }
+    }
+
+    function focusOnPage() {
+        document.getElementById("pageAnchor").focus();
+    }
+
+
+
+
+
+
+    var loader = new wavesLoaders.AudioBufferLoader();
+    var ytWav = 'https://dl.dropboxusercontent.com/s/08b4q7att1gwtrv/Brains.wav';
+    loader.load(ytWav).then(function(buffer) {
         var $track = document.querySelector('#track-1');
         var width = $track.getBoundingClientRect().width;
         var timeAxisHeight = 18; // height of text above waveform
@@ -25,7 +187,6 @@
             width: 4,
             color: 'steelblue',
             opacity: 0.8,
-            text: 'this is a region.'
         }, {
             x: 10,
             width: 5,
@@ -61,32 +222,55 @@
         //     height: layerHeight
         // });
 
-
+        var playSong = true;
+        var startTime;
+        var currentTime;
         var duration = buffer.duration;
         var pixelsPerSecond = width / duration;
 
         window.addEventListener("keydown", checkKeyPressed, false);
+        window.addEventListener("mousedown", checkKeyPressed, false);
+        // window.addEventListener("keydown", pauseCursor, false);
         var clickSound = new Audio('click.mp3');
 
 
         function checkKeyPressed(e) {
             var evtobj = window.event ? event : e
-            if (e.keyCode == "66") {
+            if (e.keyCode == "32") {
+                e.preventDefault();
+                pauseCursor(e);
+                return false;
+            } else if (e.keyCode == "66") {
                 recordTimeStamp();
                 clickSound.play();
             }
         }
 
         function recordTimeStamp() {
-            var currentTime = new Date().getTime() / 1000;
+            // var d = new Date();
+            // var currentTime = (d.getTime() / 1000) - startTime;
             var newmarker = {
-                time: currentTime % duration,
+                time: currentTime,
                 text: ' '
             }
             beatMarkers.push(newmarker);
 
             markerLayer.render();
             markerLayer.update();
+        }
+
+
+        function pauseCursor(e) {
+            if (e.keyCode == "32" && playSong == true) {
+                playSong = false;
+                player.pauseVideo();
+            } else if (e.keyCode == "32" && playSong == false) {
+                playSong = true;
+                player.playVideo();
+                var d = new Date();
+                startTime = (d.getTime() / 1000) - currentTime;
+                requestAnimationFrame(loop);
+            }
         }
 
         var timeline = new wavesUI.core.Timeline(pixelsPerSecond, width);
@@ -118,6 +302,7 @@
             color: function() {
                 return 'red';
             }
+
         });
 
         markerLayer.setBehavior(new wavesUI.behaviors.MarkerBehavior());
@@ -152,14 +337,16 @@
             height: layerHeight
         });
 
+        timeline.state = new wavesUI.states.SimpleEditionState(timeline);
 
-        timeline.addLayer(cursorLayer, 'main');
-        timeline.addLayer(segmentLayer, 'main');
 
         track.add(timeAxis);
         // track.add(grid);
         track.add(waveformLayer);
+        timeline.addLayer(segmentLayer, 'main');
         track.add(markerLayer);
+
+        timeline.addLayer(cursorLayer, 'main');
 
         track.render();
         track.update();
@@ -167,16 +354,47 @@
         timeline.tracks.render();
         timeline.tracks.update();
 
-        timeline.state = new wavesUI.states.CenteredZoomState(timeline);
+        var finalDur = timeline.timeContext.visibleDuration;
+        var windowWidth = 20;
+        timeline.timeContext.zoom = finalDur / windowWidth + 20;
+        // timeline.timeContext.offset = -100;
+        // console.log(timeContext);
 
+        timeline.tracks.render();
+        timeline.tracks.update();
+
+
+        document.getElementById('loading').innerHTML = '';
+        var d = new Date();
+        startTime = d.getTime() / 1000;
+        player.playVideo();
+        player.pauseVideo();
+        sleep(500);
         // listen for time passing...
         (function loop() {
-            var currentTime = new Date().getTime() / 1000;
-            cursorLayer.currentPosition = currentTime % duration;
-            cursorLayer.update();
-
-            requestAnimationFrame(loop);
+            if (playSong) {
+                var d = new Date();
+                player.playVideo()
+                currentTime = (d.getTime() / 1000) - startTime;
+                cursorLayer.currentPosition = currentTime;
+                cursorLayer.update();
+                timeline.timeContext.offset = -cursorLayer.currentPosition + (finalDur / windowWidth) / 2;
+                // timeline.tracks.render();
+                timeline.tracks.update();
+                requestAnimationFrame(loop);
+            } else {
+                setTimeout(function() {
+                    requestAnimationFrame(loop);
+                    timeline.tracks.update();
+                }, 20);
+            }
         }());
+
+        function sleep(miliseconds) {
+            var currentTime = new Date().getTime();
+
+            while (currentTime + miliseconds >= new Date().getTime()) {}
+        }
 
         timeline.on('event', function(e) {
             var segment;
