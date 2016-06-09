@@ -90,12 +90,13 @@
                     </p>
                     <p class="lead">
                         <a href="#" class="btn btn-lg btn-default" id="reset" onclick="clearMarkers()">Clear Markers</a>
-                        <a href="#" class="btn btn-lg btn-default" id="toPHP" onclick="writeToPage()">Update Tracking info</a>
+                        <a href="#" class="btn btn-lg btn-default" id="toPHP" onclick="writeToPage()">Get Marker Timings</a>
                         <a href="#" id="infotext2" data-toggle="tooltip" data-placement="right" title="The Tracking info is a list which contains the beat annotations you made.">
                             <i class="material-icons">help_outline</i>
                         </a>
                     </p>
                     <p id="showTimeStamps"></p>
+                    <textarea rows="4" cols="50" id="markerInfo" style="color:black" hidden>nothing here</textarea>
                 </div>
                 <div>
                     <div class="inner">
@@ -153,19 +154,7 @@
             displayHandlers: true,
         });
 
-        beatMarkers = [{
-            time: 2,
-            text: '1'
-        }, {
-            time: 5,
-            text: '2'
-        }, {
-            time: 6,
-            text: '3'
-        }, {
-            time: 8,
-            text: '4'
-        }, ];
+        beatMarkers = [];
 
         // var segmentLayer = new wavesUI.core.Layer('collection', data, {
         //     height: layerHeight
@@ -301,6 +290,22 @@
         timeline.timeContext.offset = -cursorLayer.currentPosition + (finalDur / windowWidth) / 2;
         timeline.tracks.update();
     }
+
+    function writeToPage() {
+        // console.log(beatMarkers);
+        document.getElementById('markerInfo').hidden = ""
+        var objString = "[ ";
+        for (i = 0; i < beatMarkers.length; i++) {
+                var temp = beatMarkers[i];
+                SingleObjString = "{ " + temp.time.toString() + ", " + temp.text.toString() + " },";
+                objString = objString + SingleObjString;
+            }
+        objString = objString.replace(/,$/, "") + " ]";
+
+        document.getElementById('markerInfo').value = objString;
+        // console.log(txtarea);
+    }
+
 
     function clearMarkers() {
         beatMarkers.length = 0;
