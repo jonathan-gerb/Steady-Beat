@@ -62,7 +62,7 @@
                     <br>
                     <div id="player"></div>
                     <div class="track" id="track-1"></div>
-                    <div class="lead" id="loading">Loading...</div>
+                    <div class="lead" id="loading"><img src="loading.gif" alt="loadingGif" height="100" width="100"></div>
                     <div class="waveform-box" id="waveform"></div>
                     <div style="text-align: center">
                         <button class="btn btn-primary" id="playButton" onclick="playOrPause()">
@@ -105,17 +105,225 @@
         </div>
     </div>
     <script class="example" rel="track-1">
+    var wavesJSReady = false;
+
+    var markerCounter = 5;
+    var loader = new wavesLoaders.AudioBufferLoader();
+    var ytWav = 'https://dl.dropboxusercontent.com/s/08b4q7att1gwtrv/Brains.wav';
+    loader.load(ytWav).then(function(buffer) {
+        wavesJSReady = true;
+        initialize(buffer);
+    });
+
+    var data;
+    var $track;
+    var markerLayer;
+    var beatMarkers;
+    var segmentLayer;
+    var cursorLayer;
+    var playSong;
+    var timeline;
+    var track;
+    var timeContext;
+    var startTime;
+    var currentTime;
+    var finalDur;
+    var windowWidth = 20;
+
+    function initialize(buffer) {
+        $track = document.querySelector('#track-1');
+        var width = $track.getBoundingClientRect().width;
+        var timeAxisHeight = 18; // height of text above waveform
+        var layerHeight = 200; // height of waveform
+
+        var duration = buffer.duration;
+        var pixelsPerSecond = width / duration;
+
+        data = [{
+            x: 0,
+            width: duration,
+            color: 'steelblue',
+            opacity: 0.5,
+            text: '4/4'
+        }, ];
+
+        segmentLayer = new wavesUI.helpers.SegmentLayer(data, {
+            height: layerHeight,
+            displayHandlers: true,
+        });
+
+        beatMarkers = [{
+            time: 2,
+            text: '1'
+        }, {
+            time: 5,
+            text: '2'
+        }, {
+            time: 6,
+            text: '3'
+        }, {
+            time: 8,
+            text: '4'
+        }, ];
+
+        // var segmentLayer = new wavesUI.core.Layer('collection', data, {
+        //     height: layerHeight
+        // });
+        timeline = new wavesUI.core.Timeline(pixelsPerSecond, width);
+        // var track = new wavesUI.core.Track($track, layerHeight + timeAxisHeight, 'main');
+        // timeline.add(track);
+
+        track = timeline.createTrack($track, layerHeight + timeAxisHeight, 'main');
+
+        // marker layer
+        markerLayer = new wavesUI.core.Layer('collection', beatMarkers, {
+            height: layerHeight
+        });
+
+        // time axis
+        var timeAxis = new wavesUI.axis.AxisLayer(wavesUI.axis.timeAxisGenerator(), {
+            height: timeAxisHeight
+        });
+
+        timeContext = new wavesUI.core.LayerTimeContext(timeline.timeContext);
+
+        markerLayer.setTimeContext(timeContext);
+        markerLayer.configureShape(wavesUI.shapes.AnnotatedMarker, {
+            x: function(d, v) {
+                if (v !== undefined) {
+                    d.time = v;
+                }
+                return d.time;
+            },
+            color: function() {
+                return 'red';
+            }
+        });
+
+        markerLayer.setBehavior(new wavesUI.behaviors.MarkerBehavior());
+
+        // Axis layers use `timeline.TimeContext` directly,
+        // they don't have their own timeContext
+        timeAxis.setTimeContext(timeline.timeContext);
+        timeAxis.configureShape(wavesUI.shapes.Ticks, {}, {
+            color: 'CadetBlue'
+        });
+
+        // bpm axis
+        var grid = new wavesUI.axis.AxisLayer(wavesUI.axis.gridAxisGenerator(10, '4/4'), {
+            height: layerHeight,
+            top: timeAxisHeight
+        });
+
+        grid.setTimeContext(timeline.timeContext);
+        grid.configureShape(wavesUI.shapes.Ticks, {}, {
+            color: 'green'
+        });
+
+        // wavesform layer
+        var waveformLayer = new wavesUI.helpers.WaveformLayer(buffer, {
+            height: layerHeight,
+            top: timeAxisHeight,
+            color: 'CadetBlue'
+        });
+
+        waveformLayer.setTimeContext(new wavesUI.core.LayerTimeContext(timeline.timeContext));
+
+        cursorLayer = new wavesUI.helpers.CursorLayer({
+            height: layerHeight
+        });
+
+        timeline.state = new wavesUI.states.SimpleEditionState(timeline);
+
+
+        track.add(timeAxis);
+        // track.add(grid);
+        track.add(waveformLayer);
+        timeline.addLayer(segmentLayer, 'main');
+        track.add(markerLayer);
+
+        timeline.addLayer(cursorLayer, 'main');
+
+        track.render();
+        track.update();
+
+        timeline.tracks.render();
+        timeline.tracks.update();
+
+        finalDur = timeline.timeContext.visibleDuration;
+
+        timeline.timeContext.zoom = finalDur / windowWidth;
+        // timeline.timeContext.offset = -100;
+        // console.log(timeContext);
+
+        timeline.tracks.render();
+        timeline.tracks.update();
+
+        document.getElementById('loading').innerHTML = '';
+
+        // listen for time passing...
+        (function loop() {
+            if (playSong) {
+                var d = new Date();
+                currentTime = (d.getTime() / 1000) - startTime;
+                updatePlugin();
+                setTimeout(requestAnimationFrame(loop), 20);
+            } else {
+                setTimeout(function() {
+                    requestAnimationFrame(loop);
+                    timeline.tracks.update();
+                }, 200);
+            }
+        }());
+
+        timeline.on('event', function(e) {
+            var segment;
+            var eventType = e.type;
+
+            if (eventType !== 'mouseover' && eventType !== 'mouseout') {
+                return;
+            }
+
+            segment = segmentLayer.getItemFromDOMElement(e.target);
+
+            if (segment !== null) {
+                var datum = segmentLayer.getDatumFromItem(segment);
+                datum.opacity = eventType === 'mouseover' ? 1 : 0.8;
+                segmentLayer.updateShapes();
+            }
+        });
+    }
+
+    function updatePlugin() {
+        cursorLayer.currentPosition = currentTime;
+        cursorLayer.update();
+        timeline.timeContext.offset = -cursorLayer.currentPosition + (finalDur / windowWidth) / 2;
+        timeline.tracks.update();
+    }
+
+    window.addEventListener("keydown", checkKeyPressed, false);
+    window.addEventListener("mousedown", checkKeyPressed, false);
+    // window.addEventListener("keydown", pauseCursor, false);
+    var clickSound = new Audio('click.mp3');
+
+    var metronome = true;
+
+    function toggleClick() {
+        if (metronome) {
+            metronome = false;
+            document.getElementById('clickToggle').innerHTML = 'Click OFF'
+        } else {
+            metronome = true;
+            document.getElementById('clickToggle').innerHTML = 'Click ON'
+        }
+    }
+
     // Gets the Youtube video-ID from the URL
     function getYoutubeId() {
         var query = window.location.search.substring(1);
         var id = query.split("=");
         return id[1];
     }
-
-    // hover script for info button
-    $(document).ready(function() {
-        $('[data-toggle="tooltip"]').tooltip();
-    });
 
     // Implementation of the Youtube API, retrieved and modified from: https://developers.google.com/youtube/iframe_api_reference
     var tag = document.createElement('script');
@@ -139,19 +347,8 @@
         });
     }
 
-    // When the yt player's state changes, synchronizes the wavesurfer player
+    // When the yt player's state changes, s   ynchronizes the wavesurfer player
     var done = false;
-
-    function onPlayerStateChange(event) {
-        if (event.data == YT.PlayerState.PLAYING && !done) {
-            done = true;
-        } else if (event.data != YT.PlayerState.PLAYING) {
-            playSong = false;
-        } else if (event.data == YT.PlayerState.PLAYING) {
-            playSong = true;
-        }
-        focusOnPage();
-    }
 
     // Pauses the YT video when it's playing and starts playback when it's paused.
     function playOrPause() {
@@ -159,260 +356,72 @@
             player.pauseVideo();
             document.getElementById('playButton').innerHTML = '<i class="glyphicon glyphicon-play"></i> Play'
         } else {
-            player.seekTo(wavesurfer.getCurrentTime(), true)
             player.playVideo();
             document.getElementById('playButton').innerHTML = '<i class="glyphicon glyphicon-pause"></i> Pause';
         }
     }
 
-    function focusOnPage() {
-        document.getElementById("pageAnchor").focus();
+    function onPlayerStateChange(event) {
+        if (event.data == YT.PlayerState.PLAYING && !done) {
+            var d = new Date();
+            startTime = d.getTime() / 1000;
+            currentTime = player.getCurrentTime();
+            playSong = true;
+            done = true;
+        } else if (event.data != YT.PlayerState.PLAYING) {
+            currentTime = player.getCurrentTime();
+            updatePlugin();
+            playSong = false;
+        } else if (event.data == YT.PlayerState.PLAYING) {
+            var d = new Date();
+            currentTime = player.getCurrentTime();
+            startTime = (d.getTime() / 1000) - currentTime;
+            playSong = true;
+        }
     }
 
-
-
-
-
-
-    var loader = new wavesLoaders.AudioBufferLoader();
-    var ytWav = 'https://dl.dropboxusercontent.com/s/08b4q7att1gwtrv/Brains.wav';
-    loader.load(ytWav).then(function(buffer) {
-        var $track = document.querySelector('#track-1');
-        var width = $track.getBoundingClientRect().width;
-        var timeAxisHeight = 18; // height of text above waveform
-        var layerHeight = 200; // height of waveform
-
-        var data = [{
-            x: 2,
-            width: 4,
-            color: 'steelblue',
-            opacity: 0.8,
-        }, {
-            x: 10,
-            width: 5,
-            color: 'orange',
-            opacity: 0.8
-        }, {
-            x: 14,
-            width: 3,
-            color: 'green',
-            opacity: 0.8
-        }, ];
-
-        var segmentLayer = new wavesUI.helpers.SegmentLayer(data, {
-            height: layerHeight,
-            displayHandlers: true,
-        });
-
-        var beatMarkers = [{
-            time: 2,
-            text: ' '
-        }, {
-            time: 5,
-            text: ' '
-        }, {
-            time: 6,
-            text: ' '
-        }, {
-            time: 8,
-            text: ' '
-        }, ];
-
-        // var segmentLayer = new wavesUI.core.Layer('collection', data, {
-        //     height: layerHeight
-        // });
-
-        var playSong = true;
-        var startTime;
-        var currentTime;
-        var duration = buffer.duration;
-        var pixelsPerSecond = width / duration;
-
-        window.addEventListener("keydown", checkKeyPressed, false);
-        window.addEventListener("mousedown", checkKeyPressed, false);
-        // window.addEventListener("keydown", pauseCursor, false);
-        var clickSound = new Audio('click.mp3');
-
-
-        function checkKeyPressed(e) {
-            var evtobj = window.event ? event : e
-            if (e.keyCode == "32") {
-                e.preventDefault();
-                pauseCursor(e);
-                return false;
-            } else if (e.keyCode == "66") {
-                recordTimeStamp();
+    function checkKeyPressed(e) {
+        var evtobj = window.event ? event : e
+        if (e.keyCode == "32") {
+            e.preventDefault();
+            playOrPause();
+            player.seekTo(currentTime, true);
+            return false;
+        } else if (e.keyCode == "66") {
+            recordTimeStamp();
+            if (metronome) {
                 clickSound.play();
             }
-        }
-
-        function recordTimeStamp() {
-            // var d = new Date();
-            // var currentTime = (d.getTime() / 1000) - startTime;
-            var newmarker = {
-                time: currentTime,
-                text: ' '
+        } else if (e.keyCode == "46") {
+            var selectedMarker = document.getElementsByClassName('item annotated-marker selected');
+            console.log(selectedMarker[0].childNodes[2].innerHTML);
+            var i;
+            for (i = 0; i < beatMarkers.length; i++) {
+                if (beatMarkers[i].text == selectedMarker[0].childNodes[2].innerHTML) {
+                    // put the element to be deleted at the end, and pop it off
+                    var temp = beatMarkers[i];
+                    beatMarkers[i] = beatMarkers[beatMarkers.length - 1];
+                    beatMarkers[beatMarkers.length - 1] = temp;
+                    beatMarkers.pop();
+                    break;
+                }
             }
-            beatMarkers.push(newmarker);
-
             markerLayer.render();
             markerLayer.update();
+            // console.log(listy);
         }
+    }
 
-
-        function pauseCursor(e) {
-            if (e.keyCode == "32" && playSong == true) {
-                playSong = false;
-                player.pauseVideo();
-            } else if (e.keyCode == "32" && playSong == false) {
-                playSong = true;
-                player.playVideo();
-                var d = new Date();
-                startTime = (d.getTime() / 1000) - currentTime;
-                requestAnimationFrame(loop);
-            }
+    function recordTimeStamp() {
+        var newmarker = {
+            time: currentTime,
+            text: markerCounter.toString()
         }
-
-        var timeline = new wavesUI.core.Timeline(pixelsPerSecond, width);
-        // var track = new wavesUI.core.Track($track, layerHeight + timeAxisHeight, 'main');
-        // timeline.add(track);
-
-        var track = timeline.createTrack($track, layerHeight + timeAxisHeight, 'main');
-
-        // marker layer
-        var markerLayer = new wavesUI.core.Layer('collection', beatMarkers, {
-            height: layerHeight
-        });
-
-        // time axis
-        var timeAxis = new wavesUI.axis.AxisLayer(wavesUI.axis.timeAxisGenerator(), {
-            height: timeAxisHeight
-        });
-
-        var timeContext = new wavesUI.core.LayerTimeContext(timeline.timeContext);
-
-        markerLayer.setTimeContext(timeContext);
-        markerLayer.configureShape(wavesUI.shapes.AnnotatedMarker, {
-            x: function(d, v) {
-                if (v !== undefined) {
-                    d.time = v;
-                }
-                return d.time;
-            },
-            color: function() {
-                return 'red';
-            }
-
-        });
-
-        markerLayer.setBehavior(new wavesUI.behaviors.MarkerBehavior());
-
-        // Axis layers use `timeline.TimeContext` directly,
-        // they don't have their own timeContext
-        timeAxis.setTimeContext(timeline.timeContext);
-        timeAxis.configureShape(wavesUI.shapes.Ticks, {}, {
-            color: 'steelblue'
-        });
-
-        // bpm axis
-        var grid = new wavesUI.axis.AxisLayer(wavesUI.axis.gridAxisGenerator(10, '4/4'), {
-            height: layerHeight,
-            top: timeAxisHeight
-        });
-
-        grid.setTimeContext(timeline.timeContext);
-        grid.configureShape(wavesUI.shapes.Ticks, {}, {
-            color: 'green'
-        });
-
-        // wavesform layer
-        var waveformLayer = new wavesUI.helpers.WaveformLayer(buffer, {
-            height: layerHeight,
-            top: timeAxisHeight
-        });
-
-        waveformLayer.setTimeContext(new wavesUI.core.LayerTimeContext(timeline.timeContext));
-
-        var cursorLayer = new wavesUI.helpers.CursorLayer({
-            height: layerHeight
-        });
-
-        timeline.state = new wavesUI.states.SimpleEditionState(timeline);
-
-
-        track.add(timeAxis);
-        // track.add(grid);
-        track.add(waveformLayer);
-        timeline.addLayer(segmentLayer, 'main');
-        track.add(markerLayer);
-
-        timeline.addLayer(cursorLayer, 'main');
-
-        track.render();
-        track.update();
-
-        timeline.tracks.render();
-        timeline.tracks.update();
-
-        var finalDur = timeline.timeContext.visibleDuration;
-        var windowWidth = 20;
-        timeline.timeContext.zoom = finalDur / windowWidth + 20;
-        // timeline.timeContext.offset = -100;
-        // console.log(timeContext);
-
-        timeline.tracks.render();
-        timeline.tracks.update();
-
-
-        document.getElementById('loading').innerHTML = '';
-        var d = new Date();
-        startTime = d.getTime() / 1000;
-        player.playVideo();
-        player.pauseVideo();
-        sleep(500);
-        // listen for time passing...
-        (function loop() {
-            if (playSong) {
-                var d = new Date();
-                player.playVideo()
-                currentTime = (d.getTime() / 1000) - startTime;
-                cursorLayer.currentPosition = currentTime;
-                cursorLayer.update();
-                timeline.timeContext.offset = -cursorLayer.currentPosition + (finalDur / windowWidth) / 2;
-                // timeline.tracks.render();
-                timeline.tracks.update();
-                requestAnimationFrame(loop);
-            } else {
-                setTimeout(function() {
-                    requestAnimationFrame(loop);
-                    timeline.tracks.update();
-                }, 20);
-            }
-        }());
-
-        function sleep(miliseconds) {
-            var currentTime = new Date().getTime();
-
-            while (currentTime + miliseconds >= new Date().getTime()) {}
-        }
-
-        timeline.on('event', function(e) {
-            var segment;
-            var eventType = e.type;
-
-            if (eventType !== 'mouseover' && eventType !== 'mouseout') {
-                return;
-            }
-
-            segment = segmentLayer.getItemFromDOMElement(e.target);
-
-            if (segment !== null) {
-                var datum = segmentLayer.getDatumFromItem(segment);
-                datum.opacity = eventType === 'mouseover' ? 1 : 0.8;
-                segmentLayer.updateShapes();
-            }
-        });
-    });
+        markerCounter++;
+        beatMarkers.push(newmarker);
+        markerLayer.render();
+        markerLayer.update();
+    }
     </script>
 </body>
 
