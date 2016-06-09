@@ -28,6 +28,7 @@
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
     #infotext1,
     #infobutton1 {
@@ -84,14 +85,14 @@
                     </div>
                     <p class="lead">Press the 'b' key on the beat to add a beat annotation.
                         <a href="#" id="infotext1" data-toggle="tooltip" data-placement="right" title="Drag a beat marker to move it, or double click to delete it.">
-                            <img id="infobutton1" src="info.png" alt="Info" style="width:18px;height:18px;">
+                            <i class="material-icons">help_outline</i>
                         </a>
                     </p>
                     <p class="lead">
-                        <a href="#" class="btn btn-lg btn-default" id="reset" onclick="resetTimeStamps()">Reset Recording</a>
+                        <a href="#" class="btn btn-lg btn-default" id="reset" onclick="clearMarkers()">Clear Markers</a>
                         <a href="#" class="btn btn-lg btn-default" id="toPHP" onclick="writeToPage()">Update Tracking info</a>
                         <a href="#" id="infotext2" data-toggle="tooltip" data-placement="right" title="The Tracking info is a list which contains the beat annotations you made.">
-                            <img id="infobutton2" src="info.png" alt="Info" style="width:18px;height:18px;">
+                            <i class="material-icons">help_outline</i>
                         </a>
                     </p>
                     <p id="showTimeStamps"></p>
@@ -299,6 +300,12 @@
         cursorLayer.update();
         timeline.timeContext.offset = -cursorLayer.currentPosition + (finalDur / windowWidth) / 2;
         timeline.tracks.update();
+    }
+
+    function clearMarkers() {
+        beatMarkers.length = 0;
+        markerLayer.render();
+        markerLayer.update();
     }
 
     window.addEventListener("keydown", checkKeyPressed, false);
