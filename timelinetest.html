@@ -144,6 +144,8 @@
         data = [{
             x: 0,
             width: duration,
+            height: layerHeight,
+            top: timeAxisHeight,
             color: 'steelblue',
             opacity: 0.5,
             text: '4/4'
@@ -284,7 +286,7 @@
         timeline.tracks.update();
         for (var i = 0; i < beatMarkers.length - 1; i++) {
             // console.log(currentTime.toFixed(3));
-            if (beatMarkers[i].time.toFixed(3) < currentTime.toFixed(3) + 0.03  && beatMarkers[i].time.toFixed(3) > currentTime.toFixed(3) - 0.03) {
+            if (beatMarkers[i].time.toFixed(3) < currentTime.toFixed(3) + 0.03 && beatMarkers[i].time.toFixed(3) > currentTime.toFixed(3) - 0.03) {
                 clickSound.play();
             }
         }
