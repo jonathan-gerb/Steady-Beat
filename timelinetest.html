@@ -109,6 +109,7 @@
     function getYoutubeId() {
         var query = window.location.search.substring(1);
         var id = query.split("=");
+        window.alert(id[1]);
         return id[1];
     }
 
@@ -175,7 +176,7 @@
 
 
     var loader = new wavesLoaders.AudioBufferLoader();
-    var ytWav = 'https://dl.dropboxusercontent.com/s/08b4q7att1gwtrv/Brains.wav';
+    var ytWav = './mp3files/';
     loader.load(ytWav).then(function(buffer) {
         var $track = document.querySelector('#track-1');
         var width = $track.getBoundingClientRect().width;

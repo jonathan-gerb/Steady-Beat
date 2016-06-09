@@ -39,7 +39,7 @@
 		var ytStr2 = 'youtu.be';
 		if (inputStr.match(ytStr1) == ytStr1) {
 			var idIdx = inputStr.search(/\?v=/);
-		} else if (inputStr.match('youtu.be') == 'youtu.be') {
+		} else if (inputStr.match(ytStr2) == ytStr2) {
 			var idIdx = inputStr.search(/be\//);
 		} else {
 			window.alert("You didn't input a Youtube URL.");
