@@ -48,12 +48,11 @@
 		// Youtube id's are always 11 characters.
 		var ytID = inputStr.substring(idIdx+3, idIdx+14);	
         loadytID(ytID);
-		//window.location.assign('recordbeats.html?yt_ID='+ytID);
+		window.location.assign('recordbeats.html?yt_ID='+ytID);
   };
 
     function loadytID(ytID) {
         var xhttp;
-        var url = "downloadytwav.php";
         var id = "ytID=" . ytID;
         if (window.XMLHttpRequest) {
             // code for modern browsers
@@ -68,12 +67,6 @@
         //Send the proper header information along with the request
         xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
-        xhttp.onreadystatechange = function() {
-            if (xhttp.readyState == 4 && xhttp.status == 200) {
-                document.getElementById("demo").innerHTML = xhttp.responseText;
-            }
-        };
-
         xhttp.send(id);
     }
 </script>
@@ -87,7 +80,6 @@
                     </div>
                 </div>
                 <h1 class="cover-heading">Welcome to the Steady Beat project, please paste the URL of the youtube video you want to annotate below.</h1>
-                <p id="demo">Let AJAX change this text.</p>
                 <div class="inner cover">
                     <h1 class="cover-heading"></h1>
                     <p class="lead">
