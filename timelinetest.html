@@ -111,7 +111,7 @@
 
     var markerCounter = 5;
     var loader = new wavesLoaders.AudioBufferLoader();
-    var ytWav = 'https://dl.dropboxusercontent.com/s/08b4q7att1gwtrv/Brains.wav';
+    var ytWav = './mp3files/' + getYoutubeId +'.wav';
     loader.load(ytWav).then(function(buffer) {
         wavesJSReady = true;
         initialize(buffer);
@@ -252,6 +252,7 @@
             if (playSong) {
                 var d = new Date();
                 currentTime = (d.getTime() / 1000) - startTime;
+                console.log(currentTime);
                 updatePlugin();
                 setTimeout(requestAnimationFrame(loop), 20);
             } else {
@@ -287,7 +288,7 @@
         timeline.tracks.update();
         for (var i = 0; i < beatMarkers.length - 1; i++) {
             // console.log(currentTime.toFixed(3));
-            if (beatMarkers[i].time.toFixed(3) < currentTime.toFixed(3) + 0.03 && beatMarkers[i].time.toFixed(3) > currentTime.toFixed(3) - 0.03) {
+            if (beatMarkers[i].time > currentTime - 0.04 && beatMarkers[i].time < currentTime + 0.04) {
                 clickSound.play();
             }
         }
@@ -448,7 +449,7 @@
             }
             markerLayer.render();
             markerLayer.update();
-        }
+        } 
     }
 
     function checkMouse(e) {
