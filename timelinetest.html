@@ -34,7 +34,7 @@
     #infobutton1 {
         float: bottom-right;
     }
-    
+
     #infobutton2 {
         float: bottom-right;
     }
@@ -123,6 +123,7 @@
     var beatMarkers;
     var segmentLayer;
     var cursorLayer;
+    var waveformLayer;
     var playSong;
     var timeline;
     var track;
@@ -208,7 +209,7 @@
         });
 
         // wavesform layer
-        var waveformLayer = new wavesUI.helpers.WaveformLayer(buffer, {
+        waveformLayer = new wavesUI.helpers.WaveformLayer(buffer, {
             height: layerHeight,
             top: timeAxisHeight,
             color: 'CadetBlue'
@@ -316,7 +317,7 @@
     }
 
     window.addEventListener("keydown", checkKeyPressed, false);
-    window.addEventListener("mousedown", checkKeyPressed, false);
+    window.addEventListener("mousedown", checkMouse, false);
     // window.addEventListener("keydown", pauseCursor, false);
     var clickSound = new Audio('click.mp3');
 
@@ -422,8 +423,15 @@
             }
             markerLayer.render();
             markerLayer.update();
-            // console.log(listy);
         }
+    }
+
+    function checkMouse(e) {
+        var time = waveformLayer.timeToPixel.invert(e.x) - timeline.timeContext.offset;
+        currentTime = time;
+        // var d = new Date();
+        // startTime = (d.getTime() / 1000) - currentTime;
+        updatePlugin();
     }
 
     function recordTimeStamp() {
