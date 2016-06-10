@@ -111,7 +111,7 @@
 
     var markerCounter = 5;
     var loader = new wavesLoaders.AudioBufferLoader();
-    var ytWav = './mp3files/' + getYoutubeId +'.wav';
+    var ytWav = './mp3files/' + getYoutubeId() +'.wav';
     loader.load(ytWav).then(function(buffer) {
         wavesJSReady = true;
         initialize(buffer);
@@ -449,7 +449,7 @@
             }
             markerLayer.render();
             markerLayer.update();
-        } 
+        }
     }
 
     function checkMouse(e) {
