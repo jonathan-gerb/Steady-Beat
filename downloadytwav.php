@@ -8,8 +8,9 @@
 /*ini_set('display_errors', 1);
 error_reporting(E_ALL); */
 
-	if(isset($_GET['ytID'])) {
-		$yturl = 'https://www.youtube.com/watch?v=Qpl7XU9sLfs';
+	if(isset($_POST['ID'])) {
+        $ID = $_POST['ID'];
+		$yturl = 'https://www.youtube.com/watch?v=' . $ID;
 		$cmd = 'youtube-dl --extract-audio --audio-format wav --output "./mp3files/%(id)s.%(ext)s" ' . $yturl;
 		exec($cmd) or die("cannot download video using youtube-dl");
 	}	else {
