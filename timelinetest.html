@@ -458,9 +458,10 @@
     function checkMouse(e) {
         var time = timeline.timeToPixel.invert(e.x) - timeline.offset;
         console.log(time);
-        currentTime = currentTime + time;
+        deltaCurrentTime = time - currentTime;
+        startTime = startTime - deltaCurrentTime;
         var d = new Date();
-        startTime = (d.getTime() / 1000) - currentTime;
+        currentTime = (d.getTime() / 1000) - startTime;
         updatePlugin();
     }
 
