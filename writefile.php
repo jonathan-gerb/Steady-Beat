@@ -8,12 +8,15 @@
 <?php
 	echo "Hello World!";
 
-	if(isset($_POST['beat1']))
+	if(isset($_POST['beat']))
 	{
 		echo "Received info from javascript.";
-	    $beat = $_POST['beat1'];
+	    $beat = $_POST['beat'];
 		$myfile = fopen("./txtfiles/newfile.txt", "w+") or die("Unable to open file!");
-		fwrite($myfile, $beat);
+		$beatArray = explode(",", "$beat");
+		foreach ($beatArray as $line){
+		    fwrite($myfile, $line . "\n");
+		}
 		fclose($myfile);
 	} else {
 		echo "Nothing received from javascript";

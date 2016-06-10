@@ -10,7 +10,7 @@
 function loadDoc() {
   var xhttp;
   var url = "writefile.php";
-  var params = "beat1=one";
+  var params = "beat1=one<br>two";
   if (window.XMLHttpRequest) {
     // code for modern browsers
     xhttp = new XMLHttpRequest();
@@ -29,7 +29,7 @@ function loadDoc() {
       document.getElementById("demo").innerHTML = xhttp.responseText;
     }
   };
-  
+
   xhttp.send(params);
 }
 </script>
