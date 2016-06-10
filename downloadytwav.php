@@ -13,7 +13,7 @@ error_reporting(E_ALL); */
 		$cmd = 'youtube-dl --extract-audio --audio-format wav --output "./mp3files/%(id)s.%(ext)s" ' . $yturl;
 		exec($cmd) or die("cannot download video using youtube-dl");
 	}	else {
-		$yturl = 'https://www.youtube.com/watch?v=VnRP5aw7mD8';
+		$yturl = 'https://www.youtube.com/watch?v=Qpl7XU9sLfs';
 		$cmd = 'youtube-dl --extract-audio --audio-format wav --output "./mp3files/FAIL%(id)s.%(ext)s" ' . $yturl;
 		exec($cmd) or die("cannot download video using youtube-dl");
 
