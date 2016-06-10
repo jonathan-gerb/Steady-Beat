@@ -12,7 +12,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="bootstrap/docs/favicon.ico">
+    <link rel="./icon" href="icon.jpg">
     <title>Waveform generation page</title>
     <!-- Bootstrap core CSS -->
     <link href="bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -90,7 +90,7 @@
                     </p>
                     <p class="lead">
                         <a href="#" class="btn btn-lg btn-default" id="reset" onclick="clearMarkers()" data-toggle="tooltip" data-placement="right" title="You can also select a single marker and press delete to remove it!">Clear Markers</a>
-                        <a href="#" class="btn btn-lg btn-default" id="toPHP" onclick="writeToPage()">Get Marker Timings</a>
+                        <a href="#" class="btn btn-lg btn-default" id="toPHP" onclick="writeToFile()">Get Marker Timings</a>
                         <a href="#" id="infotext2" data-toggle="tooltip" data-placement="right" title="The Tracking info is a list which contains the beat annotations you made.">
                             <i class="material-icons">help_outline</i>
                         </a>
@@ -306,6 +306,35 @@
 
         document.getElementById('markerInfo').value = objString;
         // console.log(txtarea);
+    }
+
+    function writeToFile() {
+        // console.log(beatMarkers);
+        var toSend = [];
+        for (i = 0; i < beatMarkers.length; i++) {
+            toSend.push(beatMarkers[i].time);
+        }
+        console.log(toSend);
+        var xhttp;
+        var url = "writefile.php";
+        var params = "beat=" + toSend.toString();
+        if (window.XMLHttpRequest) {
+            // code for modern browsers
+            xhttp = new XMLHttpRequest();
+        } else {
+            // code for IE6, IE5
+            xhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        xhttp.open("POST", "writefile.php", true);
+        //Send the proper header information along with the request
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhttp.onreadystatechange = function() {
+        if (xhttp.readyState == 4 && xhttp.status == 200) {
+            document.getElementById("demo").innerHTML = xhttp.responseText;
+            }
+        };
+
+    xhttp.send(params);
     }
 
 
