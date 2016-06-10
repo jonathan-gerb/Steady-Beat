@@ -328,11 +328,6 @@
         xhttp.open("POST", "writefile.php", true);
         //Send the proper header information along with the request
         xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xhttp.onreadystatechange = function() {
-        if (xhttp.readyState == 4 && xhttp.status == 200) {
-            document.getElementById("demo").innerHTML = xhttp.responseText;
-            }
-        };
 
     xhttp.send(params);
     window.alert("Beats written to server!");
