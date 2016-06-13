@@ -46,14 +46,17 @@
 			return;
 		}
 		// Youtube id's are always 11 characters.
-		var ytID = inputStr.substring(idIdx+3, idIdx+14);	
+		var ytID = inputStr.substring(idIdx+3, idIdx+14);
         loadytID(ytID);
-		window.location.assign('timelinetest.html?yt_ID='+ytID);
+        window.location.assign('timelinetest.html?yt_ID='+ytID);
   };
 
     function loadytID(ytID) {
+        // console.log(beatMarkers);
+        console.log(ytID);
         var xhttp;
-        var id = "ytID=" . ytID;
+        var url = "downloadytwav.php";
+        var params = "ID=" + ytID;
         if (window.XMLHttpRequest) {
             // code for modern browsers
             xhttp = new XMLHttpRequest();
@@ -61,14 +64,14 @@
             // code for IE6, IE5
             xhttp = new ActiveXObject("Microsoft.XMLHTTP");
         }
-
         xhttp.open("POST", "downloadytwav.php", true);
-
         //Send the proper header information along with the request
         xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
-        xhttp.send(id);
+    xhttp.send(params);
+    window.alert("Downloading.");
     }
+
 </script>
     <div class="site-wrapper">
         <div class="site-wrapper-inner">

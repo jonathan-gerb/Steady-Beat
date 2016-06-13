@@ -12,7 +12,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="./icon" href="icon.jpg">
+    <link rel="icon" href="./icon.jpg">
     <title>Waveform generation page</title>
     <!-- Bootstrap core CSS -->
     <link href="bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -37,6 +37,11 @@
 
     #infobutton2 {
         float: bottom-right;
+    }
+    #player {
+        position: fixed;
+        left: 0;
+        bottom: 0;
     }
     </style>
 </head>
@@ -100,11 +105,19 @@
 
     var markerCounter = 5;
     var loader = new wavesLoaders.AudioBufferLoader();
-    var ytWav = 'https://dl.dropboxusercontent.com/s/08b4q7att1gwtrv/Brains.wav';
+    var ytWav = './mp3files/' + getYoutubeId() +'.wav';
     loader.load(ytWav).then(function(buffer) {
         wavesJSReady = true;
         initialize(buffer);
     });
+
+    var x = document.createElement("AUDIO");
+    if (x.canPlayType("audio/mpeg")) {
+        x.setAttribute("src", 'mp3files/'+ getYoutubeId() + ".wav");
+        x.setAttribute("hidden", "hidden");
+    }
+    x.setAttribute("controls", "controls");
+    document.body.appendChild(x);
 
     var data;
     var markerLayer;
@@ -121,6 +134,7 @@
     var currentTime;
     var finalDur;
     var windowWidth = 20;
+    var markerQueue = [];
 
     function initialize(buffer) {
         var $mcTrack = document.querySelector('#macroTrack');
@@ -244,6 +258,7 @@
                 updatePlugin();
                 setTimeout(requestAnimationFrame(loop), 20);
             } else {
+                cleanQueue()
                 setTimeout(function() {
                     requestAnimationFrame(loop);
                     timeline.tracks.update();
@@ -274,16 +289,25 @@
         cursorLayer.update();
         timeline.timeContext.offset = -cursorLayer.currentPosition + (finalDur / windowWidth) / 2;
         timeline.tracks.update();
-        for (var i = 0; i < beatMarkers.length - 1; i++) {
-            // console.log(currentTime.toFixed(3));
-            if (beatMarkers[i].time.toFixed(3) < currentTime.toFixed(3) + 0.03 && beatMarkers[i].time.toFixed(3) > currentTime.toFixed(3) - 0.03) {
-                clickSound.play();
-            }
-        }
+        if(currentTime > markerQueue[0]) {
+            console.log("removed beat from Queue");
+            clickSound.play();
+            markerQueue.shift();
+        // for (var i = 0; i < beatMarkers.length - 1; i++) {
+        //     // console.log(currentTime.toFixed(3));
+        //     distance = currentTime - beatMarkers[i].time;
+        //     if (abs(beatMarkers[i].time) < ) {
+        //       shortestDistance = beatMarkers[i].time;
+        //     }
+        //
+        //     if (beatMarkers[i].time > currentTime - 0.04 && beatMarkers[i].time < currentTime + 0.04) {
+        //         clickSound.play();
+        //     }
+        // }
+    }
     }
 
     function writeToPage() {
-        // console.log(beatMarkers);
         document.getElementById('markerInfo').hidden = ""
         var objString = "[ ";
         for (i = 0; i < beatMarkers.length; i++) {
@@ -294,11 +318,9 @@
         objString = objString.replace(/,$/, "") + " ]";
 
         document.getElementById('markerInfo').value = objString;
-        // console.log(txtarea);
     }
 
     function writeToFile() {
-        // console.log(beatMarkers);
         var toSend = [];
         for (i = 0; i < beatMarkers.length; i++) {
             toSend.push(beatMarkers[i].time);
@@ -323,6 +345,7 @@
             }
         };
         xhttp.send(params);
+        window.alert("Beats written to server!");
     }
 
 
@@ -394,6 +417,7 @@
             player.pauseVideo();
             document.getElementById('playButton').innerHTML = '<i class="glyphicon glyphicon-play"></i> Play'
         } else {
+            cleanQueue();
             player.playVideo();
             document.getElementById('playButton').innerHTML = '<i class="glyphicon glyphicon-pause"></i> Pause';
         }
@@ -405,16 +429,19 @@
             var d = new Date();
             startTime = d.getTime() / 1000;
             currentTime = player.getCurrentTime();
+            cleanQueue();
             playSong = true;
             done = true;
         } else if (event.data != YT.PlayerState.PLAYING) {
             currentTime = player.getCurrentTime();
+            cleanQueue();
             updatePlugin();
             playSong = false;
         } else if (event.data == YT.PlayerState.PLAYING) {
             var d = new Date();
             currentTime = player.getCurrentTime();
             startTime = (d.getTime() / 1000) - currentTime;
+            cleanQueue();
             playSong = true;
         }
     }
@@ -427,10 +454,11 @@
             player.seekTo(currentTime, true);
             return false;
         } else if (e.keyCode == "66") {
-            recordTimeStamp();
             if (metronome) {
                 clickSound.play();
             }
+            recordTimeStamp();
+            markerQueue.sort();
         } else if (e.keyCode == "46") {
             var selectedMarker = document.getElementsByClassName('item annotated-marker selected');
             console.log(selectedMarker[0].childNodes[2].innerHTML);
@@ -450,12 +478,27 @@
         }
     }
 
+    function cleanQueue() {
+        markerQueue = [];
+        for (var i = 0; i < beatMarkers.length; i++) {
+            if(beatMarkers[i].time > currentTime){
+                markerQueue.push(beatMarkers[i].time);
+            }
+        }
+    }
+
     function checkMouse(e) {
-        var time = timeline.timeToPixel.invert(e.x) - 20;
+        var time = timeline.timeToPixel.invert(e.x) - windowWidth;
         currentTime = currentTime + time;
         var d = new Date();
         startTime = (d.getTime() / 1000) - currentTime;
         player.seekTo(currentTime)
+        // deltaCurrentTime = time - currentTime;
+        // startTime = startTime - deltaCurrentTime;
+        // var d = new Date();
+        // currentTime = (d.getTime() / 1000) - startTime;
+        cleanQueue();
+        updatePlugin();
     }
 
     function recordTimeStamp() {
