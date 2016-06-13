@@ -62,6 +62,7 @@
                     <h1 class="cover-heading"></h1>
                     <br>
                     <div id="player"></div>
+                    <div class="macroTrack" id="macroTrack"></div>
                     <div class="track" id="track-1"></div>
                     <div class="lead" id="loading"><img src="loading.gif" alt="loadingGif" height="50" width="50"></div>
                     <div class="waveform-box" id="waveform"></div>
@@ -70,18 +71,6 @@
                             <i class="glyphicon glyphicon-play"></i> Play
                         </button>
                         <button class="btn btn-primary" id="clickToggle" onclick="toggleClick()">Click ON</button>
-                        <!-- This is the removed zoom functionality:
-                        <p class="row">
-                            <div class="col-xs-1">
-                                <i class="glyphicon glyphicon-zoom-in"></i>
-                            </div>
-                            <div class="col-xs-10">
-                                <input id="slider" type="range" min="1" max="200" value="1" style="width: 100%" />
-                            </div>
-                            <div class="col-xs-1">
-                                <i class="glyphicon glyphicon-zoom-out"></i>
-                            </div>
-                        </p> -->
                     </div>
                     <p class="lead">Press the 'b' key on the beat to add a beat annotation.
                         <a href="#" id="infotext1" data-toggle="tooltip" data-placement="right" title="Drag a beat marker to move it, or double click to delete it.">
@@ -118,14 +107,14 @@
     });
 
     var data;
-    var $track;
     var markerLayer;
-    var beatMarkers;
+    var beatMarkers = [];
     var segmentLayer;
     var cursorLayer;
     var waveformLayer;
     var playSong;
     var timeline;
+    var macroTrack;
     var track;
     var timeContext;
     var startTime;
@@ -134,7 +123,8 @@
     var windowWidth = 20;
 
     function initialize(buffer) {
-        $track = document.querySelector('#track-1');
+        var $mcTrack = document.querySelector('#macroTrack');
+        var $track = document.querySelector('#track-1');
         var width = $track.getBoundingClientRect().width;
         var timeAxisHeight = 18; // height of text above waveform
         var layerHeight = 200; // height of waveform
@@ -142,13 +132,14 @@
         var duration = buffer.duration;
         var pixelsPerSecond = width / duration;
 
+        // Needs to be removed eventually
         data = [{
             x: 0,
             width: duration,
             height: layerHeight,
             top: timeAxisHeight,
             color: 'steelblue',
-            opacity: 0.5,
+            opacity: 0.2,
             text: '4/4'
         }, ];
 
@@ -157,19 +148,18 @@
             displayHandlers: true,
         });
 
-        beatMarkers = [];
-
         timeline = new wavesUI.core.Timeline(pixelsPerSecond, width);
-
         track = timeline.createTrack($track, layerHeight + timeAxisHeight, 'main');
 
-        // marker layer
         markerLayer = new wavesUI.core.Layer('collection', beatMarkers, {
             height: layerHeight
         });
 
-        // time axis
         var timeAxis = new wavesUI.axis.AxisLayer(wavesUI.axis.timeAxisGenerator(), {
+            height: timeAxisHeight
+        });
+
+        var timeAxis2 = new wavesUI.axis.AxisLayer(wavesUI.axis.timeAxisGenerator(), {
             height: timeAxisHeight
         });
 
@@ -222,7 +212,6 @@
         });
 
         timeline.state = new wavesUI.states.SimpleEditionState(timeline);
-
 
         track.add(timeAxis);
         // track.add(grid);
@@ -333,8 +322,7 @@
             document.getElementById("demo").innerHTML = xhttp.responseText;
             }
         };
-
-    xhttp.send(params);
+        xhttp.send(params);
     }
 
 
@@ -385,13 +373,19 @@
             height: '300',
             width: '496.5',
             videoId: getYoutubeId(),
+            playerVars: {
+                'controls': 0,
+                'autoplay': 0,
+                'disablekb': 1,
+                'fs': 0
+            },
             events: {
                 'onStateChange': onPlayerStateChange
             }
         });
-    }
+    };
 
-    // When the yt player's state changes, s   ynchronizes the wavesurfer player
+    // When the yt player's state changes, synchronizes the wavesurfer player
     var done = false;
 
     // Pauses the YT video when it's playing and starts playback when it's paused.
@@ -407,6 +401,7 @@
 
     function onPlayerStateChange(event) {
         if (event.data == YT.PlayerState.PLAYING && !done) {
+            player.mute();
             var d = new Date();
             startTime = d.getTime() / 1000;
             currentTime = player.getCurrentTime();
@@ -456,12 +451,11 @@
     }
 
     function checkMouse(e) {
-        var time = timeline.timeToPixel.invert(e.x) - timeline.offset;
-        console.log(time);
+        var time = timeline.timeToPixel.invert(e.x) - 20;
         currentTime = currentTime + time;
         var d = new Date();
         startTime = (d.getTime() / 1000) - currentTime;
-        updatePlugin();
+        player.seekTo(currentTime)
     }
 
     function recordTimeStamp() {
