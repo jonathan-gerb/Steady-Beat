@@ -146,6 +146,7 @@
     var finalDur;
     var windowWidth = 20;
     var markerQueue = [];
+    var audioplayer = document.getElementsByTagName("AUDIO")[0];
 
     function initialize(buffer) {
         $track = document.querySelector('#track-1');
@@ -416,10 +417,13 @@
     function playOrPause() {
         if (player.getPlayerState() == 1) {
             player.pauseVideo();
+            audioplayer.pause();
             document.getElementById('playButton').innerHTML = '<i class="glyphicon glyphicon-play"></i> Play'
         } else {
             cleanQueue();
             player.playVideo();
+            audioplayer.play();
+
             document.getElementById('playButton').innerHTML = '<i class="glyphicon glyphicon-pause"></i> Pause';
         }
     }
@@ -429,17 +433,20 @@
             var d = new Date();
             startTime = d.getTime() / 1000;
             currentTime = player.getCurrentTime();
+            audioplayer.currentTime = currentTime;
             cleanQueue();
             playSong = true;
             done = true;
         } else if (event.data != YT.PlayerState.PLAYING) {
             currentTime = player.getCurrentTime();
+            audioplayer.currentTime = currentTime;
             cleanQueue();
             updatePlugin();
             playSong = false;
         } else if (event.data == YT.PlayerState.PLAYING) {
             var d = new Date();
             currentTime = player.getCurrentTime();
+            audioplayer.currentTime = currentTime;
             startTime = (d.getTime() / 1000) - currentTime;
             cleanQueue();
             playSong = true;
@@ -452,6 +459,7 @@
             e.preventDefault();
             playOrPause();
             player.seekTo(currentTime, true);
+            audioplayer.currentTime = currentTime;
             return false;
         } else if (e.keyCode == "66") {
             if (metronome) {
