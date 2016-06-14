@@ -262,7 +262,7 @@
 
         // cursorLayer
         cursorLayer = new wavesUI.helpers.CursorLayer({
-            height: layerHeight,
+            height: layerHeight + timeAxisHeight,
             color: 'white'
         });
         timeline.addLayer(cursorLayer, 'main');
@@ -484,9 +484,10 @@
             width: '240',
             videoId: getYoutubeId(),
             playerVars: {
-                // 'controls': 0,
+                'controls': 0,
                 'autoplay': 0,
-                'fs': 0
+                'fs': 0,
+                'disablekb': 0
             },
             events: {
                 'onStateChange': onPlayerStateChange
@@ -501,12 +502,10 @@
     function playOrPause() {
         if (player.getPlayerState() == 1) {
             player.pauseVideo();
-            audioplayer.pause();
             document.getElementById('playButton').innerHTML = '<i class="glyphicon glyphicon-play"></i> Play'
         } else {
             cleanQueue();
             player.playVideo();
-            audioplayer.play();
             document.getElementById('playButton').innerHTML = '<i class="glyphicon glyphicon-pause"></i> Pause';
         }
     }
@@ -523,9 +522,11 @@
             done = true;
         } else if (event.data != YT.PlayerState.PLAYING) {
             cleanQueue();
+            audioplayer.pause();
             playSong = false;
         } else if (event.data == YT.PlayerState.PLAYING) {
             cleanQueue();
+            audioplayer.play();
             seekTo(currentTime);
             playSong = true;
         }
