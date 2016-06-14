@@ -122,6 +122,7 @@
     var data;
     var markerLayer;
     var beatMarkers = [];
+    var segmentLayer;
     var cursorLayer;
     var playSong;
     var timeline;
@@ -156,7 +157,7 @@
             text: '4/4'
         }, ];
 
-        var segmentLayer = new wavesUI.helpers.SegmentLayer(data, {
+        segmentLayer = new wavesUI.helpers.SegmentLayer(data, {
             height: layerHeight,
             displayHandlers: true,
         });
@@ -169,6 +170,10 @@
         });
 
         var timeAxis = new wavesUI.axis.AxisLayer(wavesUI.axis.timeAxisGenerator(), {
+            height: timeAxisHeight
+        });
+
+        var timeAxis2 = new wavesUI.axis.AxisLayer(wavesUI.axis.timeAxisGenerator(), {
             height: timeAxisHeight
         });
 
@@ -196,7 +201,7 @@
             color: 'CadetBlue'
         });
 
-        // bpm axis, not used anymore
+        // bpm axis
         var grid = new wavesUI.axis.AxisLayer(wavesUI.axis.gridAxisGenerator(10, '4/4'), {
             height: layerHeight,
             top: timeAxisHeight
@@ -217,8 +222,7 @@
         waveformLayer.setTimeContext(new wavesUI.core.LayerTimeContext(timeline.timeContext));
 
         cursorLayer = new wavesUI.helpers.CursorLayer({
-            height: layerHeight,
-            color: 'white'
+            height: layerHeight
         });
 
         timeline.state = new wavesUI.states.SimpleEditionState(timeline);
