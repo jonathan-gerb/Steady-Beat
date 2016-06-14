@@ -393,7 +393,7 @@
             width: '496.5',
             videoId: getYoutubeId(),
             playerVars: {
-                'controls': 0,
+                // 'controls': 0,
                 'autoplay': 0,
                 'disablekb': 1,
                 'fs': 0
@@ -461,7 +461,6 @@
                 clickSound.play();
             }
             recordTimeStamp();
-            markerQueue.sort();
         } else if (e.keyCode == "46") {
             var selectedMarker = document.getElementsByClassName('item annotated-marker selected');
             console.log(selectedMarker[0].childNodes[2].innerHTML);
@@ -488,6 +487,9 @@
                 markerQueue.push(beatMarkers[i].time);
             }
         }
+        markerQueue.sort(function(a,b) {
+            return a-b
+        });
     }
 
     function checkMouse(e) {
