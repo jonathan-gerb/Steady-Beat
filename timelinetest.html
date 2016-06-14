@@ -119,14 +119,19 @@
     x.setAttribute("controls", "controls");
     document.body.appendChild(x);
 
+    // variables we need to be global
     var data;
     var markerLayer;
     var beatMarkers = [];
+    var segmentLayer;
+    var cursorLayerMacro;
     var cursorLayer;
     var playSong;
+    var timelineMacro;
     var timeline;
-    var macroTrack;
+    var trackMacro;
     var track;
+    var timeContextMacro;
     var timeContext;
     var startTime;
     var currentTime;
@@ -136,11 +141,12 @@
     var audioplayer = document.getElementsByTagName("AUDIO")[0];
 
     function initialize(buffer) {
-        var $mcTrack = document.querySelector('#macroTrack');
+        var $trackMacro = document.querySelector('#macroTrack');
         var $track = document.querySelector('#track-1');
         var width = $track.getBoundingClientRect().width;
         var timeAxisHeight = 18; // height of text above waveform
         var layerHeight = 200; // height of waveform
+        var macroTimelineHeight = 130; // height of zoomed out view
 
         var duration = buffer.duration;
         var pixelsPerSecond = width / duration;
@@ -156,24 +162,49 @@
             text: '4/4'
         }, ];
 
-        var segmentLayer = new wavesUI.helpers.SegmentLayer(data, {
-            height: layerHeight,
-            displayHandlers: true,
-        });
-
         timeline = new wavesUI.core.Timeline(pixelsPerSecond, width);
+        timelineMacro = new wavesUI.core.Timeline(pixelsPerSecond, width);
+
         track = timeline.createTrack($track, layerHeight + timeAxisHeight, 'main');
+        trackMacro = timelineMacro.createTrack($trackMacro, macroTimelineHeight + timeAxisHeight, 'macro');
 
-        markerLayer = new wavesUI.core.Layer('collection', beatMarkers, {
-            height: layerHeight
-        });
+        timeContext = new wavesUI.core.LayerTimeContext(timeline.timeContext);
+        timeContextMacro = new wavesUI.core.LayerTimeContext(timelineMacro.timeContext);
 
+        // time axis
         var timeAxis = new wavesUI.axis.AxisLayer(wavesUI.axis.timeAxisGenerator(), {
             height: timeAxisHeight
         });
+        var timeAxisMacro = new wavesUI.axis.AxisLayer(wavesUI.axis.timeAxisGenerator(), {
+            height: timeAxisHeight
+        });
 
-        timeContext = new wavesUI.core.LayerTimeContext(timeline.timeContext);
+        timeAxis.setTimeContext(timeline.timeContext);
+        timeAxis.configureShape(wavesUI.shapes.Ticks, {}, {
+            color: 'CadetBlue'
+        });
+        track.add(timeAxis);
 
+        timeAxisMacro.setTimeContext(timelineMacro.timeContext);
+        timeAxisMacro.configureShape(wavesUI.shapes.Ticks,{},{
+            color: 'CadetBlue"'
+        });
+        trackMacro.add(timeAxisMacro);
+
+
+        // Segment layer
+        segmentLayer = new wavesUI.helpers.SegmentLayer(data, {
+            height: layerHeight,
+            top: timeAxisHeight,
+            displayHandlers: true,
+        });
+        timeline.addLayer(segmentLayer, 'main');
+
+
+        // Marker layer
+        markerLayer = new wavesUI.core.Layer('collection', beatMarkers, {
+            height: layerHeight
+        });
         markerLayer.setTimeContext(timeContext);
         markerLayer.configureShape(wavesUI.shapes.AnnotatedMarker, {
             x: function(d, v) {
@@ -186,55 +217,50 @@
                 return 'red';
             }
         });
-
         markerLayer.setBehavior(new wavesUI.behaviors.MarkerBehavior());
+        track.add(markerLayer);
 
-        // Axis layers use `timeline.TimeContext` directly,
-        // they don't have their own timeContext
-        timeAxis.setTimeContext(timeline.timeContext);
-        timeAxis.configureShape(wavesUI.shapes.Ticks, {}, {
-            color: 'CadetBlue'
-        });
 
-        // bpm axis, not used anymore
-        var grid = new wavesUI.axis.AxisLayer(wavesUI.axis.gridAxisGenerator(10, '4/4'), {
-            height: layerHeight,
-            top: timeAxisHeight
-        });
-
-        grid.setTimeContext(timeline.timeContext);
-        grid.configureShape(wavesUI.shapes.Ticks, {}, {
-            color: 'green'
-        });
-
-        // wavesform layer
+        // waveform layer
         var waveformLayer = new wavesUI.helpers.WaveformLayer(buffer, {
             height: layerHeight,
             top: timeAxisHeight,
             color: 'CadetBlue'
         });
-
         waveformLayer.setTimeContext(new wavesUI.core.LayerTimeContext(timeline.timeContext));
+        track.add(waveformLayer);
 
+        // var waveformLayerMacro = new wavesUI.helpers.WaveformLayer(buffer, {
+        //     height: macroTimelineHeight,
+        //     top: timeAxisHeight,
+        //     color: 'CadetBlue'
+        // });
+        // waveformLayer.setTimeContext(new wavesUI.core.LayerTimeContext(timelineMacro.timeContext));
+        // trackMacro.add(waveformLayerMacro);
+
+
+        // cursorLayer
         cursorLayer = new wavesUI.helpers.CursorLayer({
             height: layerHeight
         });
+        timeline.addLayer(cursorLayer, 'main');
+
+        cursorLayerMacro = new wavesUI.helpers.CursorLayer({
+            height: layerHeight
+        });
+        timelineMacro.addLayer(cursorLayerMacro, 'macro');
+
 
         timeline.state = new wavesUI.states.SimpleEditionState(timeline);
-
-        track.add(timeAxis);
-        // track.add(grid);
-        track.add(waveformLayer);
-        timeline.addLayer(segmentLayer, 'main');
-        track.add(markerLayer);
-
-        timeline.addLayer(cursorLayer, 'main');
+        timelineMacro.state = new wavesUI.states.SimpleEditionState(timelineMacro);
 
         track.render();
         track.update();
+        trackMacro.render();
+        trackMacro.update();
 
-        timeline.tracks.render();
-        timeline.tracks.update();
+        // timeline.tracks.render();
+        // timeline.tracks.update();
 
         finalDur = timeline.timeContext.visibleDuration;
 
@@ -242,6 +268,8 @@
 
         timeline.tracks.render();
         timeline.tracks.update();
+        timelineMacro.tracks.render();
+        timelineMacro.tracks.update();
 
         document.getElementById('loading').innerHTML = '';
 
@@ -262,44 +290,33 @@
         }());
 
         timeline.on('event', function(e) {
-            var segment;
             var eventType = e.type;
+            var segment = segmentLayer.getItemFromDOMElement(e.target);
 
-            if (eventType !== 'mouseover' && eventType !== 'mouseout') {
-                return;
-            }
-
-            segment = segmentLayer.getItemFromDOMElement(e.target);
-
-            if (segment !== null) {
+            if (segment !== null && (eventType == 'mouseover' || eventType == 'mouseout')) {
                 var datum = segmentLayer.getDatumFromItem(segment);
-                datum.opacity = eventType === 'mouseover' ? 1 : 0.8;
+                datum.opacity = eventType == 'mouseout' ? 0.8 : 1;
                 segmentLayer.updateShapes();
             }
         });
     }
 
+    // Renders all layers from the WavesJS plugin and plays a sound when
+    // encountering a beat marker
     function updatePlugin() {
         cursorLayer.currentPosition = currentTime;
+        cursorLayerMacro.currentPosition = currentTime;
         cursorLayer.update();
+        cursorLayerMacro.update();
         timeline.timeContext.offset = -cursorLayer.currentPosition + (finalDur / windowWidth) / 2;
         timeline.tracks.update();
-        if(currentTime > markerQueue[0]) {
+        if(currentTime >= markerQueue[0]) {
             console.log("removed beat from Queue");
-            clickSound.play();
+            if (metronome > 0) {
+                metronome == 1 ? clickSound.play() : clickSound2.play();
+            }
             markerQueue.shift();
-        // for (var i = 0; i < beatMarkers.length - 1; i++) {
-        //     // console.log(currentTime.toFixed(3));
-        //     distance = currentTime - beatMarkers[i].time;
-        //     if (abs(beatMarkers[i].time) < ) {
-        //       shortestDistance = beatMarkers[i].time;
-        //     }
-        //
-        //     if (beatMarkers[i].time > currentTime - 0.04 && beatMarkers[i].time < currentTime + 0.04) {
-        //         clickSound.play();
-        //     }
-        // }
-    }
+        }
     }
 
     function writeToPage() {
@@ -355,15 +372,16 @@
     window.addEventListener("mousedown", checkMouse, false);
     // window.addEventListener("keydown", pauseCursor, false);
     var clickSound = new Audio('click.mp3');
+    var clickSound2 = new Audio('click.mp3');
 
-    var metronome = true;
+    var metronome = 1;
 
     function toggleClick() {
-        if (metronome) {
-            metronome = false;
+        if (metronome > 0) {
+            metronome = 0;
             document.getElementById('clickToggle').innerHTML = 'Click OFF'
         } else {
-            metronome = true;
+            metronome = 1;
             document.getElementById('clickToggle').innerHTML = 'Click ON'
         }
     }
@@ -394,7 +412,6 @@
             playerVars: {
                 'controls': 0,
                 'autoplay': 0,
-                'disablekb': 1,
                 'fs': 0
             },
             events: {
@@ -456,8 +473,8 @@
             audioplayer.currentTime = currentTime;
             return false;
         } else if (e.keyCode == "66") {
-            if (metronome) {
-                clickSound.play();
+            if (metronome > 0) {
+                metronome == 1 ? clickSound.play() : clickSound2.play();
             }
             recordTimeStamp();
             markerQueue.sort();
@@ -490,7 +507,7 @@
     }
 
     function checkMouse(e) {
-        var time = timeline.timeToPixel.invert(e.x) - timeline.offset;
+        var time = timeline.timeToPixel.invert(e.x); - timeline.offset;
         currentTime = currentTime + time;
         // var d = new Date();
         // startTime = (d.getTime() / 1000) - currentTime;
