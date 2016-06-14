@@ -14,6 +14,7 @@
     <meta name="author" content="">
     <link rel="icon" href="./icon.jpg">
     <title>Waveform generation page</title>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <!-- Bootstrap core CSS -->
     <link href="bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
@@ -43,6 +44,24 @@
         left: 0;
         bottom: 0;
     }
+    #sidebar {
+        background-color:DimGray ;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 240px;
+    }#bottombar {
+        bottom: 0;
+        position: absolute;
+    }#timelines {
+        background-color: DimGray;
+        padding-bottom: 10px;
+    }#macroTrack {
+        background-color: LightGray;
+    }#track-1 {
+        background-color: DarkGray;
+    }
     </style>
 </head>
 
@@ -63,19 +82,23 @@
                         </nav>
                     </div>
                 </div>
-                <div class="inner cover">
+                <div class="inner cover" id="timelines">
                     <h1 class="cover-heading"></h1>
                     <br>
-                    <div id="player"></div>
+                    <div id="sidebar">
+                        <div id="player"></div>
+                    </div>
                     <div class="macroTrack" id="macroTrack"></div>
                     <div class="track" id="track-1"></div>
                     <div class="lead" id="loading"><img src="loading.gif" alt="loadingGif" height="50" width="50"></div>
                     <div class="waveform-box" id="waveform"></div>
                     <div style="text-align: center">
-                        <button class="btn btn-primary" id="playButton" onclick="playOrPause()">
-                            <i class="glyphicon glyphicon-play"></i> Play
+                        <button type="button" class="btn btn-default btn-sm" onclick="playOrPause()">
+                          <span class="glyphicon glyphicon-play"></span> Play
                         </button>
-                        <button class="btn btn-primary" id="clickToggle" onclick="toggleClick()">Click ON</button>
+                        <button type="button" class="btn btn-default btn-sm" id="clickToggle" onclick="toggleClick()">
+                          <span class="	glyphicon glyphicon-volume-up"></span> Click ON
+                        </button>
                     </div>
                     <p class="lead">Press the 'b' key on the beat to add a beat annotation.
                         <a href="#" id="infotext1" data-toggle="tooltip" data-placement="right" title="Drag a beat marker to move it, or double click to delete it.">
@@ -92,7 +115,7 @@
                     <p id="showTimeStamps"></p>
                     <textarea rows="4" cols="50" id="markerInfo" style="color:black" hidden>nothing here</textarea>
                 </div>
-                <div>
+                <div id="bottombar">
                     <div class="inner">
                         <p>Waveform generation by <a href="http://wavesjs.github.io/">WavesJS-UI</a>, Project Members <a href="#">@rockforr</a>, <a href="#">@blane</a>, <a href="#">@nindia</a>, <a href="#">@clarayeah__</a>, <a href="#">@adrivri</a>.</p>
                     </div>
@@ -373,10 +396,10 @@
     function toggleClick() {
         if (metronome > 0) {
             metronome = 0;
-            document.getElementById('clickToggle').innerHTML = 'Click OFF'
+            document.getElementById('clickToggle').innerHTML = '<span class="	glyphicon glyphicon-volume-off"></span> Click OFF'
         } else {
             metronome = 1;
-            document.getElementById('clickToggle').innerHTML = 'Click ON'
+            document.getElementById('clickToggle').innerHTML = '<span class="	glyphicon glyphicon-volume-up"></span> Click ON'
         }
     }
 
@@ -400,8 +423,8 @@
 
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('player', {
-            height: '300',
-            width: '496.5',
+            height: '240',
+            width: '240',
             videoId: getYoutubeId(),
             playerVars: {
                 // 'controls': 0,
@@ -503,17 +526,17 @@
     }
 
     function checkMouse(e) {
-        var time = timeline.timeToPixel.invert(e.x); - timeline.offset;
-        currentTime = currentTime + time;
+        // var time = timeline.timeToPixel.invert(e.x); - timeline.offset;
+        // currentTime = currentTime + time;
+        // // var d = new Date();
+        // // startTime = (d.getTime() / 1000) - currentTime;
+        // deltaCurrentTime = time - currentTime;
+        // startTime = startTime - deltaCurrentTime;
         // var d = new Date();
-        // startTime = (d.getTime() / 1000) - currentTime;
-        deltaCurrentTime = time - currentTime;
-        startTime = startTime - deltaCurrentTime;
-        var d = new Date();
-        currentTime = (d.getTime() / 1000) - startTime;
-        player.seekTo(currentTime)
-        cleanQueue();
-        updatePlugin();
+        // currentTime = (d.getTime() / 1000) - startTime;
+        // player.seekTo(currentTime)
+        // cleanQueue();
+        // updatePlugin();
     }
 
     function recordTimeStamp() {
