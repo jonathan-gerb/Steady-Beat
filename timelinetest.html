@@ -14,7 +14,7 @@
     <meta name="author" content="">
     <link rel="icon" href="./icon.jpg">
     <title>Waveform generation page</title>
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="./bootstrap/dist/js/bootstrap.min.js" ></script>
     <!-- Bootstrap core CSS -->
     <link href="bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
@@ -61,6 +61,8 @@
         background-color: LightGray;
     }#track-1 {
         background-color: DarkGray;
+    }.item.annotated-marker.selected {
+        color: PeachPuff;
     }
     </style>
 </head>
@@ -93,7 +95,7 @@
                     <div class="lead" id="loading"><img src="loading.gif" alt="loadingGif" height="50" width="50"></div>
                     <div class="waveform-box" id="waveform"></div>
                     <div style="text-align: center">
-                        <button type="button" class="btn btn-default btn-sm" onclick="playOrPause()">
+                        <button type="button" class="btn btn-default btn-sm" id="playButton" onclick="playOrPause()">
                           <span class="glyphicon glyphicon-play"></span> Play
                         </button>
                         <button type="button" class="btn btn-default btn-sm" id="clickToggle" onclick="toggleClick()">
@@ -451,7 +453,6 @@
             cleanQueue();
             player.playVideo();
             audioplayer.play();
-
             document.getElementById('playButton').innerHTML = '<i class="glyphicon glyphicon-pause"></i> Pause';
         }
     }
