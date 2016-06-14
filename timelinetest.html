@@ -43,6 +43,23 @@
         left: 0;
         bottom: 0;
     }
+    #sidebar {
+        background-color:DimGray ;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 240px;
+    }#bottombar {
+        bottom: 0;
+        position: absolute;
+    }#timelines {
+        background-color: DimGray;
+    }#macroTrack {
+        background-color: LightGray;
+    }#track-1 {
+        background-color: DarkGray;
+    }
     </style>
 </head>
 
@@ -63,10 +80,12 @@
                         </nav>
                     </div>
                 </div>
-                <div class="inner cover">
+                <div class="inner cover" id="timelines">
                     <h1 class="cover-heading"></h1>
                     <br>
-                    <div id="player"></div>
+                    <div id="sidebar">
+                        <div id="player"></div>
+                    </div>
                     <div class="macroTrack" id="macroTrack"></div>
                     <div class="track" id="track-1"></div>
                     <div class="lead" id="loading"><img src="loading.gif" alt="loadingGif" height="50" width="50"></div>
@@ -92,7 +111,7 @@
                     <p id="showTimeStamps"></p>
                     <textarea rows="4" cols="50" id="markerInfo" style="color:black" hidden>nothing here</textarea>
                 </div>
-                <div>
+                <div id="bottombar">
                     <div class="inner">
                         <p>Waveform generation by <a href="http://wavesjs.github.io/">WavesJS-UI</a>, Project Members <a href="#">@rockforr</a>, <a href="#">@blane</a>, <a href="#">@nindia</a>, <a href="#">@clarayeah__</a>, <a href="#">@adrivri</a>.</p>
                     </div>
@@ -401,8 +420,8 @@
 
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('player', {
-            height: '300',
-            width: '496.5',
+            height: '240',
+            width: '240',
             videoId: getYoutubeId(),
             playerVars: {
                 // 'controls': 0,
@@ -504,17 +523,17 @@
     }
 
     function checkMouse(e) {
-        var time = timeline.timeToPixel.invert(e.x); - timeline.offset;
-        currentTime = currentTime + time;
+        // var time = timeline.timeToPixel.invert(e.x); - timeline.offset;
+        // currentTime = currentTime + time;
+        // // var d = new Date();
+        // // startTime = (d.getTime() / 1000) - currentTime;
+        // deltaCurrentTime = time - currentTime;
+        // startTime = startTime - deltaCurrentTime;
         // var d = new Date();
-        // startTime = (d.getTime() / 1000) - currentTime;
-        deltaCurrentTime = time - currentTime;
-        startTime = startTime - deltaCurrentTime;
-        var d = new Date();
-        currentTime = (d.getTime() / 1000) - startTime;
-        player.seekTo(currentTime)
-        cleanQueue();
-        updatePlugin();
+        // currentTime = (d.getTime() / 1000) - startTime;
+        // player.seekTo(currentTime)
+        // cleanQueue();
+        // updatePlugin();
     }
 
     function recordTimeStamp() {
