@@ -29,27 +29,26 @@
 </head>
 
 <body>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
-
-<script>
-	// Checks if input is a youtube url
-	function validateInput() {
-		var inputStr = $("#yt-url").val();
-		var ytStr1 = 'youtube';
-		var ytStr2 = 'youtu.be';
-		if (inputStr.match(ytStr1) == ytStr1) {
-			var idIdx = inputStr.search(/\?v=/);
-		} else if (inputStr.match(ytStr2) == ytStr2) {
-			var idIdx = inputStr.search(/be\//);
-		} else {
-			window.alert("You didn't input a Youtube URL.");
-			return;
-		}
-		// Youtube id's are always 11 characters.
-		var ytID = inputStr.substring(idIdx+3, idIdx+14);
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <script>
+    // Checks if input is a youtube url
+    function validateInput() {
+        var inputStr = $("#yt-url").val();
+        var ytStr1 = 'youtube';
+        var ytStr2 = 'youtu.be';
+        if (inputStr.match(ytStr1) == ytStr1) {
+            var idIdx = inputStr.search(/\?v=/);
+        } else if (inputStr.match(ytStr2) == ytStr2) {
+            var idIdx = inputStr.search(/be\//);
+        } else {
+            window.alert("You didn't input a Youtube URL.");
+            return;
+        }
+        // Youtube id's are always 11 characters.
+        var ytID = inputStr.substring(idIdx + 3, idIdx + 14);
         loadytID(ytID);
-        window.location.assign('timelinetest.html?yt_ID='+ytID);
-  };
+        window.location.assign('timelinetest.html?yt_ID=' + ytID);
+    };
 
     function loadytID(ytID) {
         // console.log(beatMarkers);
@@ -68,11 +67,10 @@
         //Send the proper header information along with the request
         xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
-    xhttp.send(params);
-    window.alert("Downloading.");
+        xhttp.send(params);
+        window.alert("Downloading.");
     }
-
-</script>
+    </script>
     <div class="site-wrapper">
         <div class="site-wrapper-inner">
             <div class="cover-container">
