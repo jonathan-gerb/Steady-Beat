@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="./icon" href="icon.jpg">
+    <title>Welcome to the Steady Beat project</title>
+    <!-- Bootstrap core CSS -->
+    <link href="./bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="./bootstrap/docs/assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="./cover.css" rel="stylesheet">
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="./bootstrap/docs/assets/js/ie-emulation-modes-warning.js"></script>
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" href="./pure-min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+
+<script>
+    // Checks if input is a youtube url
+    function validateInput() {
+        var inputStr = $("#yt-url").val();
+        var ytStr1 = 'youtube';
+        var ytStr2 = 'youtu.be';
+        if (inputStr.match(ytStr1) == ytStr1) {
+            var idIdx = inputStr.search(/\?v=/);
+        } else if (inputStr.match(ytStr2) == ytStr2) {
+            var idIdx = inputStr.search(/be\//);
+        } else {
+            window.alert("You didn't input a Youtube URL.");
+            return;
+        }
+        // Youtube id's are always 11 characters.
+        var ytID = inputStr.substring(idIdx+3, idIdx+14);
+        // loadytID(ytID);
+        window.location.assign('intermediatepage.php?yt_ID='+ytID);
+  };
+
+    function loadytID(ytID) {
+        // console.log(beatMarkers);
+        console.log(ytID);
+        var xhttp;
+        var url = "downloadytwav.php";
+        var params = "ID=" + ytID;
+        if (window.XMLHttpRequest) {
+            // code for modern browsers
+            xhttp = new XMLHttpRequest();
+        } else {
+            // code for IE6, IE5
+            xhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        xhttp.open("POST", "downloadytwav.php", true);
+        //Send the proper header information along with the request
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+    xhttp.send(params);
+    window.alert("Downloading.");
+    }
+
+</script>
+    <div class="site-wrapper">
+        <div class="site-wrapper-inner">
+            <div class="cover-container">
+                <div class="masthead clearfix">
+                    <div class="inner">
+                        <nav>
+                        </nav>
+                    </div>
+                </div>
+                <h1 class="cover-heading">Welcome to the Steady Beat project, please paste the URL of the youtube video you want to annotate below.</h1>
+                <div class="inner cover">
+                    <h1 class="cover-heading"></h1>
+                    <p class="lead">
+                        <form class="pure-form" onsubmit="return false">
+                            <fieldset>
+                                <legend></legend>
+                                <style>
+                                #yt-url {
+                                    color: #424242;
+                                }
+                                </style>
+                                <input type="text" color="" placeholder="Youtube URL" id="yt-url">
+                                <button type="submit" class="pure-button pure-button-primary" id="submitBtn" onclick="validateInput()" value="Go">Start Tracking</button>
+                            </fieldset>
+                        </form>
+                    </p>
+                </div>
+                Project BEAT is a project supported by Chordify, its aim is to enable users to annotate beats and improve beattracking for songs. Beattracking isn't always perfect and by incorporating user feedback we can improve the performance drastically. The project is currently under construction and is scheduled for completion on the 24th of June.
+                <div class="mastfoot">
+                    <div class="inner">
+                        <p>Waveform generation by <a href="http://wavesjs.github.io/">WavesJS-UI</a>, Project Members <a href="#">@rockforr</a>, <a href="#">@blane</a>, <a href="#">@nindia</a>, <a href="#">@clarayeah__</a>, <a href="#">@adrivri</a>.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script>
+    window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')
+    </script>
+    <script src="bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="bootstrap/docs/assets/js/ie10-viewport-bug-workaround.js"></script>
+</body>
+
+</html>
