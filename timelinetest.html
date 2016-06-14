@@ -223,7 +223,8 @@
         waveformLayer.setTimeContext(new wavesUI.core.LayerTimeContext(timeline.timeContext));
 
         cursorLayer = new wavesUI.helpers.CursorLayer({
-            height: layerHeight
+            height: layerHeight,
+            color: 'white'
         });
 
         timeline.state = new wavesUI.states.SimpleEditionState(timeline);
