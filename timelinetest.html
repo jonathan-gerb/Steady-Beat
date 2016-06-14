@@ -14,6 +14,7 @@
     <meta name="author" content="">
     <link rel="icon" href="./icon.jpg">
     <title>Waveform generation page</title>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <!-- Bootstrap core CSS -->
     <link href="bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
@@ -92,10 +93,12 @@
                     <div class="lead" id="loading"><img src="loading.gif" alt="loadingGif" height="50" width="50"></div>
                     <div class="waveform-box" id="waveform"></div>
                     <div style="text-align: center">
-                        <button class="btn btn-primary" id="playButton" onclick="playOrPause()">
-                            <i class="glyphicon glyphicon-play"></i> Play
+                        <button type="button" class="btn btn-default btn-sm" onclick="playOrPause()">
+                          <span class="glyphicon glyphicon-play"></span> Play
                         </button>
-                        <button class="btn btn-primary" id="clickToggle" onclick="toggleClick()">Click ON</button>
+                        <button type="button" class="btn btn-default btn-sm" id="clickToggle" onclick="toggleClick()">
+                          <span class="	glyphicon glyphicon-volume-up"></span> Click ON
+                        </button>
                     </div>
                     <p class="lead">Press the 'b' key on the beat to add a beat annotation.
                         <a href="#" id="infotext1" data-toggle="tooltip" data-placement="right" title="Drag a beat marker to move it, or double click to delete it.">
@@ -394,10 +397,10 @@
     function toggleClick() {
         if (metronome > 0) {
             metronome = 0;
-            document.getElementById('clickToggle').innerHTML = 'Click OFF'
+            document.getElementById('clickToggle').innerHTML = '<span class="	glyphicon glyphicon-volume-off"></span> Click OFF'
         } else {
             metronome = 1;
-            document.getElementById('clickToggle').innerHTML = 'Click ON'
+            document.getElementById('clickToggle').innerHTML = '<span class="	glyphicon glyphicon-volume-up"></span> Click ON'
         }
     }
 
