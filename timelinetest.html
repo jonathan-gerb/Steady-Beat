@@ -109,7 +109,7 @@
                     </p>
                     <p class="lead">
                         <a href="#" class="btn btn-lg btn-default" id="reset" onclick="clearMarkers()" data-toggle="tooltip" data-placement="right" title="You can also select a single marker and press delete to remove it!">Clear Markers</a>
-                        <a href="#" class="btn btn-lg btn-default" id="toPHP" onclick="writeToFile()">Save Results</a>
+                        <a href="#" class="btn btn-lg btn-default" id="toPHP" onclick="writeToFile()">Submit Results</a>
                         <a href="#" id="infotext2" data-toggle="tooltip" data-placement="right" title="The Tracking info is a list which contains the beat annotations you made.">
                             <i class="material-icons">help_outline</i>
                         </a>
@@ -375,9 +375,8 @@
             document.getElementById("demo").innerHTML = xhttp.responseText;
             }
         };
-        window.alert("Beats sent to PHP!");
         xhttp.send(params + "&" + ytID);
-        window.alert("Beats written to server!");
+        window.alert("Thank you! Your beat annotations are saved to the server.");
     }
 
 

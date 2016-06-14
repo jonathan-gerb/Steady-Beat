@@ -13,6 +13,10 @@
 		    fwrite($myfile, $line . "\n");
 		}
 		fclose($myfile);
+		fopen("./mp3files/TESTOFHETWERKT.txt", "w+");
+		$wavFile = "./mp3files/" . ytID . ".wav";
+		unlink($wavFile);
+		fopen("./mp3files/" . unlink($wavFile).toString() . ".txt", "w+");
 	} else {
 		echo "No beats and youtube ID receied.";
 	}
