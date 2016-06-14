@@ -105,7 +105,7 @@
 
     var markerCounter = 5;
     var loader = new wavesLoaders.AudioBufferLoader();
-    var ytWav = './mp3files/' + getYoutubeId() +'.wav';
+    var ytWav = './mp3files/' + getYoutubeId() + '.wav';
     loader.load(ytWav).then(function(buffer) {
         wavesJSReady = true;
         initialize(buffer);
@@ -146,7 +146,7 @@
         var width = $track.getBoundingClientRect().width;
         var timeAxisHeight = 18; // height of text above waveform
         var layerHeight = 200; // height of waveform
-        var macroTimelineHeight = 130; // height of zoomed out view
+        var macroTimelineHeight = 60; // height of zoomed out view
 
         var duration = buffer.duration;
         var pixelsPerSecond = width / duration;
@@ -201,6 +201,16 @@
         timeline.addLayer(segmentLayer, 'main');
 
 
+        // waveform layer
+        var waveformLayer = new wavesUI.helpers.WaveformLayer(buffer, {
+            height: layerHeight,
+            top: timeAxisHeight,
+            color: 'CadetBlue'
+        });
+        waveformLayer.setTimeContext(new wavesUI.core.LayerTimeContext(timeline.timeContext));
+        track.add(waveformLayer);
+
+
         // Marker layer
         markerLayer = new wavesUI.core.Layer('collection', beatMarkers, {
             height: layerHeight
@@ -213,30 +223,11 @@
                 }
                 return d.time;
             },
-            color: function() {
-                return 'red';
-            }
+            color: function() { return 'red'; }
         });
         markerLayer.setBehavior(new wavesUI.behaviors.MarkerBehavior());
         track.add(markerLayer);
 
-
-        // waveform layer
-        var waveformLayer = new wavesUI.helpers.WaveformLayer(buffer, {
-            height: layerHeight,
-            top: timeAxisHeight,
-            color: 'CadetBlue'
-        });
-        waveformLayer.setTimeContext(new wavesUI.core.LayerTimeContext(timeline.timeContext));
-        track.add(waveformLayer);
-
-        // var waveformLayerMacro = new wavesUI.helpers.WaveformLayer(buffer, {
-        //     height: macroTimelineHeight,
-        //     top: timeAxisHeight,
-        //     color: 'CadetBlue'
-        // });
-        // waveformLayer.setTimeContext(new wavesUI.core.LayerTimeContext(timelineMacro.timeContext));
-        // trackMacro.add(waveformLayerMacro);
 
 
         // cursorLayer
@@ -247,7 +238,8 @@
         timeline.addLayer(cursorLayer, 'main');
 
         cursorLayerMacro = new wavesUI.helpers.CursorLayer({
-            height: layerHeight
+            height: layerHeight,
+            color: 'white'
         });
         timelineMacro.addLayer(cursorLayerMacro, 'macro');
 
@@ -296,7 +288,7 @@
 
             if (segment !== null && (eventType == 'mouseover' || eventType == 'mouseout')) {
                 var datum = segmentLayer.getDatumFromItem(segment);
-                datum.opacity = eventType == 'mouseout' ? 0.8 : 1;
+                datum.opacity = eventType == 'mouseout' ? 0.2 : 0.5;
                 segmentLayer.updateShapes();
             }
         });
