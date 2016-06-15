@@ -393,6 +393,10 @@
     }
 
     function writeToFile() {
+        var done = window.confirm("Are you sure you are done annotating? You cannot make any more changes after saving your annotations to the server.");
+        if(!done) {
+            return;
+        }
         var toSend = [];
         for (i = 0; i < beatMarkers.length; i++) {
             toSend.push(beatMarkers[i].time);
