@@ -113,6 +113,7 @@
                     <p class="lead">
                         <a href="#" class="btn btn-lg btn-default" id="reset" onclick="clearMarkers()" data-toggle="tooltip" data-placement="right" title="You can also select a single marker and press delete to remove it!">Clear All Annotations</a>
                         <a href="#" class="btn btn-lg btn-default" id="toPHP" onclick="writeToFile()">Save Annotations</a>
+                        <a href="#" class="btn btn-lg btn-default" id="toPHP" onclick="autocomplete()">Autocomplete</a>
                         <a href="#" id="infotext2" data-toggle="tooltip" data-placement="right" title="Click here when you are finished annotating. Your beat annotations will be saved on the server. " is a list which contains the beat annotations you made.">
                             <i class="material-icons">help_outline</i>
                         </a>
@@ -169,6 +170,7 @@
     var markerQueue = [];
     var seeking = false;
     var audioplayer = document.getElementsByTagName("AUDIO")[0];
+    var duration;
 
     function initialize(buffer) {
         var $trackMacro = document.querySelector('#macroTrack');
@@ -178,7 +180,7 @@
         var layerHeight = 200; // height of waveform
         var macroTimelineHeight = 60; // height of zoomed out view
 
-        var duration = buffer.duration;
+        duration = buffer.duration;
         var pixelsPerSecond = width / duration;
 
         // Needs to be removed eventually
@@ -547,7 +549,7 @@
             return false;
         } else if (e.keyCode == "66") {
             playClick();
-            recordTimeStamp();
+            recordTimeStamp(currentTime);
         } else if (e.keyCode == "46") {
             var selectedMarker = document.getElementsByClassName('item annotated-marker selected');
             console.log(selectedMarker[0].childNodes[2].innerHTML);
@@ -579,15 +581,55 @@
         });
     }
 
-    function recordTimeStamp() {
+    function recordTimeStamp(markerTime) {
         var newmarker = {
-            time: currentTime,
+            time: markerTime,
             text: markerCounter.toString()
         }
         markerCounter++;
         beatMarkers.push(newmarker);
         markerLayer.render();
         markerLayer.update();
+    }
+
+
+    function autocomplete() {
+        var markerTimes = [];
+        for (i = 0; i < beatMarkers.length; i++) {
+            markerTimes.push(beatMarkers[i].time);
+        }
+        markerTimes.sort(function(a,b) {
+            return a-b;
+        });
+        
+        console.log(markerTimes);
+        var betweenTimes = [];
+        for (var i = 1; i < markerTimes.length; i++) {
+            betweenTimes.push(markerTimes[i] - markerTimes[i - 1]);
+        }
+        console.log(betweenTimes);
+
+        var sum = 0;
+        for(var i = 0; i < betweenTimes.length; i++) {
+            sum += betweenTimes[i];
+        }
+        var avg = sum / betweenTimes.length;
+        console.log(avg);
+
+        var time = markerTimes[markerTimes.length - 1] + avg;
+        console.log("time", time);
+        console.log("duration", duration);
+        while(time < duration) {
+            recordTimeStamp(time);
+            time = time + avg;
+            console.log(time, duration);
+        }
+        console.log("beegees", beatMarkers);
+
+
+        // neem de 8 timestamps uit de beatMarkers
+        // bereken de gemiddelde tijd die ertussen zit
+        // voeg zoveel beats toe als autocomplete (steeds gemiddeldeTijdErtussen uit elkaar)
     }
     </script>
 </body>
