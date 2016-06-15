@@ -6,6 +6,7 @@
     <script src="./waves-ui-master/waves-ui.umd.js"></script>
     <script src="./waves-audio-master/examples/assets/prism.js"></script>
     <script src="./waves-audio-master/examples/assets/waves-loaders.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,6 +15,7 @@
     <meta name="author" content="">
     <link rel="icon" href="./icon.jpg">
     <title>Waveform generation page</title>
+    <script src="./bootstrap/dist/js/bootstrap.min.js" ></script>
     <!-- Bootstrap core CSS -->
     <link href="bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
@@ -43,6 +45,27 @@
         left: 0;
         bottom: 0;
     }
+    #sidebar {
+        background-color:DimGray ;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 240px;
+    }#bottombar {
+        bottom: 0;
+        position: absolute;
+    }#timelines {
+        background-color: DimGray;
+        padding-bottom: 10px;
+    }#macroTrack {
+        background-color: LightGray;
+        opacity: 0.5
+    }#track-1 {
+        background-color: DarkGray;
+    }.item.annotated-marker.selected {
+        color: PeachPuff;
+    }
     </style>
 </head>
 
@@ -63,19 +86,27 @@
                         </nav>
                     </div>
                 </div>
-                <div class="inner cover">
+                <div class="inner cover" id="timelines">
                     <h1 class="cover-heading"></h1>
                     <br>
-                    <div id="player"></div>
+                    <div class="macroTrack" id="macroTrack"></div>
+                    <div id="sidebar">
+                        <div id="player"></div>
+                    </div>
                     <div class="macroTrack" id="macroTrack"></div>
                     <div class="track" id="track-1"></div>
                     <div class="lead" id="loading"><img src="loading.gif" alt="loadingGif" height="50" width="50"></div>
                     <div class="waveform-box" id="waveform"></div>
                     <div style="text-align: center">
-                        <button class="btn btn-primary" id="playButton" onclick="playOrPause()">
-                            <i class="glyphicon glyphicon-play"></i> Play
+                        <button type="button" class="btn btn-default btn-sm" id="playButton" onclick="playOrPause()">
+                          <span class="glyphicon glyphicon-play"></span> Play
                         </button>
-                        <button class="btn btn-primary" id="clickToggle" onclick="toggleClick()">Click ON</button>
+                        <button type="button" class="btn btn-default btn-sm" id="clickToggle" onclick="toggleClick()">
+                          <span class="glyphicon glyphicon-volume-up"></span> Click ON
+                        </button>
+                        <button type="button" class="btn btn-default btn-sm" onclick="splitSegOnBeat()">
+                          <span class="glyphicon glyphicon-scissors"></span> split on selected beat
+                        </button>
                     </div>
                     <p class="lead">Press the 'b' key on the beat to add a beat annotation.
                         <a href="#" id="infotext1" data-toggle="tooltip" data-placement="right" title="Drag a beat marker to move it, or double click to delete it.">
@@ -84,7 +115,7 @@
                     </p>
                     <p class="lead">
                         <a href="#" class="btn btn-lg btn-default" id="reset" onclick="clearMarkers()" data-toggle="tooltip" data-placement="right" title="You can also select a single marker and press delete to remove it!">Clear Markers</a>
-                        <a href="#" class="btn btn-lg btn-default" id="toPHP" onclick="writeToFile()">Get Marker Timings</a>
+                        <a href="#" class="btn btn-lg btn-default" id="toPHP" onclick="writeToFile()">Submit Results</a>
                         <a href="#" id="infotext2" data-toggle="tooltip" data-placement="right" title="The Tracking info is a list which contains the beat annotations you made.">
                             <i class="material-icons">help_outline</i>
                         </a>
@@ -92,7 +123,7 @@
                     <p id="showTimeStamps"></p>
                     <textarea rows="4" cols="50" id="markerInfo" style="color:black" hidden>nothing here</textarea>
                 </div>
-                <div>
+                <div id="bottombar">
                     <div class="inner">
                         <p>Waveform generation by <a href="http://wavesjs.github.io/">WavesJS-UI</a>, Project Members <a href="#">@rockforr</a>, <a href="#">@blane</a>, <a href="#">@nindia</a>, <a href="#">@clarayeah__</a>, <a href="#">@adrivri</a>.</p>
                     </div>
@@ -105,7 +136,8 @@
 
     var markerCounter = 5;
     var loader = new wavesLoaders.AudioBufferLoader();
-    var ytWav = './mp3files/' + getYoutubeId() +'.wav';
+    // var ytWav = './mp3files/' + getYoutubeId() + '.wav';
+    var ytWav = 'https://dl.dropboxusercontent.com/s/x96jtzww89u8cdf/Brains.wav'
     loader.load(ytWav).then(function(buffer) {
         wavesJSReady = true;
         initialize(buffer);
@@ -137,30 +169,40 @@
     var currentTime;
     var finalDur;
     var windowWidth = 20;
+    var layerHeight = 200; // height of waveform
+    var timeAxisHeight = 18; // height of text above waveform
     var markerQueue = [];
+    var seeking = false;
     var audioplayer = document.getElementsByTagName("AUDIO")[0];
 
     function initialize(buffer) {
         var $trackMacro = document.querySelector('#macroTrack');
         var $track = document.querySelector('#track-1');
         var width = $track.getBoundingClientRect().width;
-        var timeAxisHeight = 18; // height of text above waveform
-        var layerHeight = 200; // height of waveform
-        var macroTimelineHeight = 130; // height of zoomed out view
+        var macroTimelineHeight = 60; // height of zoomed out view
 
         var duration = buffer.duration;
         var pixelsPerSecond = width / duration;
 
         // Needs to be removed eventually
-        data = [{
+        segments = [{
             x: 0,
+            width: 10,
+            height: layerHeight,
+            top: timeAxisHeight,
+            color: 'steelblue',
+            opacity: 0.2,
+            text: '4/4'
+        },
+        {
+            x: 10,
             width: duration,
             height: layerHeight,
             top: timeAxisHeight,
             color: 'steelblue',
             opacity: 0.2,
             text: '4/4'
-        }, ];
+        },];
 
         timeline = new wavesUI.core.Timeline(pixelsPerSecond, width);
         timelineMacro = new wavesUI.core.Timeline(pixelsPerSecond, width);
@@ -192,35 +234,6 @@
         trackMacro.add(timeAxisMacro);
 
 
-        // Segment layer
-        segmentLayer = new wavesUI.helpers.SegmentLayer(data, {
-            height: layerHeight,
-            top: timeAxisHeight,
-            displayHandlers: true,
-        });
-        timeline.addLayer(segmentLayer, 'main');
-
-
-        // Marker layer
-        markerLayer = new wavesUI.core.Layer('collection', beatMarkers, {
-            height: layerHeight
-        });
-        markerLayer.setTimeContext(timeContext);
-        markerLayer.configureShape(wavesUI.shapes.AnnotatedMarker, {
-            x: function(d, v) {
-                if (v !== undefined) {
-                    d.time = v;
-                }
-                return d.time;
-            },
-            color: function() {
-                return 'red';
-            }
-        });
-        markerLayer.setBehavior(new wavesUI.behaviors.MarkerBehavior());
-        track.add(markerLayer);
-
-
         // waveform layer
         var waveformLayer = new wavesUI.helpers.WaveformLayer(buffer, {
             height: layerHeight,
@@ -230,23 +243,46 @@
         waveformLayer.setTimeContext(new wavesUI.core.LayerTimeContext(timeline.timeContext));
         track.add(waveformLayer);
 
-        // var waveformLayerMacro = new wavesUI.helpers.WaveformLayer(buffer, {
-        //     height: macroTimelineHeight,
-        //     top: timeAxisHeight,
-        //     color: 'CadetBlue'
-        // });
-        // waveformLayer.setTimeContext(new wavesUI.core.LayerTimeContext(timelineMacro.timeContext));
-        // trackMacro.add(waveformLayerMacro);
+
+        // Segment layer
+        segmentLayer = new wavesUI.helpers.SegmentLayer(segments, {
+            height: layerHeight,
+            top: timeAxisHeight,
+            displayHandlers: true,
+        });
+        timeline.addLayer(segmentLayer, 'main');
+
+
+        // Marker layer
+        markerLayer = new wavesUI.core.Layer('collection', beatMarkers, {
+            height: layerHeight,
+            top: timeAxisHeight
+        });
+        markerLayer.setTimeContext(timeContext);
+        markerLayer.configureShape(wavesUI.shapes.AnnotatedMarker, {
+            x: function(d, v) {
+                if (v !== undefined) {
+                    d.time = v;
+                }
+                return d.time;
+            },
+            color: function() { return 'red'; }
+        });
+        markerLayer.setBehavior(new wavesUI.behaviors.MarkerBehavior());
+        track.add(markerLayer);
+
 
 
         // cursorLayer
         cursorLayer = new wavesUI.helpers.CursorLayer({
-            height: layerHeight
+            height: layerHeight + timeAxisHeight,
+            color: 'white'
         });
         timeline.addLayer(cursorLayer, 'main');
 
         cursorLayerMacro = new wavesUI.helpers.CursorLayer({
-            height: layerHeight
+            height: layerHeight,
+            color: 'white'
         });
         timelineMacro.addLayer(cursorLayerMacro, 'macro');
 
@@ -258,9 +294,6 @@
         track.update();
         trackMacro.render();
         trackMacro.update();
-
-        // timeline.tracks.render();
-        // timeline.tracks.update();
 
         finalDur = timeline.timeContext.visibleDuration;
 
@@ -278,7 +311,7 @@
             if (playSong) {
                 var d = new Date();
                 currentTime = (d.getTime() / 1000) - startTime;
-                updatePlugin();
+                updatePlugin(false);
                 setTimeout(requestAnimationFrame(loop), 20);
             } else {
                 cleanQueue()
@@ -292,32 +325,71 @@
         timeline.on('event', function(e) {
             var eventType = e.type;
             var segment = segmentLayer.getItemFromDOMElement(e.target);
+            var onTimeAxis = $.inArray(timeAxis, timeline.getHitLayers(e));
 
             if (segment !== null && (eventType == 'mouseover' || eventType == 'mouseout')) {
                 var datum = segmentLayer.getDatumFromItem(segment);
-                datum.opacity = eventType == 'mouseout' ? 0.8 : 1;
+                datum.opacity = eventType == 'mouseout' ? 0.2 : 0.5;
                 segmentLayer.updateShapes();
+            } else if (!onTimeAxis && eventType == 'mousemove') {
+                seeking = true;
+                var newTime = timeAxis.timeToPixel.invert(e.x) - timeline.timeContext.offset;
+                cursorLayer.currentPosition = newTime;
+                cursorLayer.update();
+            } else if (!onTimeAxis && eventType == 'mouseup') {
+                var newTime = timeAxis.timeToPixel.invert(e.x) - timeline.timeContext.offset;
+                player.seekTo(newTime)
+                seekTo(newTime);
+                seeking = false;
             }
         });
+
+        timelineMacro.on('event', function(e) {
+            var onTimeAxis = $.inArray(timeAxisMacro, timeline.getHitLayers);
+            var eType = e.type;
+
+            if (onTimeAxis && eType == 'mousemove') {
+                seeking = true;
+                var newTime = timeAxisMacro.timeToPixel.invert(e.x) - timelineMacro.timeContext.offset;
+                cursorLayerMacro.currentPosition = newTime;
+                cursorLayerMacro.update();
+            } else if (onTimeAxis && eType == 'mouseup') {
+                var newTime = timeAxisMacro.timeToPixel.invert(e.x) - timelineMacro.timeContext.offset;
+                player.seekTo(newTime);
+                seekTo(newTime);
+                seeking = false;
+            };
+        });
+
     }
 
     // Renders all layers from the WavesJS plugin and plays a sound when
     // encountering a beat marker
-    function updatePlugin() {
-        cursorLayer.currentPosition = currentTime;
-        cursorLayerMacro.currentPosition = currentTime;
-        cursorLayer.update();
-        cursorLayerMacro.update();
-        timeline.timeContext.offset = -cursorLayer.currentPosition + (finalDur / windowWidth) / 2;
+    function updatePlugin(seeked) {
+        if (!seeking) {
+          cursorLayer.currentPosition = currentTime;
+          cursorLayer.update();
+          cursorLayerMacro.currentPosition = currentTime;
+          cursorLayerMacro.update();
+        }
+        timeline.timeContext.offset = -currentTime + (finalDur / windowWidth) / 2;
         timeline.tracks.update();
-        if(currentTime >= markerQueue[0]) {
+
+        if(currentTime >= markerQueue[0] && !seeked) {
             console.log("removed beat from Queue");
-            if (metronome > 0) {
-                metronome == 1 ? clickSound.play() : clickSound2.play();
-            }
+            playClick();
             markerQueue.shift();
         }
     }
+
+    function seekTo(newTime) {
+        currentTime = newTime;
+        var d = new Date();
+        startTime = d.getTime()/1000 - currentTime;
+        cleanQueue();
+        audioplayer.currentTime = currentTime;
+        updatePlugin(true);
+    };
 
     function writeToPage() {
         document.getElementById('markerInfo').hidden = ""
@@ -341,6 +413,7 @@
         var xhttp;
         var url = "writefile.php";
         var params = "beat=" + toSend.toString();
+        var ytID = "ytID=" + getYoutubeId();
         if (window.XMLHttpRequest) {
             // code for modern browsers
             xhttp = new XMLHttpRequest();
@@ -356,8 +429,8 @@
             document.getElementById("demo").innerHTML = xhttp.responseText;
             }
         };
-        xhttp.send(params);
-        window.alert("Beats written to server!");
+        xhttp.send(params + "&" + ytID);
+        window.alert("Thank you! Your beat annotations are saved to the server.");
     }
 
 
@@ -369,20 +442,34 @@
     }
 
     window.addEventListener("keydown", checkKeyPressed, false);
-    window.addEventListener("mousedown", checkMouse, false);
-    // window.addEventListener("keydown", pauseCursor, false);
-    var clickSound = new Audio('click.mp3');
-    var clickSound2 = new Audio('click.mp3');
+    window.addEventListener("mouseup", mouseUpOutOfBounds, false);
+
+    function mouseUpOutOfBounds() {
+        seeking = false;
+    }
+
+    var clickSound = new Audio('click.ogg');
+    var clickSound2 = new Audio('click.ogg');
 
     var metronome = 1;
 
     function toggleClick() {
         if (metronome > 0) {
             metronome = 0;
-            document.getElementById('clickToggle').innerHTML = 'Click OFF'
+            document.getElementById('clickToggle').innerHTML = '<span class="	glyphicon glyphicon-volume-off"></span> Click OFF'
         } else {
             metronome = 1;
-            document.getElementById('clickToggle').innerHTML = 'Click ON'
+            document.getElementById('clickToggle').innerHTML = '<span class="	glyphicon glyphicon-volume-up"></span> Click ON'
+        }
+    }
+
+    function playClick() {
+        if (metronome == 1) {
+            clickSound.play();
+            metronome = 2;
+        } else if (metronome == 2) {
+            clickSound2.play();
+            metronome = 1;
         }
     }
 
@@ -406,13 +493,14 @@
 
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('player', {
-            height: '300',
-            width: '496.5',
+            height: '240',
+            width: '240',
             videoId: getYoutubeId(),
             playerVars: {
                 'controls': 0,
                 'autoplay': 0,
-                'fs': 0
+                'fs': 0,
+                'disablekb': 0
             },
             events: {
                 'onStateChange': onPlayerStateChange
@@ -427,13 +515,10 @@
     function playOrPause() {
         if (player.getPlayerState() == 1) {
             player.pauseVideo();
-            audioplayer.pause();
             document.getElementById('playButton').innerHTML = '<i class="glyphicon glyphicon-play"></i> Play'
         } else {
             cleanQueue();
             player.playVideo();
-            audioplayer.play();
-
             document.getElementById('playButton').innerHTML = '<i class="glyphicon glyphicon-pause"></i> Pause';
         }
     }
@@ -449,17 +534,13 @@
             playSong = true;
             done = true;
         } else if (event.data != YT.PlayerState.PLAYING) {
-            currentTime = player.getCurrentTime();
-            audioplayer.currentTime = currentTime;
             cleanQueue();
-            updatePlugin();
+            audioplayer.pause();
             playSong = false;
         } else if (event.data == YT.PlayerState.PLAYING) {
-            var d = new Date();
-            currentTime = player.getCurrentTime();
-            audioplayer.currentTime = currentTime;
-            startTime = (d.getTime() / 1000) - currentTime;
             cleanQueue();
+            audioplayer.play();
+            seekTo(currentTime);
             playSong = true;
         }
     }
@@ -473,11 +554,8 @@
             audioplayer.currentTime = currentTime;
             return false;
         } else if (e.keyCode == "66") {
-            if (metronome > 0) {
-                metronome == 1 ? clickSound.play() : clickSound2.play();
-            }
+            playClick();
             recordTimeStamp();
-            markerQueue.sort();
         } else if (e.keyCode == "46") {
             var selectedMarker = document.getElementsByClassName('item annotated-marker selected');
             console.log(selectedMarker[0].childNodes[2].innerHTML);
@@ -494,6 +572,8 @@
             }
             markerLayer.render();
             markerLayer.update();
+        } else if (e.keyCode == "83") {
+            splitSegments(segments, currentTime);
         }
     }
 
@@ -504,20 +584,9 @@
                 markerQueue.push(beatMarkers[i].time);
             }
         }
-    }
-
-    function checkMouse(e) {
-        var time = timeline.timeToPixel.invert(e.x); - timeline.offset;
-        currentTime = currentTime + time;
-        // var d = new Date();
-        // startTime = (d.getTime() / 1000) - currentTime;
-        deltaCurrentTime = time - currentTime;
-        startTime = startTime - deltaCurrentTime;
-        var d = new Date();
-        currentTime = (d.getTime() / 1000) - startTime;
-        player.seekTo(currentTime)
-        cleanQueue();
-        updatePlugin();
+        markerQueue.sort(function(a,b) {
+            return a-b;
+        });
     }
 
     function recordTimeStamp() {
@@ -529,6 +598,42 @@
         beatMarkers.push(newmarker);
         markerLayer.render();
         markerLayer.update();
+    }
+    function splitSegments(segments, splitTime) {
+        var newSegment = {
+            x: splitTime,
+            width: splitTime,
+            height: layerHeight,
+            top: timeAxisHeight,
+            color: 'steelblue',
+            opacity: 0.2,
+            text: '4/4'
+        };
+        for (var i = 0; i < segments.length; i++) {
+            if (segments[i].x < splitTime && splitTime < (segments[i].x + segments[i].width)){
+                oldWidth = segments[i].width;
+                segments[i].width = splitTime - segments[i].x;
+                newSegment.width = oldWidth - segments[i].width;
+                segments.push(newSegment);
+                break;
+            }
+        }
+        segmentLayer.render();
+        segmentLayer.update();
+    }
+
+    function splitSegOnBeat() {
+        var selectedMarker = document.getElementsByClassName('item annotated-marker selected');
+        var j;
+        for (var j = 0; j < beatMarkers.length; j++) {
+            if (beatMarkers[j].text == selectedMarker[0].childNodes[2].innerHTML) {
+                // put the element to be deleted at the end, and pop it off
+                var dataSelectedMarker = beatMarkers[j];
+                startTime = dataSelectedMarker.time;
+                break;
+            }
+        }
+        splitSegments(segments, startTime);
     }
     </script>
 </body>
