@@ -46,7 +46,7 @@
         bottom: 0;
     }
     #sidebar {
-        background-color:DimGray ;
+        background-color: DimGray ;
         position: absolute;
         top: 0;
         bottom: 0;
@@ -59,10 +59,10 @@
         background-color: DimGray;
         padding-bottom: 10px;
     }#macroTrack {
-        background-color: LightGray;
-        opacity: 0.5
+        background-color: #444;
+        /*opacity: 0.5*/
     }#track-1 {
-        background-color: DarkGray;
+        background-color: #444;
     }.item.annotated-marker.selected {
         color: PeachPuff;
     }
@@ -81,7 +81,6 @@
                         <h3 class="masthead-brand"></h3>
                         <nav class="fixed-header">
                             <ul class="nav masthead-nav">
-                                <li><a href="index.html">Song selection</a></li>
                             </ul>
                         </nav>
                     </div>
@@ -89,11 +88,12 @@
                 <div class="inner cover" id="timelines">
                     <h1 class="cover-heading"></h1>
                     <br>
-                    <div class="macroTrack" id="macroTrack"></div>
                     <div id="sidebar">
+                        <a href="index.html">Song selection</a>
                         <div id="player"></div>
                     </div>
                     <div class="macroTrack" id="macroTrack"></div>
+                    <br>
                     <div class="track" id="track-1"></div>
                     <div class="lead" id="loading"><img src="loading.gif" alt="loadingGif" height="50" width="50"></div>
                     <div class="waveform-box" id="waveform"></div>
@@ -131,10 +131,10 @@
     <script class="example" rel="track-1">
     var wavesJSReady = false;
 
-    var markerCounter = 5;
+    var markerCounter = 1;
     var loader = new wavesLoaders.AudioBufferLoader();
-    var ytWav = './mp3files/' + getYoutubeId() + '.wav';
-    // var ytWav = 'https://dl.dropboxusercontent.com/s/x96jtzww89u8cdf/Brains.wav'
+    // var ytWav = './mp3files/' + getYoutubeId() + '.wav';
+    var ytWav = 'https://dl.dropboxusercontent.com/s/x96jtzww89u8cdf/Brains.wav'
     loader.load(ytWav).then(function(buffer) {
         wavesJSReady = true;
         initialize(buffer);
@@ -175,8 +175,9 @@
         var $track = document.querySelector('#track-1');
         var width = $track.getBoundingClientRect().width;
         var timeAxisHeight = 18; // height of text above waveform
+        var macroTimeOverhead = 12;
         var layerHeight = 200; // height of waveform
-        var macroTimelineHeight = 60; // height of zoomed out view
+        var macroTimelineHeight = 68; // height of zoomed out view
 
         var duration = buffer.duration;
         var pixelsPerSecond = width / duration;
@@ -196,7 +197,7 @@
         timelineMacro = new wavesUI.core.Timeline(pixelsPerSecond, width);
 
         track = timeline.createTrack($track, layerHeight + timeAxisHeight, 'main');
-        trackMacro = timelineMacro.createTrack($trackMacro, macroTimelineHeight + timeAxisHeight, 'macro');
+        trackMacro = timelineMacro.createTrack($trackMacro, macroTimelineHeight, 'macro');
 
         timeContext = new wavesUI.core.LayerTimeContext(timeline.timeContext);
         timeContextMacro = new wavesUI.core.LayerTimeContext(timelineMacro.timeContext);
@@ -206,18 +207,18 @@
             height: timeAxisHeight
         });
         var timeAxisMacro = new wavesUI.axis.AxisLayer(wavesUI.axis.timeAxisGenerator(), {
-            height: timeAxisHeight
+            height: macroTimelineHeight
         });
 
         timeAxis.setTimeContext(timeline.timeContext);
         timeAxis.configureShape(wavesUI.shapes.Ticks, {}, {
-            color: 'CadetBlue'
+            color: '#999'
         });
         track.add(timeAxis);
 
         timeAxisMacro.setTimeContext(timelineMacro.timeContext);
         timeAxisMacro.configureShape(wavesUI.shapes.Ticks,{},{
-            color: 'CadetBlue"'
+            color: '#555'
         });
         trackMacro.add(timeAxisMacro);
 
@@ -236,7 +237,7 @@
         segmentLayer = new wavesUI.helpers.SegmentLayer(data, {
             height: layerHeight,
             top: timeAxisHeight,
-            displayHandlers: true,
+            displayHandlers: false,
         });
         timeline.addLayer(segmentLayer, 'main');
 
@@ -276,7 +277,8 @@
 
 
         timeline.state = new wavesUI.states.SimpleEditionState(timeline);
-        timelineMacro.state = new wavesUI.states.SimpleEditionState(timelineMacro);
+        segmentLayer.setContextEditable(false);
+
 
         track.render();
         track.update();
@@ -302,7 +304,7 @@
                 updatePlugin(false);
                 setTimeout(requestAnimationFrame(loop), 20);
             } else {
-                cleanQueue()
+                refreshQueue()
                 setTimeout(function() {
                     requestAnimationFrame(loop);
                     timeline.tracks.update();
@@ -374,7 +376,7 @@
         currentTime = newTime;
         var d = new Date();
         startTime = d.getTime()/1000 - currentTime;
-        cleanQueue();
+        refreshQueue();
         audioplayer.currentTime = currentTime;
         updatePlugin(true);
     };
@@ -505,7 +507,7 @@
             player.pauseVideo();
             document.getElementById('playButton').innerHTML = '<i class="glyphicon glyphicon-play"></i> Play'
         } else {
-            cleanQueue();
+            refreshQueue();
             player.playVideo();
             document.getElementById('playButton').innerHTML = '<i class="glyphicon glyphicon-pause"></i> Pause';
         }
@@ -517,16 +519,17 @@
             var d = new Date();
             startTime = d.getTime() / 1000;
             currentTime = player.getCurrentTime();
+            audioplayer.play();
             audioplayer.currentTime = currentTime;
-            cleanQueue();
+            refreshQueue();
             playSong = true;
             done = true;
         } else if (event.data != YT.PlayerState.PLAYING) {
-            cleanQueue();
+            refreshQueue();
             audioplayer.pause();
             playSong = false;
         } else if (event.data == YT.PlayerState.PLAYING) {
-            cleanQueue();
+            refreshQueue();
             audioplayer.play();
             seekTo(currentTime);
             playSong = true;
@@ -563,7 +566,7 @@
         }
     }
 
-    function cleanQueue() {
+    function refreshQueue() {
         markerQueue = [];
         for (var i = 0; i < beatMarkers.length; i++) {
             if(beatMarkers[i].time > currentTime){
