@@ -137,8 +137,8 @@
 
     var markerCounter = 1;
     var loader = new wavesLoaders.AudioBufferLoader();
-    // var ytWav = './mp3files/' + getYoutubeId() + '.wav';
-    var ytWav = 'https://dl.dropboxusercontent.com/s/x96jtzww89u8cdf/Brains.wav'
+    var ytWav = './mp3files/' + getYoutubeId() + '.wav';
+    // var ytWav = 'https://dl.dropboxusercontent.com/s/x96jtzww89u8cdf/Brains.wav'
     loader.load(ytWav).then(function(buffer) {
         wavesJSReady = true;
         initialize(buffer);
@@ -599,9 +599,35 @@
 
 
     function autocomplete() {
+        begin = 0;
+        end = 0;
+        var selectedMarker = document.getElementsByClassName('item annotated-marker selected');
+        var j;
+        for (var j = 0; j < beatMarkers.length; j++) {
+            if (beatMarkers[j].text == selectedMarker[0].childNodes[2].innerHTML) {
+                // put the element to be deleted at the end, and pop it off
+                var dataSelectedMarker = beatMarkers[j];
+                begin = dataSelectedMarker.time;
+                break;
+            }
+        }
+
+        for (var i = 0; i < segments.length; i++) {
+            if(segments[i].x <= begin && begin < (segments[i].x + segments[i].width)) {
+                end = segments[i].x + segments[i].width;
+                begin = segments[i].x;
+                break;
+            }
+        }
+
         var markerTimes = [];
         for (i = 0; i < beatMarkers.length; i++) {
-            markerTimes.push(beatMarkers[i].time);
+            console.log("beatmarkers[i].time ", beatMarkers[i].time);
+            console.log("begin ", begin);
+            console.log("end ", end);
+            if(begin < beatMarkers[i].time && beatMarkers[i].time < end) {
+                markerTimes.push(beatMarkers[i].time);
+            }
         }
         markerTimes.sort(function(a,b) {
             return a-b;
@@ -621,13 +647,15 @@
         var avg = sum / betweenTimes.length;
         console.log(avg);
 
+        console.log('markertimes ', markerTimes);
         var time = markerTimes[markerTimes.length - 1] + avg;
         console.log("time", time);
-        console.log("duration", duration);
-        while(time < duration) {
+        console.log("begin", begin);
+        console.log("end", end);
+        while(time < end) {
             recordTimeStamp(time);
             time = time + avg;
-            console.log(time, duration);
+            console.log(time, end);
         }
         console.log("beegees", beatMarkers);
 
