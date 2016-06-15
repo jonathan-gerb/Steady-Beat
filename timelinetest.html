@@ -114,7 +114,7 @@
                         <a href="#" class="btn btn-lg btn-default" id="reset" onclick="clearMarkers()" data-toggle="tooltip" data-placement="right" title="You can also select a single marker and press delete to remove it!">Clear All Annotations</a>
                         <a href="#" class="btn btn-lg btn-default" id="toPHP" onclick="writeToFile()">Save Annotations</a>
                         <a href="#" class="btn btn-lg btn-default" id="toPHP" onclick="autocomplete()">Autocomplete</a>
-                        <a href="#" id="infotext2" data-toggle="tooltip" data-placement="right" title="Click here when you are finished annotating. Your beat annotations will be saved on the server. " is a list which contains the beat annotations you made.">
+                        <a href="#" id="infotext2" data-toggle="tooltip" data-placement="right" title="Click here when you are finished annotating. Your beat annotations will be saved on the server.">
                             <i class="material-icons">help_outline</i>
                         </a>
                     </p>
@@ -604,7 +604,7 @@
         markerTimes.sort(function(a,b) {
             return a-b;
         });
-        
+
         console.log(markerTimes);
         var betweenTimes = [];
         for (var i = 1; i < markerTimes.length; i++) {
