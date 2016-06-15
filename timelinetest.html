@@ -169,6 +169,8 @@
     var windowWidth = 20;
     var markerQueue = [];
     var seeking = false;
+    var newMousePos = null;
+    var prevMousePos = null;
     var audioplayer = document.getElementsByTagName("AUDIO")[0];
     var duration;
 
@@ -176,24 +178,17 @@
         var $trackMacro = document.querySelector('#macroTrack');
         var $track = document.querySelector('#track-1');
         var width = $track.getBoundingClientRect().width;
-        var timeAxisHeight = 18; // height of text above waveform
+        var timeAxisHeight = 23; // height of text above waveform
         var macroTimeOverhead = 12;
-        var layerHeight = 200; // height of waveform
+        var layerHeight = 170; // height of waveform
         var macroTimelineHeight = 68; // height of zoomed out view
 
         duration = buffer.duration;
         var pixelsPerSecond = width / duration;
 
         // Needs to be removed eventually
-        data = [{
-            x: 0,
-            width: duration,
-            height: layerHeight,
-            top: timeAxisHeight,
-            color: 'steelblue',
-            opacity: 0.2,
-            text: '4/4'
-        }, ];
+        data = [{x: 0, width: duration, height: layerHeight, top: timeAxisHeight,
+                color: 'steelblue', opacity: 0.2, text: '4/4'}, ];
 
         timeline = new wavesUI.core.Timeline(pixelsPerSecond, width);
         timelineMacro = new wavesUI.core.Timeline(pixelsPerSecond, width);
@@ -263,7 +258,6 @@
         track.add(markerLayer);
 
 
-
         // cursorLayer
         cursorLayer = new wavesUI.helpers.CursorLayer({
             height: layerHeight + timeAxisHeight,
@@ -277,15 +271,8 @@
         });
         timelineMacro.addLayer(cursorLayerMacro, 'macro');
 
-
-        timeline.state = new wavesUI.states.SimpleEditionState(timeline);
+        timeline.state = new wavesUI.states.SelectionState(timeline);
         segmentLayer.setContextEditable(false);
-
-
-        track.render();
-        track.update();
-        trackMacro.render();
-        trackMacro.update();
 
         finalDur = timeline.timeContext.visibleDuration;
 
@@ -324,15 +311,26 @@
                 datum.opacity = eventType == 'mouseout' ? 0.2 : 0.5;
                 segmentLayer.updateShapes();
             } else if (!onTimeAxis && eventType == 'mousemove') {
-                seeking = true;
-                var newTime = timeAxis.timeToPixel.invert(e.x) - timeline.timeContext.offset;
-                cursorLayer.currentPosition = newTime;
-                cursorLayer.update();
+                if (prevMousePos == null) {
+                    prevMousePos = timeAxis.timeToPixel.invert(e.x);
+                    return;
+                } else {
+                  newMousePos = timeAxis.timeToPixel.invert(e.x);
+                  var delta = newMousePos - prevMousePos;
+                  prevMousePos = newMousePos;
+                  timeline.timeContext.offset = timeline.timeContext.offset + delta;
+                  timeline.tracks.update();
+                }
             } else if (!onTimeAxis && eventType == 'mouseup') {
-                var newTime = timeAxis.timeToPixel.invert(e.x) - timeline.timeContext.offset;
-                player.seekTo(newTime)
-                seekTo(newTime);
-                seeking = false;
+                if (newMousePos == null) {
+                  var newTime = timeAxis.timeToPixel.invert(e.x) - timeline.timeContext.offset;
+                  player.seekTo(newTime)
+                  seekTo(newTime);
+                } else {
+                  newMousePos = null;
+                  prevMousePos = null;
+                }
+
             }
         });
 
@@ -364,8 +362,12 @@
           cursorLayerMacro.currentPosition = currentTime;
           cursorLayerMacro.update();
         }
-        timeline.timeContext.offset = -currentTime + (finalDur / windowWidth) / 2;
-        timeline.tracks.update();
+        var offset = timeline.timeContext.offset;
+        var cursorTooFar = currentTime+2 > (windowWidth - offset) || currentTime+2 < -offset;
+        if (cursorTooFar) {
+            timeline.timeContext.offset = 1.5-currentTime;
+            timeline.tracks.update();
+        }
 
         if(currentTime >= markerQueue[0] && !seeked) {
             console.log("removed beat from Queue");
@@ -442,6 +444,8 @@
 
     function mouseUpOutOfBounds() {
         seeking = false;
+        setTimeout(function(){newMousePos=null},10)
+        prevMousePos = null;
     }
 
     var clickSound = new Audio('click.ogg');
