@@ -88,6 +88,7 @@
                 <div class="inner cover" id="timelines">
                     <h1 class="cover-heading"></h1>
                     <br>
+                    <div class="macroTrack" id="macroTrack"></div>
                     <div id="sidebar">
                         <div id="player"></div>
                     </div>
@@ -132,6 +133,7 @@
     var markerCounter = 5;
     var loader = new wavesLoaders.AudioBufferLoader();
     var ytWav = './mp3files/' + getYoutubeId() + '.wav';
+    // var ytWav = 'https://dl.dropboxusercontent.com/s/x96jtzww89u8cdf/Brains.wav'
     loader.load(ytWav).then(function(buffer) {
         wavesJSReady = true;
         initialize(buffer);
@@ -164,6 +166,7 @@
     var finalDur;
     var windowWidth = 20;
     var markerQueue = [];
+    var seeking = false;
     var audioplayer = document.getElementsByTagName("AUDIO")[0];
 
     function initialize(buffer) {
@@ -218,15 +221,6 @@
         trackMacro.add(timeAxisMacro);
 
 
-        // Segment layer
-        segmentLayer = new wavesUI.helpers.SegmentLayer(data, {
-            height: layerHeight,
-            top: timeAxisHeight,
-            displayHandlers: true,
-        });
-        timeline.addLayer(segmentLayer, 'main');
-
-
         // waveform layer
         var waveformLayer = new wavesUI.helpers.WaveformLayer(buffer, {
             height: layerHeight,
@@ -237,9 +231,19 @@
         track.add(waveformLayer);
 
 
+        // Segment layer
+        segmentLayer = new wavesUI.helpers.SegmentLayer(data, {
+            height: layerHeight,
+            top: timeAxisHeight,
+            displayHandlers: true,
+        });
+        timeline.addLayer(segmentLayer, 'main');
+
+
         // Marker layer
         markerLayer = new wavesUI.core.Layer('collection', beatMarkers, {
-            height: layerHeight
+            height: layerHeight,
+            top: timeAxisHeight
         });
         markerLayer.setTimeContext(timeContext);
         markerLayer.configureShape(wavesUI.shapes.AnnotatedMarker, {
@@ -258,7 +262,7 @@
 
         // cursorLayer
         cursorLayer = new wavesUI.helpers.CursorLayer({
-            height: layerHeight,
+            height: layerHeight + timeAxisHeight,
             color: 'white'
         });
         timeline.addLayer(cursorLayer, 'main');
@@ -278,9 +282,6 @@
         trackMacro.render();
         trackMacro.update();
 
-        // timeline.tracks.render();
-        // timeline.tracks.update();
-
         finalDur = timeline.timeContext.visibleDuration;
 
         timeline.timeContext.zoom = finalDur / windowWidth;
@@ -297,7 +298,7 @@
             if (playSong) {
                 var d = new Date();
                 currentTime = (d.getTime() / 1000) - startTime;
-                updatePlugin();
+                updatePlugin(false);
                 setTimeout(requestAnimationFrame(loop), 20);
             } else {
                 cleanQueue()
@@ -311,32 +312,71 @@
         timeline.on('event', function(e) {
             var eventType = e.type;
             var segment = segmentLayer.getItemFromDOMElement(e.target);
+            var onTimeAxis = $.inArray(timeAxis, timeline.getHitLayers(e));
 
             if (segment !== null && (eventType == 'mouseover' || eventType == 'mouseout')) {
                 var datum = segmentLayer.getDatumFromItem(segment);
                 datum.opacity = eventType == 'mouseout' ? 0.2 : 0.5;
                 segmentLayer.updateShapes();
+            } else if (!onTimeAxis && eventType == 'mousemove') {
+                seeking = true;
+                var newTime = timeAxis.timeToPixel.invert(e.x) - timeline.timeContext.offset;
+                cursorLayer.currentPosition = newTime;
+                cursorLayer.update();
+            } else if (!onTimeAxis && eventType == 'mouseup') {
+                var newTime = timeAxis.timeToPixel.invert(e.x) - timeline.timeContext.offset;
+                player.seekTo(newTime)
+                seekTo(newTime);
+                seeking = false;
             }
         });
+
+        timelineMacro.on('event', function(e) {
+            var onTimeAxis = $.inArray(timeAxisMacro, timeline.getHitLayers);
+            var eType = e.type;
+
+            if (onTimeAxis && eType == 'mousemove') {
+                seeking = true;
+                var newTime = timeAxisMacro.timeToPixel.invert(e.x) - timelineMacro.timeContext.offset;
+                cursorLayerMacro.currentPosition = newTime;
+                cursorLayerMacro.update();
+            } else if (onTimeAxis && eType == 'mouseup') {
+                var newTime = timeAxisMacro.timeToPixel.invert(e.x) - timelineMacro.timeContext.offset;
+                player.seekTo(newTime);
+                seekTo(newTime);
+                seeking = false;
+            };
+        });
+
     }
 
     // Renders all layers from the WavesJS plugin and plays a sound when
     // encountering a beat marker
-    function updatePlugin() {
-        cursorLayer.currentPosition = currentTime;
-        cursorLayerMacro.currentPosition = currentTime;
-        cursorLayer.update();
-        cursorLayerMacro.update();
-        timeline.timeContext.offset = -cursorLayer.currentPosition + (finalDur / windowWidth) / 2;
+    function updatePlugin(seeked) {
+        if (!seeking) {
+          cursorLayer.currentPosition = currentTime;
+          cursorLayer.update();
+          cursorLayerMacro.currentPosition = currentTime;
+          cursorLayerMacro.update();
+        }
+        timeline.timeContext.offset = -currentTime + (finalDur / windowWidth) / 2;
         timeline.tracks.update();
-        if(currentTime >= markerQueue[0]) {
+
+        if(currentTime >= markerQueue[0] && !seeked) {
             console.log("removed beat from Queue");
-            if (metronome > 0) {
-                metronome == 1 ? clickSound.play() : clickSound2.play();
-            }
+            playClick();
             markerQueue.shift();
         }
     }
+
+    function seekTo(newTime) {
+        currentTime = newTime;
+        var d = new Date();
+        startTime = d.getTime()/1000 - currentTime;
+        cleanQueue();
+        audioplayer.currentTime = currentTime;
+        updatePlugin(true);
+    };
 
     function writeToPage() {
         document.getElementById('markerInfo').hidden = ""
@@ -389,8 +429,12 @@
     }
 
     window.addEventListener("keydown", checkKeyPressed, false);
-    window.addEventListener("mousedown", checkMouse, false);
-    // window.addEventListener("keydown", pauseCursor, false);
+    window.addEventListener("mouseup", mouseUpOutOfBounds, false);
+
+    function mouseUpOutOfBounds() {
+        seeking = false;
+    }
+
     var clickSound = new Audio('click.ogg');
     var clickSound2 = new Audio('click.ogg');
 
@@ -403,6 +447,16 @@
         } else {
             metronome = 1;
             document.getElementById('clickToggle').innerHTML = '<span class="	glyphicon glyphicon-volume-up"></span> Click ON'
+        }
+    }
+
+    function playClick() {
+        if (metronome == 1) {
+            clickSound.play();
+            metronome = 2;
+        } else if (metronome == 2) {
+            clickSound2.play();
+            metronome = 1;
         }
     }
 
@@ -430,9 +484,10 @@
             width: '240',
             videoId: getYoutubeId(),
             playerVars: {
-                // 'controls': 0,
+                'controls': 0,
                 'autoplay': 0,
-                'fs': 0
+                'fs': 0,
+                'disablekb': 0
             },
             events: {
                 'onStateChange': onPlayerStateChange
@@ -447,12 +502,10 @@
     function playOrPause() {
         if (player.getPlayerState() == 1) {
             player.pauseVideo();
-            audioplayer.pause();
             document.getElementById('playButton').innerHTML = '<i class="glyphicon glyphicon-play"></i> Play'
         } else {
             cleanQueue();
             player.playVideo();
-            audioplayer.play();
             document.getElementById('playButton').innerHTML = '<i class="glyphicon glyphicon-pause"></i> Pause';
         }
     }
@@ -468,17 +521,13 @@
             playSong = true;
             done = true;
         } else if (event.data != YT.PlayerState.PLAYING) {
-            currentTime = player.getCurrentTime();
-            audioplayer.currentTime = currentTime;
             cleanQueue();
-            updatePlugin();
+            audioplayer.pause();
             playSong = false;
         } else if (event.data == YT.PlayerState.PLAYING) {
-            var d = new Date();
-            currentTime = player.getCurrentTime();
-            audioplayer.currentTime = currentTime;
-            startTime = (d.getTime() / 1000) - currentTime;
             cleanQueue();
+            audioplayer.play();
+            seekTo(currentTime);
             playSong = true;
         }
     }
@@ -492,9 +541,7 @@
             audioplayer.currentTime = currentTime;
             return false;
         } else if (e.keyCode == "66") {
-            if (metronome > 0) {
-                metronome == 1 ? clickSound.play() : clickSound2.play();
-            }
+            playClick();
             recordTimeStamp();
         } else if (e.keyCode == "46") {
             var selectedMarker = document.getElementsByClassName('item annotated-marker selected');
@@ -523,22 +570,8 @@
             }
         }
         markerQueue.sort(function(a,b) {
-            return a-b
+            return a-b;
         });
-    }
-
-    function checkMouse(e) {
-        // var time = timeline.timeToPixel.invert(e.x); - timeline.offset;
-        // currentTime = currentTime + time;
-        // // var d = new Date();
-        // // startTime = (d.getTime() / 1000) - currentTime;
-        // deltaCurrentTime = time - currentTime;
-        // startTime = startTime - deltaCurrentTime;
-        // var d = new Date();
-        // currentTime = (d.getTime() / 1000) - startTime;
-        // player.seekTo(currentTime)
-        // cleanQueue();
-        // updatePlugin();
     }
 
     function recordTimeStamp() {
