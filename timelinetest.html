@@ -185,7 +185,7 @@
         var pixelsPerSecond = width / duration;
 
         // Needs to be removed eventually
-        data = [{
+        segments = [{
             x: 0,
             width: duration,
             height: layerHeight,
@@ -236,7 +236,7 @@
 
 
         // Segment layer
-        segmentLayer = new wavesUI.helpers.SegmentLayer(data, {
+        segmentLayer = new wavesUI.helpers.SegmentLayer(segments, {
             height: layerHeight,
             top: timeAxisHeight,
             displayHandlers: false,
@@ -633,6 +633,43 @@
         // neem de 8 timestamps uit de beatMarkers
         // bereken de gemiddelde tijd die ertussen zit
         // voeg zoveel beats toe als autocomplete (steeds gemiddeldeTijdErtussen uit elkaar)
+    }
+
+    function splitSegments(segments, splitTime) {
+        var newSegment = {
+            x: splitTime,
+            width: splitTime,
+            height: layerHeight,
+            top: timeAxisHeight,
+            color: 'steelblue',
+            opacity: 0.2,
+            text: '4/4'
+        };
+        for (var i = 0; i < segments.length; i++) {
+            if (segments[i].x < splitTime && splitTime < (segments[i].x + segments[i].width)){
+                oldWidth = segments[i].width;
+                segments[i].width = splitTime - segments[i].x;
+                newSegment.width = oldWidth - segments[i].width;
+                segments.push(newSegment);
+                break;
+            }
+        }
+        segmentLayer.render();
+        segmentLayer.update();
+    }
+
+    function splitSegOnBeat() {
+        var selectedMarker = document.getElementsByClassName('item annotated-marker selected');
+        var j;
+        for (var j = 0; j < beatMarkers.length; j++) {
+            if (beatMarkers[j].text == selectedMarker[0].childNodes[2].innerHTML) {
+                // put the element to be deleted at the end, and pop it off
+                var dataSelectedMarker = beatMarkers[j];
+                startTime = dataSelectedMarker.time;
+                break;
+            }
+        }
+        splitSegments(segments, startTime);
     }
     </script>
 </body>
