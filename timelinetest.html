@@ -171,6 +171,8 @@
     var finalDur;
     var windowWidth = 20;
     var markerQueue = [];
+    var layerHeight = 200; // height of waveform
+    var timeAxisHeight = 18; // height of text above waveform
     var seeking = false;
     var audioplayer = document.getElementsByTagName("AUDIO")[0];
     var duration;
@@ -179,11 +181,8 @@
         var $trackMacro = document.querySelector('#macroTrack');
         var $track = document.querySelector('#track-1');
         var width = $track.getBoundingClientRect().width;
-        var timeAxisHeight = 18; // height of text above waveform
         var macroTimeOverhead = 12;
-        var layerHeight = 200; // height of waveform
         var macroTimelineHeight = 68; // height of zoomed out view
-
         duration = buffer.duration;
         var pixelsPerSecond = width / duration;
 
