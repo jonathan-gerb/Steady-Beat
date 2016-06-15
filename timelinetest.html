@@ -104,6 +104,9 @@
                         <button type="button" class="btn btn-default btn-sm" id="clickToggle" onclick="toggleClick()">
                           <span class="	glyphicon glyphicon-volume-up"></span> Click ON
                         </button>
+                        <button type="button" class="btn btn-default btn-sm" onclick="splitSegOnBeat()">
+                          <span class="glyphicon glyphicon-scissors"></span> split on selected beat
+                        </button>
                     </div>
                     <p class="lead">Press the 'b' key on the beat to add a beat annotation.
                         <a href="#" id="infotext1" data-toggle="tooltip" data-placement="right" title="Drag a beat marker to move it, or double click to delete it.">
@@ -134,8 +137,8 @@
 
     var markerCounter = 1;
     var loader = new wavesLoaders.AudioBufferLoader();
-    // var ytWav = './mp3files/' + getYoutubeId() + '.wav';
-    var ytWav = 'https://dl.dropboxusercontent.com/s/x96jtzww89u8cdf/Brains.wav'
+    var ytWav = './mp3files/' + getYoutubeId() + '.wav';
+    // var ytWav = 'https://dl.dropboxusercontent.com/s/x96jtzww89u8cdf/Brains.wav'
     loader.load(ytWav).then(function(buffer) {
         wavesJSReady = true;
         initialize(buffer);
@@ -168,6 +171,8 @@
     var finalDur;
     var windowWidth = 20;
     var markerQueue = [];
+    var layerHeight = 170; // height of waveform
+    var timeAxisHeight = 23; // height of text above waveform
     var seeking = false;
     var newMousePos = null;
     var prevMousePos = null;
@@ -178,16 +183,14 @@
         var $trackMacro = document.querySelector('#macroTrack');
         var $track = document.querySelector('#track-1');
         var width = $track.getBoundingClientRect().width;
-        var timeAxisHeight = 23; // height of text above waveform
         var macroTimeOverhead = 12;
         var layerHeight = 170; // height of waveform
         var macroTimelineHeight = 68; // height of zoomed out view
-
         duration = buffer.duration;
         var pixelsPerSecond = width / duration;
 
         // Needs to be removed eventually
-        data = [{x: 0, width: duration, height: layerHeight, top: timeAxisHeight,
+        segments = [{x: 0, width: duration, height: layerHeight, top: timeAxisHeight,
                 color: 'steelblue', opacity: 0.2, text: '4/4'}, ];
 
         timeline = new wavesUI.core.Timeline(pixelsPerSecond, width);
@@ -198,6 +201,7 @@
 
         timeContext = new wavesUI.core.LayerTimeContext(timeline.timeContext);
         timeContextMacro = new wavesUI.core.LayerTimeContext(timelineMacro.timeContext);
+
 
         // time axis
         var timeAxis = new wavesUI.axis.AxisLayer(wavesUI.axis.timeAxisGenerator(), {
@@ -231,7 +235,7 @@
 
 
         // Segment layer
-        segmentLayer = new wavesUI.helpers.SegmentLayer(data, {
+        segmentLayer = new wavesUI.helpers.SegmentLayer(segments, {
             height: layerHeight,
             top: timeAxisHeight,
             displayHandlers: false,
@@ -601,9 +605,35 @@
 
 
     function autocomplete() {
+        begin = 0;
+        end = 0;
+        var selectedMarker = document.getElementsByClassName('item annotated-marker selected');
+        var j;
+        for (var j = 0; j < beatMarkers.length; j++) {
+            if (beatMarkers[j].text == selectedMarker[0].childNodes[2].innerHTML) {
+                // put the element to be deleted at the end, and pop it off
+                var dataSelectedMarker = beatMarkers[j];
+                begin = dataSelectedMarker.time;
+                break;
+            }
+        }
+
+        for (var i = 0; i < segments.length; i++) {
+            if(segments[i].x <= begin && begin < (segments[i].x + segments[i].width)) {
+                end = segments[i].x + segments[i].width;
+                begin = segments[i].x;
+                break;
+            }
+        }
+
         var markerTimes = [];
         for (i = 0; i < beatMarkers.length; i++) {
-            markerTimes.push(beatMarkers[i].time);
+            console.log("beatmarkers[i].time ", beatMarkers[i].time);
+            console.log("begin ", begin);
+            console.log("end ", end);
+            if(begin < beatMarkers[i].time && beatMarkers[i].time < end) {
+                markerTimes.push(beatMarkers[i].time);
+            }
         }
         markerTimes.sort(function(a,b) {
             return a-b;
@@ -623,13 +653,15 @@
         var avg = sum / betweenTimes.length;
         console.log(avg);
 
+        console.log('markertimes ', markerTimes);
         var time = markerTimes[markerTimes.length - 1] + avg;
         console.log("time", time);
-        console.log("duration", duration);
-        while(time < duration) {
+        console.log("begin", begin);
+        console.log("end", end);
+        while(time < end) {
             recordTimeStamp(time);
             time = time + avg;
-            console.log(time, duration);
+            console.log(time, end);
         }
         console.log("beegees", beatMarkers);
 
@@ -637,6 +669,43 @@
         // neem de 8 timestamps uit de beatMarkers
         // bereken de gemiddelde tijd die ertussen zit
         // voeg zoveel beats toe als autocomplete (steeds gemiddeldeTijdErtussen uit elkaar)
+    }
+
+    function splitSegments(segments, splitTime) {
+        var newSegment = {
+            x: splitTime,
+            width: splitTime,
+            height: layerHeight,
+            top: timeAxisHeight,
+            color: 'steelblue',
+            opacity: 0.2,
+            text: '4/4'
+        };
+        for (var i = 0; i < segments.length; i++) {
+            if (segments[i].x < splitTime && splitTime < (segments[i].x + segments[i].width)){
+                oldWidth = segments[i].width;
+                segments[i].width = splitTime - segments[i].x;
+                newSegment.width = oldWidth - segments[i].width;
+                segments.push(newSegment);
+                break;
+            }
+        }
+        segmentLayer.render();
+        segmentLayer.update();
+    }
+
+    function splitSegOnBeat() {
+        var selectedMarker = document.getElementsByClassName('item annotated-marker selected');
+        var j;
+        for (var j = 0; j < beatMarkers.length; j++) {
+            if (beatMarkers[j].text == selectedMarker[0].childNodes[2].innerHTML) {
+                // put the element to be deleted at the end, and pop it off
+                var dataSelectedMarker = beatMarkers[j];
+                startTime = dataSelectedMarker.time;
+                break;
+            }
+        }
+        splitSegments(segments, startTime);
     }
     </script>
 </body>
