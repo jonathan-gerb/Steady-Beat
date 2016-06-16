@@ -113,6 +113,7 @@
                         <button type="button" class="btn btn-default btn-sm" onclick="clearMarkers()" data-toggle="tooltip" data-placement="right" title="You can also select a single marker and press delete to remove it!">
                           <span class="glyphicon glyphicon-trash"></span> Clear all markers
                         </button>
+                        <input type="range" id="volSlider" value="1" onclick="setVolume()">
                     </div>
                     <p class="lead">Press the 'b' key on the beat to add a beat annotation.
                         <a href="#" id="infotext1" data-toggle="tooltip" data-placement="right" title="Drag a beat marker to move it, or double click to delete it.">
@@ -181,6 +182,7 @@
     var newMousePos = null;
     var prevMousePos = null;
     var audioplayer = document.getElementsByTagName("AUDIO")[0];
+    var audioVol = document.getElementById("volSlider").value;
     var duration;
 
     function initialize(buffer) {
@@ -760,8 +762,8 @@
     }
 
     // cleans the Segments array
-    function cleanSegments(segments) {
-
+    function setVolume() {
+        audioplayer.volume = volSlider.value;
     }
     </script>
 </body>

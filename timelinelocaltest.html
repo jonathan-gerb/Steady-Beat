@@ -50,7 +50,7 @@
         position: absolute;
         top: 0;
         bottom: 0;
-        left: 0;
+        left: 0<;
         width: 240px;
     }#bottombar {
         bottom: 0;
@@ -65,6 +65,8 @@
         background-color: #444;
     }.item.annotated-marker.selected {
         color: PeachPuff;
+    }.btn-default {
+        margin: 5px;
     }
     </style>
 </head>
@@ -113,6 +115,9 @@
                         <button type="button" class="btn btn-default btn-sm" onclick="clearMarkers()" data-toggle="tooltip" data-placement="right" title="You can also select a single marker and press delete to remove it!">
                           <span class="glyphicon glyphicon-trash"></span> Clear all markers
                         </button>
+                        <button type="button" class="btn btn-default btn-sm" onclick="clearMarkersRegion()">
+                          <span class="	glyphicon glyphicon-remove-sign"></span> Clear all markers in Region
+                        </button>
                     </div>
                     <p class="lead">Press the 'b' key on the beat to add a beat annotation.
                         <a href="#" id="infotext1" data-toggle="tooltip" data-placement="right" title="Drag a beat marker to move it, or double click to delete it.">
@@ -151,11 +156,14 @@
 
     var x = document.createElement("AUDIO");
     if (x.canPlayType("audio/mpeg")) {
-        x.setAttribute("src", 'mp3files/'+ getYoutubeId() + ".wav");
+        // x.setAttribute("src", 'mp3files/'+ getYoutubeId() + ".wav");
+        x.setAttribute("src", 'https://dl.dropboxusercontent.com/s/x96jtzww89u8cdf/Brains.wav');
         x.setAttribute("hidden", "hidden");
     }
     x.setAttribute("controls", "controls");
     document.body.appendChild(x);
+
+
 
     // variables we need to be global
     var data;
@@ -447,6 +455,34 @@
         markerCounter = 1;
     }
 
+    function clearMarkersRegion() {
+        var selectedMarker = document.getElementsByClassName('item annotated-marker selected');
+        var markerTime = 0;
+        var j;
+        for (var j = 0; j < beatMarkers.length; j++) {
+            if (beatMarkers[j].text == selectedMarker[0].childNodes[2].innerHTML) {
+                // put the element to be deleted at the end, and pop it off
+                var dataSelectedMarker = beatMarkers[j];
+                markerTime = dataSelectedMarker.time;
+                break;
+            }
+        }
+        for (var i = 0; i < segments.length; i++) {
+            if(segments[i].x <= markerTime && markerTime < (segments[i].x + segments[i].width)) {
+                end = segments[i].x + segments[i].width;
+                begin = segments[i].x;
+                break;
+            }
+        }
+        for (var i = 0; i < beatMarkers.length; i++) {
+            if(beatMarkers[i].time > begin && beatMarkers[i].time < end) {
+                beatMarkers.splice(i, 1);
+            }
+        }
+        markerLayer.render();
+        markerLayer.update();
+    }
+
     window.addEventListener("keydown", checkKeyPressed, false);
     window.addEventListener("mouseup", mouseUpOutOfBounds, false);
 
@@ -458,16 +494,18 @@
 
     var clickSound = new Audio('click.ogg');
     var clickSound2 = new Audio('click.ogg');
+    clickSound.volume(100);
+    clickSound2.volume(100);
 
     var metronome = 1;
 
     function toggleClick() {
         if (metronome > 0) {
             metronome = 0;
-            document.getElementById('clickToggle').innerHTML = '<span class="	glyphicon glyphicon-volume-off"></span> Click OFF'
+            document.getElementById('clickToggle').innerHTML = '<span class="glyphicon glyphicon-volume-off"></span> Click OFF'
         } else {
             metronome = 1;
-            document.getElementById('clickToggle').innerHTML = '<span class="	glyphicon glyphicon-volume-up"></span> Click ON'
+            document.getElementById('clickToggle').innerHTML = '<span class="glyphicon glyphicon-volume-up"></span> Click ON'
         }
     }
 
@@ -752,10 +790,6 @@
         console.log(segments);
     }
 
-    // cleans the Segments array
-    function cleanSegments(segments) {
-
-    }
     </script>
 </body>
 
