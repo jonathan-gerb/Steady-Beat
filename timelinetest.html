@@ -110,6 +110,9 @@
                         <button type="button" class="btn btn-default btn-sm" onclick="mergeSegmentsOnBeat()">
                           <span class="	glyphicon glyphicon-erase"></span> merge left on selected beat
                         </button>
+                        <button type="button" class="btn btn-default btn-sm" onclick="clearMarkers()" data-toggle="tooltip" data-placement="right" title="You can also select a single marker and press delete to remove it!">
+                          <span class="glyphicon glyphicon-trash"></span> Clear all markers
+                        </button>
                     </div>
                     <p class="lead">Press the 'b' key on the beat to add a beat annotation.
                         <a href="#" id="infotext1" data-toggle="tooltip" data-placement="right" title="Drag a beat marker to move it, or double click to delete it.">
@@ -117,7 +120,6 @@
                         </a>
                     </p>
                     <p class="lead">
-                        <a href="#" class="btn btn-lg btn-default" id="reset" onclick="clearMarkers()" data-toggle="tooltip" data-placement="right" title="You can also select a single marker and press delete to remove it!">Clear All Annotations</a>
                         <a href="#" class="btn btn-lg btn-default" id="toPHP" onclick="writeToFile()">Save Annotations</a>
                         <a href="#" class="btn btn-lg btn-default" id="toPHP" onclick="autocomplete()">Autocomplete</a>
                         <a href="#" id="infotext2" data-toggle="tooltip" data-placement="right" title="Click here when you are finished annotating. Your beat annotations will be saved on the server.">
@@ -192,7 +194,6 @@
         duration = buffer.duration;
         var pixelsPerSecond = width / duration;
 
-        // Needs to be removed eventually
         segments = [{x: 0, width: duration, height: layerHeight, top: timeAxisHeight,
                 color: 'steelblue', opacity: 0.2, text: '4/4'}, ];
 
