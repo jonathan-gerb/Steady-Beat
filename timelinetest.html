@@ -263,7 +263,7 @@
                 }
                 return d.time;
             },
-            color: function(d,v) { 
+            color: function(d,v) {
               return dynamicColors(d);
             }
         });
@@ -761,15 +761,21 @@
     }
 
     function dynamicColors(d) {
+      // // DOESNT WORK
       // var selected;
       // if ($.inArray(d, markerLayer.selectedItems)) {
       //     selected = true;
       // }
       for (var i = 0; i<segments.length; i++) {
           var diff = Math.abs(segments[i].x - d.time);
-          if (diff < 0.0001) {
+          if (diff < 0.0001 && selected) {
+              return '#cccc00';
+          } else if (diff < 0.0001) {
               return 'yellow';
           }
+      }
+      if (selected) {
+          return '#cc0000'
       }
       return 'red';
     }
