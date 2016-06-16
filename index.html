@@ -89,36 +89,32 @@
             window.location.assign('timelinetest.html?yt_ID=' + ytID);
             console.log('wow. nee.');
         }
-        // console.log(42);
     }
 
     function file_exists(url2, fileType) {
-      console.log(url2);
-      $.ajax({
-          url: url2,
-          type:'HEAD',
-          error: function()
-          {
-              if (fileType == 'webm') {
-                  webmExists = false;
-              } else if (fileType == 'wav') {
-                  wavExists = false;
-              } else {
-                  partExists = false;
-              }
-              console.log('false');
-          },
-          success: function()
-          {
-              if (fileType == 'webm') {
-                  webmExists = true;
-              } else if (fileType == 'wav') {
-                  wavExists = true;
-              } else {
-                  partExists = true;
-              }
-              console.log('true');
-          }
+        $.ajax({
+            url: url2,
+            type:'HEAD',
+            error: function()
+            {
+                if (fileType == 'webm') {
+                    webmExists = false;
+                } else if (fileType == 'wav') {
+                    wavExists = false;
+                } else {
+                    partExists = false;
+                }
+            },
+            success: function()
+            {
+                if (fileType == 'webm') {
+                    webmExists = true;
+                } else if (fileType == 'wav') {
+                    wavExists = true;
+                } else {
+                    partExists = true;
+                }
+            }
       });
     }
 
