@@ -263,7 +263,9 @@
                 }
                 return d.time;
             },
-            color: function() { return 'red'; }
+            color: function(d,v) { 
+              return dynamicColors(d);
+            }
         });
         markerLayer.setBehavior(new wavesUI.behaviors.MarkerBehavior());
         track.add(markerLayer);
@@ -323,10 +325,10 @@
                 segmentLayer.updateShapes();
             } else if (!onTimeAxis && eventType == 'mousemove') {
                 if (prevMousePos == null) {
-                    prevMousePos = timeline.timeToPixel.invert(e.x);
+                    prevMousePos = timeAxis.timeToPixel.invert(e.x);
                     return;
                 } else {
-                  newMousePos = timeline.timeToPixel.invert(e.x);
+                  newMousePos = timeAxis.timeToPixel.invert(e.x);
                   var delta = newMousePos - prevMousePos;
                   prevMousePos = newMousePos;
                   timeline.timeContext.offset = timeline.timeContext.offset + delta;
@@ -334,7 +336,7 @@
                 }
             } else if (!onTimeAxis && eventType == 'mouseup') {
                 if (newMousePos == null) {
-                  var newTime = timeline.timeToPixel.invert(e.x) - timeline.timeContext.offset;
+                  var newTime = timeAxis.timeToPixel.invert(e.x) - timeline.timeContext.offset;
                   player.seekTo(newTime)
                   seekTo(newTime);
                 } else {
@@ -756,6 +758,20 @@
         segmentLayer.render();
         segmentLayer.update();
         console.log(segments);
+    }
+
+    function dynamicColors(d) {
+      // var selected;
+      // if ($.inArray(d, markerLayer.selectedItems)) {
+      //     selected = true;
+      // }
+      for (var i = 0; i<segments.length; i++) {
+          var diff = Math.abs(segments[i].x - d.time);
+          if (diff < 0.0001) {
+              return 'yellow';
+          }
+      }
+      return 'red';
     }
 
     // cleans the Segments array

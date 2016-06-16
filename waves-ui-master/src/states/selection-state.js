@@ -58,7 +58,7 @@ export default class SelectionState extends BaseState {
 
     const brush = document.createElementNS(ns, 'rect');
     brush.style.fill = '#686868';
-    brush.style.opacity = 0.2;
+    brush.style.opacity = 0;
 
     track.$interactions.appendChild(brush);
     track.$brush = brush;
