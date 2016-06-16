@@ -143,7 +143,7 @@
 
     var markerCounter = 1;
     var loader = new wavesLoaders.AudioBufferLoader();
-    var ytWav = './mp3files/' + getYoutubeId() + '.wav';
+    var ytWav = './wavfiles/' + getYoutubeId() + '.wav';
     // var ytWav = 'https://dl.dropboxusercontent.com/s/x96jtzww89u8cdf/Brains.wav'
     loader.load(ytWav).then(function(buffer) {
         wavesJSReady = true;
@@ -152,7 +152,7 @@
 
     var x = document.createElement("AUDIO");
     if (x.canPlayType("audio/mpeg")) {
-        x.setAttribute("src", 'mp3files/'+ getYoutubeId() + ".wav");
+        x.setAttribute("src", 'wavfiles/'+ getYoutubeId() + ".wav");
         x.setAttribute("hidden", "hidden");
     }
     x.setAttribute("controls", "controls");

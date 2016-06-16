@@ -32,8 +32,16 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
 
     <script>
+    var currentInterval = null;
+    var wavExists = false;
+    var webmExists = false;
+    var partExists = false;
+
     // Checks if input is a youtube url
     function validateInput() {
+        if (currentInterval != null) {
+            clearInterval(currentInterval);
+        }
         var inputStr = $("#yt-url").val();
         var ytStr1 = 'youtube';
         var ytStr2 = 'youtu.be';
@@ -47,9 +55,68 @@
         }
         // Youtube id's are always 11 characters.
         var ytID = inputStr.substring(idIdx + 3, idIdx + 14);
-
-        window.location.assign('intermediatepage.html?yt_ID=' + ytID);
+        loadytID(ytID);
+        currentInterval = setInterval ( function(){assignIfDone(ytID)}, 300 );
     };
+
+    // downloads wav file to server
+    function loadytID(ytID) {
+        // console.log(beatMarkers);
+        var xhttp;
+        var url = "downloadytwav.php";
+        var params = "ID=" + ytID;
+        if (window.XMLHttpRequest) {
+            // code for modern browsers
+            xhttp = new XMLHttpRequest();
+        } else {
+            // code for IE6, IE5
+            xhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        xhttp.open("POST", "downloadytwav.php", true);
+        //Send the proper header information along with the request
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+    xhttp.send(params);
+    }
+
+    function assignIfDone(ytID) {
+        file_exists('./wavfiles/' + ytID + '.webm', 'webm');
+        file_exists('./wavfiles/' + ytID + '.wav', 'wav');
+        file_exists('./wavfiles/' + ytID + '.webm.part', 'part');
+        if (!webmExists && wavExists && !partExists) {
+            console.log('we have liftoff');
+            clearInterval(currentInterval);
+            window.location.assign('timelinetest.html?yt_ID=' + ytID);
+            console.log('wow. nee.');
+        }
+    }
+
+    function file_exists(url2, fileType) {
+        $.ajax({
+            url: url2,
+            type:'HEAD',
+            error: function()
+            {
+                if (fileType == 'webm') {
+                    webmExists = false;
+                } else if (fileType == 'wav') {
+                    wavExists = false;
+                } else {
+                    partExists = false;
+                }
+            },
+            success: function()
+            {
+                if (fileType == 'webm') {
+                    webmExists = true;
+                } else if (fileType == 'wav') {
+                    wavExists = true;
+                } else {
+                    partExists = true;
+                }
+            }
+      });
+    }
 
     </script>
     <div class="site-wrapper">
