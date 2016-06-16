@@ -107,6 +107,12 @@
                         <button type="button" class="btn btn-default btn-sm" onclick="splitSegOnBeat()">
                           <span class="glyphicon glyphicon-scissors"></span> split on selected beat
                         </button>
+                        <button type="button" class="btn btn-default btn-sm" onclick="mergeSegmentsOnBeat()">
+                          <span class="	glyphicon glyphicon-erase"></span> merge left on selected beat
+                        </button>
+                        <button type="button" class="btn btn-default btn-sm" onclick="clearMarkers()" data-toggle="tooltip" data-placement="right" title="You can also select a single marker and press delete to remove it!">
+                          <span class="glyphicon glyphicon-trash"></span> Clear all markers
+                        </button>
                     </div>
                     <p class="lead">Press the 'b' key on the beat to add a beat annotation.
                         <a href="#" id="infotext1" data-toggle="tooltip" data-placement="right" title="Drag a beat marker to move it, or double click to delete it.">
@@ -114,7 +120,6 @@
                         </a>
                     </p>
                     <p class="lead">
-                        <a href="#" class="btn btn-lg btn-default" id="reset" onclick="clearMarkers()" data-toggle="tooltip" data-placement="right" title="You can also select a single marker and press delete to remove it!">Clear All Annotations</a>
                         <a href="#" class="btn btn-lg btn-default" id="toPHP" onclick="writeToFile()">Save Annotations</a>
                         <a href="#" class="btn btn-lg btn-default" id="toPHP" onclick="autocomplete()">Autocomplete</a>
                         <a href="#" id="infotext2" data-toggle="tooltip" data-placement="right" title="Click here when you are finished annotating. Your beat annotations will be saved on the server.">
@@ -705,6 +710,51 @@
             }
         }
         splitSegments(segments, startTime);
+    }
+
+    // Merges segment that contains mergeTime with the previous segment
+    function mergeSegmentsLeft(segments, mergeTime) {
+        var selectedSegment;
+        var endTimePreviousSeg;
+        for (var i = 0; i < segments.length; i++) {
+            if(segments[i].x <= mergeTime && mergeTime < (segments[i].width + segments[i].x)) {
+                selectedSegment = i;
+                endTimePreviousSeg = segments[i].x;
+                break;
+            }
+        }
+        for (var i = 0; i < segments.length; i++) {
+            if(endTimePreviousSeg == (segments[i].x + segments[i].width)) {
+                segments[selectedSegment].x = segments[i].x;
+                segments[selectedSegment].width = segments[selectedSegment].width + segments[i].width;
+                segments.splice(i,1);
+                console.log("spliced stuff.");
+                break;
+            }
+        }
+        console.log("merged stuff maybe.");
+    }
+
+    function mergeSegmentsOnBeat() {
+        var selectedMarker = document.getElementsByClassName('item annotated-marker selected');
+        var j;
+        for (var j = 0; j < beatMarkers.length; j++) {
+            if (beatMarkers[j].text == selectedMarker[0].childNodes[2].innerHTML) {
+                // put the element to be deleted at the end, and pop it off
+                var dataSelectedMarker = beatMarkers[j];
+                mergeTime = dataSelectedMarker.time;
+                break;
+            }
+        }
+        mergeSegmentsLeft(segments, mergeTime);
+        segmentLayer.render();
+        segmentLayer.update();
+        console.log(segments);
+    }
+
+    // cleans the Segments array
+    function cleanSegments(segments) {
+
     }
     </script>
 </body>
