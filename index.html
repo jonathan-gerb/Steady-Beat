@@ -33,7 +33,7 @@
 
     <script>
     var currentInterval = null;
-    var wavExists = false;
+    var mp3Exists = false;
     var webmExists = false;
     var partExists = false;
 
@@ -63,7 +63,7 @@
     function loadytID(ytID) {
         // console.log(beatMarkers);
         var xhttp;
-        var url = "downloadytwav.php";
+        var url = "downloadytmp3.php";
         var params = "ID=" + ytID;
         if (window.XMLHttpRequest) {
             // code for modern browsers
@@ -72,7 +72,7 @@
             // code for IE6, IE5
             xhttp = new ActiveXObject("Microsoft.XMLHTTP");
         }
-        xhttp.open("POST", "downloadytwav.php", true);
+        xhttp.open("POST", url, true);
         //Send the proper header information along with the request
         xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
@@ -80,10 +80,10 @@
     }
 
     function assignIfDone(ytID) {
-        file_exists('./wavfiles/' + ytID + '.webm', 'webm');
-        file_exists('./wavfiles/' + ytID + '.wav', 'wav');
-        file_exists('./wavfiles/' + ytID + '.webm.part', 'part');
-        if (!webmExists && wavExists && !partExists) {
+        file_exists('./mp3files/' + ytID + '.webm', 'webm');
+        file_exists('./mp3files/' + ytID + '.mp3', 'mp3');
+        file_exists('./mp3files/' + ytID + '.webm.part', 'part');
+        if (!webmExists && mp3Exists && !partExists) {
             console.log('we have liftoff');
             clearInterval(currentInterval);
             window.location.assign('timelinetest.html?yt_ID=' + ytID);
@@ -99,8 +99,8 @@
             {
                 if (fileType == 'webm') {
                     webmExists = false;
-                } else if (fileType == 'wav') {
-                    wavExists = false;
+                } else if (fileType == 'mp3') {
+                    mp3Exists = false;
                 } else {
                     partExists = false;
                 }
@@ -109,8 +109,8 @@
             {
                 if (fileType == 'webm') {
                     webmExists = true;
-                } else if (fileType == 'wav') {
-                    wavExists = true;
+                } else if (fileType == 'mp3') {
+                    mp3Exists = true;
                 } else {
                     partExists = true;
                 }

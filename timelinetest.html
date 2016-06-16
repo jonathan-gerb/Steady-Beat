@@ -138,20 +138,19 @@
         </div>
     </div>
     <script class="example" rel="track-1">
-    var wavesJSReady = false;
 
     var markerCounter = 1;
     var loader = new wavesLoaders.AudioBufferLoader();
-    var ytWav = './wavfiles/' + getYoutubeId() + '.wav';
-    // var ytWav = 'https://dl.dropboxusercontent.com/s/x96jtzww89u8cdf/Brains.wav'
-    loader.load(ytWav).then(function(buffer) {
-        wavesJSReady = true;
+    // var ytAudio = './wavfiles/' + getYoutubeId() + '.wav';
+    var ytAudio = './mp3files/' + getYoutubeId() + '.mp3';
+    // var ytAudio = 'https://dl.dropboxusercontent.com/s/x96jtzww89u8cdf/Brains.wav'
+    loader.load(ytAudio).then(function(buffer) {
         initialize(buffer);
     });
 
     var x = document.createElement("AUDIO");
     if (x.canPlayType("audio/mpeg")) {
-        x.setAttribute("src", 'wavfiles/'+ getYoutubeId() + ".wav");
+        x.setAttribute("src", ytAudio);
         x.setAttribute("hidden", "hidden");
     }
     x.setAttribute("controls", "controls");
@@ -192,6 +191,10 @@
         var layerHeight = 170; // height of waveform
         var macroTimelineHeight = 68; // height of zoomed out view
         duration = buffer.duration;
+        if (duration > 900) {
+            window.alert('Sorry, this song is too long for this application for to handle');
+            window.location.assign('index.html')
+        }
         var pixelsPerSecond = width / duration;
 
         segments = [{x: 0, width: duration, height: layerHeight, top: timeAxisHeight,
@@ -320,10 +323,10 @@
                 segmentLayer.updateShapes();
             } else if (!onTimeAxis && eventType == 'mousemove') {
                 if (prevMousePos == null) {
-                    prevMousePos = timeAxis.timeToPixel.invert(e.x);
+                    prevMousePos = timeline.timeToPixel.invert(e.x);
                     return;
                 } else {
-                  newMousePos = timeAxis.timeToPixel.invert(e.x);
+                  newMousePos = timeline.timeToPixel.invert(e.x);
                   var delta = newMousePos - prevMousePos;
                   prevMousePos = newMousePos;
                   timeline.timeContext.offset = timeline.timeContext.offset + delta;
@@ -331,7 +334,7 @@
                 }
             } else if (!onTimeAxis && eventType == 'mouseup') {
                 if (newMousePos == null) {
-                  var newTime = timeAxis.timeToPixel.invert(e.x) - timeline.timeContext.offset;
+                  var newTime = timeline.timeToPixel.invert(e.x) - timeline.timeContext.offset;
                   player.seekTo(newTime)
                   seekTo(newTime);
                 } else {
@@ -555,7 +558,6 @@
     }
 
     function checkKeyPressed(e) {
-        var evtobj = window.event ? event : e
         if (e.keyCode == "32") {
             e.preventDefault();
             playOrPause();
@@ -566,22 +568,26 @@
             playClick();
             recordTimeStamp(currentTime);
         } else if (e.keyCode == "46") {
-            var selectedMarker = document.getElementsByClassName('item annotated-marker selected');
-            console.log(selectedMarker[0].childNodes[2].innerHTML);
-            var i;
-            for (i = 0; i < beatMarkers.length; i++) {
-                if (beatMarkers[i].text == selectedMarker[0].childNodes[2].innerHTML) {
-                    // put the element to be deleted at the end, and pop it off
-                    var temp = beatMarkers[i];
-                    beatMarkers[i] = beatMarkers[beatMarkers.length - 1];
-                    beatMarkers[beatMarkers.length - 1] = temp;
-                    beatMarkers.pop();
-                    break;
-                }
-            }
-            markerLayer.render();
-            markerLayer.update();
+            deleteMarker();
         }
+    }
+
+    function deleteMarker() {
+        var selectedMarker = document.getElementsByClassName('item annotated-marker selected');
+        console.log(selectedMarker[0].childNodes[2].innerHTML);
+        var i;
+        for (i = 0; i < beatMarkers.length; i++) {
+            if (beatMarkers[i].text == selectedMarker[0].childNodes[2].innerHTML) {
+                // put the element to be deleted at the end, and pop it off
+                var temp = beatMarkers[i];
+                beatMarkers[i] = beatMarkers[beatMarkers.length - 1];
+                beatMarkers[beatMarkers.length - 1] = temp;
+                beatMarkers.pop();
+                break;
+            }
+        }
+        markerLayer.render();
+        markerLayer.update();
     }
 
     function refreshQueue() {
@@ -599,7 +605,8 @@
     function recordTimeStamp(markerTime) {
         var newmarker = {
             time: markerTime,
-            text: markerCounter.toString()
+            text: markerCounter.toString(),
+            color: '#333'
         }
         markerCounter++;
         beatMarkers.push(newmarker);
