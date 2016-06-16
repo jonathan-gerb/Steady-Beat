@@ -49,18 +49,18 @@
     ID = getYoutubeId();
     loadytID(ID);
     window.alert("Downloading. Click OK to check whether the download is finished");
-    var bool1 = !file_exists('https://minor.chordify.net/projectbeat/mp3files/' + ID + '.wav');
-    var bool2 = file_exists('https://minor.chordify.net/projectbeat/mp3files/' + ID + '.webm');
-    var bool3 = file_exists('https://minor.chordify.net/projectbeat/mp3files/' + ID + '.webm.part');
+    var bool1 = !file_exists('https://minor.chordify.net/projectbeat/wavfiles/' + ID + '.wav');
+    var bool2 = file_exists('https://minor.chordify.net/projectbeat/wavfiles/' + ID + '.webm');
+    var bool3 = file_exists('https://minor.chordify.net/projectbeat/wavfiles/' + ID + '.webm.part');
     while( bool1 || bool2 || bool3) {
         console.log(bool1, bool2, bool3);
         console.log(2);
         window.alert("The download is not yet finished, click here to try again.");
         console.log(3);
 
-        bool1 = !file_exists('https://minor.chordify.net/projectbeat/mp3files/' + ID + '.wav');
-        bool2 = file_exists('https://minor.chordify.net/projectbeat/mp3files/' + ID + '.webm');
-        bool3 = file_exists('https://minor.chordify.net/projectbeat/mp3files/' + ID + '.webm.part');
+        bool1 = !file_exists('https://minor.chordify.net/projectbeat/wavfiles/' + ID + '.wav');
+        bool2 = file_exists('https://minor.chordify.net/projectbeat/wavfiles/' + ID + '.webm');
+        bool3 = file_exists('https://minor.chordify.net/projectbeat/wavfiles/' + ID + '.webm.part');
     }
     window.location.assign('timelinetest.html?yt_ID='+ID);
 
