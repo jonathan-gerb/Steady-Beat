@@ -52,6 +52,13 @@
         bottom: 0;
         left: 0;
         width: 240px;
+    }#sidebarRight {
+        background-color: DimGray ;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        width: 240px;
     }#bottombar {
         bottom: 0;
         position: absolute;
@@ -67,6 +74,9 @@
         color: PeachPuff;
     }.btn-default {
         margin: 3px;
+    }.panel-body {
+        color: Grey;
+        background-color: Black;
     }
     </style>
 </head>
@@ -93,6 +103,83 @@
                     <div id="sidebar">
                         <a href="index.html">Song selection</a>
                         <div id="player"></div>
+                    </div>
+                    <div id="sidebarRight">
+                        <div class="panel-group" id="accordion">
+                            <div class="panel panel-default" style="border-color: Black;">
+                              <div class="panel-heading" style="background-color: Black;">
+                                <h4 class="panel-title">
+                                  <a style="color: Dimgrey;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse1">Play / Pause</a>
+                                </h4>
+                              </div>
+                              <div id="collapse1" class="panel-collapse collapse in">
+                                <div class="panel-body" >Play and pause the song using the Play/Pause-button or by pressing the spacebar. </div>
+                              </div>
+                            </div>
+                            <div class="panel panel-default" style="border: Black;">
+                              <div class="panel-heading" style="background-color: Black;">
+                                <h4 class="panel-title">
+                                  <a style="color: Dimgrey;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse2">Click ON/OFF</a>
+                                </h4>
+                              </div>
+                              <div id="collapse2" class="panel-collapse collapse">
+                                <div class="panel-body" >If the click is turned ON the click sound is played when adding a beat and during playback. If the click sound is turned OFF it is not played during playback.</div>
+                              </div>
+                            </div>
+                            <div class="panel panel-default" style="border-color: Black;">
+                              <div class="panel-heading" style="background-color: Black;">
+                                <h4 class="panel-title">
+                                  <a style="color: Dimgrey;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse3">Split region</a>
+                                </h4>
+                              </div>
+                              <div id="collapse3" class="panel-collapse collapse">
+                                <div class="panel-body" >Split the current region into two regions (initially the entire song is one  region)
+                                on the location of the selected beat. The selected beat becomes yellow to mark that it is
+                                the boundary between two regions. Use regions to mark regions of time signatures,
+                                regions with the same tempo, etc.</div>
+                              </div>
+                            </div>
+                            <div class="panel panel-default" style="border-color: Black;">
+                              <div class="panel-heading" style="background-color: Black;">
+                                <h4 class="panel-title">
+                                  <a style="color: Dimgrey;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse4">Merge regions</a>
+                                </h4>
+                              </div>
+                              <div id="collapse4" class="panel-collapse collapse">
+                                <div class="panel-body" >Merge a region with the region left it by selecting a beat in that region and clicking the button 'Merge region to the left'.</div>
+                              </div>
+                            </div>
+                            <div class="panel panel-default" style="border-color: Black;">
+                              <div class="panel-heading" style="background-color: Black;">
+                                <h4 class="panel-title">
+                                  <a style="color: Dimgrey;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse5">Autocomplete</a>
+                                </h4>
+                              </div>
+                              <div id="collapse5" class="panel-collapse collapse">
+                                <div class="panel-body" >When you press the Autocomplete-button the current region will be autocompleted. This means that the rest of the region will be filled with beats. These beats are spaced apart with the same distance as the beats you manually added.</div>
+                              </div>
+                            </div>
+                            <div class="panel panel-default" style="border-color: Black;">
+                              <div class="panel-heading" style="background-color: Black;">
+                                <h4 class="panel-title">
+                                  <a style="color: Dimgrey;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse6">Clear all beat markers</a>
+                                </h4>
+                              </div>
+                              <div id="collapse6" class="panel-collapse collapse">
+                                <div class="panel-body" >If you want to start over completely, you can click the button 'clear all beat markers'.</div>
+                              </div>
+                            </div>
+                            <div class="panel panel-default" style="border-color: Black;">
+                              <div class="panel-heading" style="background-color: Black;">
+                                <h4 class="panel-title">
+                                  <a style="color: Dimgrey;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse7">Save Annotations</a>
+                                </h4>
+                              </div>
+                                <div id="collapse7" class="panel-collapse collapse">
+                                  <div class="panel-body" >Save the annotations to the server when you are done annotating the song by clicking the 'Save Annotations-button' </div>
+                                </div>
+                          </div>
+                    </div>
                     </div>
                     <div class="macroTrack" id="macroTrack"></div>
                     <br>
