@@ -254,7 +254,7 @@
     var markerQueue = [];
     var layerHeight = 170; // height of waveform
     var timeAxisHeight = 23; // height of text above waveform
-    var seeking = false;
+    var mouseMoving = false;
     var newMousePos = null;
     var prevMousePos = null;
     var audioplayer = document.getElementsByTagName("AUDIO")[0];
@@ -364,9 +364,7 @@
                 macroHighlight[0].x = - timeline.timeContext.offset;
                 segmentLayerMacro.update();
                 timeline.tracks.update();
-                setTimeout(function() {
-                    requestAnimationFrame(loop);
-                }, 50);
+                setTimeout(function() { requestAnimationFrame(loop); }, 50);
             }
         }());
 
@@ -384,22 +382,17 @@
 
             // when navigating the timeline
             } else if (!onTimeAxis && eventType == 'mousemove') {
-                seeking = true;
+                mouseMoving = true;
                 navigateTimeline(e, timeAxis);
 
             // when seeking or when done navigating the timeline
             } else if (!onTimeAxis && eventType == 'mouseup') {
                 if (newMousePos == null) {
-                    var newTime = timeAxis.timeToPixel.invert(e.x) - timeline.timeContext.offset;
+                    var newTime = timeline.timeToPixel.invert(e.x) - timeline.timeContext.offset;
                     player.seekTo(newTime);
                     seekTo(newTime);
-                } else {
-                    seeking = false;
-                    newMousePos = null;
-                    prevMousePos = null;
-                }
-
-            }
+                };
+            };
         });
 
         // WavesJS eventlistener for the upper (macro) timeline
@@ -409,14 +402,19 @@
 
             // when seeking, only updates cursor location
             if (onTimeAxis && eType == 'mousemove') {
-                seeking = true;
+                mouseMoving = true;
                 timeline.timeContext.offset = -macroHighlight[0].x;
 
             // when done seeking
-            } else if (onTimeAxis && eType == 'mouseup' && !seeking) {
+            } else if (onTimeAxis && eType == 'mouseup' && !mouseMoving) {
                 var newTime = timeAxisMacro.timeToPixel.invert(e.x) - timelineMacro.timeContext.offset;
                 player.seekTo(newTime);
                 seekTo(newTime);
+            } else if (eType == 'mouseup') {
+                refreshWindowMacro();
+                timeAxis.setTimeContext(timeline.timeContext);
+                // timeAxis.update();
+                timeline.tracks.update();
             };
         });
     };
@@ -427,7 +425,7 @@
         var offset = timeline.timeContext.offset;
 
         // updates cursor position
-        if (!seeking) {
+        if (!mouseMoving) {
             cursorLayer.currentPosition = currentTime;
             cursorLayer.update();
             cursorLayerMacro.currentPosition = currentTime;
@@ -439,19 +437,13 @@
             segmentLayerMacro.update();
         }
         // updates lower timeline window position
-        var cursorTooFar = currentTime+2 > (windowWidth - offset) || currentTime+2 < -offset;
-        if (cursorTooFar && playSong) {
-            timeline.timeContext.offset = 1.5-currentTime;
-            timeline.tracks.update();
-            macroHighlight[0].x = - timeline.timeContext.offset;
-            segmentLayerMacro.update();
-        }
+        refreshWindow();
+
         // plays a clicksound when going past a beatmarker
         if(currentTime >= markerQueue[0] && !seeked) {
             playClick(metronome);
             markerQueue.shift();
         }
-        // macroHighlight.width = windowWidth;
     }
 
     // moves the window of the lower timeline according to mouse movement
@@ -477,6 +469,37 @@
         audioplayer.currentTime = currentTime;
         updatePlugin(true);
     };
+
+    // refreshes the viewing window from the lower timeline automatically
+    function refreshWindow() {
+        var offset = timeline.timeContext.offset;
+        var padding = windowWidth/10;
+        var cursorTooFar = currentTime+padding > (windowWidth - offset) || currentTime+padding < -offset;
+        if (cursorTooFar && playSong) {
+            if (padding + currentTime + windowWidth <= finalDur) {
+                timeline.timeContext.offset = padding-currentTime;
+                timeline.tracks.update();
+            } else {
+                timeline.timeContext.offset = windowWidth - finalDur;
+                timeline.tracks.update();
+            }
+            macroHighlight[0].x = - timeline.timeContext.offset;
+            segmentLayerMacro.update();
+        }
+    }
+
+    // refreshes the viewing window manually
+    function refreshWindowMacro() {
+        var newWidth = macroHighlight[0].width;
+        var windowXPos = macroHighlight[0].x;
+        if (windowXPos < 0) {
+            macroHighlight[0].x = 0;
+        } else if ((windowXPos + newWidth) > finalDur) {
+            newWidth = finalDur - windowXPos;
+        }
+        windowWidth = newWidth;
+        timeline.timeContext.zoom = finalDur / windowWidth;
+    }
 
     window.addEventListener("keydown", checkKeyPressed, false);
 
@@ -521,9 +544,11 @@
 
     // when a mouseup is registered when it doesn't hover above the WavesJS plugin
     function mouseUpOutOfBounds() {
-        seeking = false;
-        setTimeout(function(){newMousePos=null},10)
-        prevMousePos = null;
+        setTimeout(function(){
+            newMousePos=null;
+            mouseMoving = false;
+            prevMousePos = null;
+        },20)
     }
 
     // creates a new beatmarker using the input time
@@ -536,6 +561,10 @@
         beatMarkers.push(newmarker);
         markerLayer.render();
         markerLayer.update();
+        var markers = document.getElementsByClassName('item annotated-marker');
+        for (var i=0; i<markers.length; i++) {
+            markers[i].getElementsByTagName('text')[0].style.visibility = "hidden";
+        };
     }
 
     // deletes a specified marker

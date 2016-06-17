@@ -54,7 +54,8 @@ export default class SelectionState extends BaseState {
   }
 
   _addBrush(track) {
-    if (track.$brush) { return; }
+    return;
+    // if (track.$brush) { return; }
 
     const brush = document.createElementNS(ns, 'rect');
     brush.style.fill = '#686868';
@@ -107,44 +108,44 @@ export default class SelectionState extends BaseState {
   }
 
   onMouseMove(e) {
-    this._updateBrush(e, this._currentTrack);
-
-    this._currentTrack.layers.forEach((layer) => {
-      const currentSelection = layer.selectedItems;
-      const currentItems = layer.getItemsInArea(e.area);
-
-      // if is not pressed
-      if (!e.originalEvent.shiftKey) {
-        layer.unselect(currentSelection);
-        layer.select(currentItems);
-      } else {
-        const toSelect = [];
-        const toUnselect = [];
-        // use the selection from the previous drag
-        const previousSelection = this._layerSelectedItemsMap.get(layer);
-        // toUnselect = toUnselect.concat(previousSelectedItems);
-
-        currentItems.forEach((item) => {
-          if (previousSelection.indexOf(item) === -1) {
-            toSelect.push(item);
-          } else {
-            toUnselect.push(item);
-          }
-        });
-
-        currentSelection.forEach((item) => {
-          if (
-            currentItems.indexOf(item) === -1 &&
-            previousSelection.indexOf(item) === -1
-          ) {
-            toUnselect.push(item);
-          }
-        });
-
-        layer.unselect(toUnselect);
-        layer.select(toSelect);
-      }
-    });
+    // this._updateBrush(e, this._currentTrack);
+    //
+    // this._currentTrack.layers.forEach((layer) => {
+    //   const currentSelection = layer.selectedItems;
+    //   const currentItems = layer.getItemsInArea(e.area);
+    //
+    //   // if is not pressed
+    //   if (!e.originalEvent.shiftKey) {
+    //     layer.unselect(currentSelection);
+    //     layer.select(currentItems);
+    //   } else {
+    //     const toSelect = [];
+    //     const toUnselect = [];
+    //     // use the selection from the previous drag
+    //     const previousSelection = this._layerSelectedItemsMap.get(layer);
+    //     // toUnselect = toUnselect.concat(previousSelectedItems);
+    //
+    //     currentItems.forEach((item) => {
+    //       if (previousSelection.indexOf(item) === -1) {
+    //         toSelect.push(item);
+    //       } else {
+    //         toUnselect.push(item);
+    //       }
+    //     });
+    //
+    //     currentSelection.forEach((item) => {
+    //       if (
+    //         currentItems.indexOf(item) === -1 &&
+    //         previousSelection.indexOf(item) === -1
+    //       ) {
+    //         toUnselect.push(item);
+    //       }
+    //     });
+    //
+    //     layer.unselect(toUnselect);
+    //     layer.select(toSelect);
+    //   }
+    // });
   }
 
   onMouseUp(e) {
