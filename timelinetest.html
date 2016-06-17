@@ -110,6 +110,9 @@
                         <button type="button" class="btn btn-default btn-sm" onclick="mergeSegmentsOnBeat()">
                           <span class="	glyphicon glyphicon-erase"></span> merge left on selected beat
                         </button>
+                        <button type="button" class="btn btn-default btn-sm" onclick="autocomplete()">
+                          <span class=" glyphicon glyphicon-erase"></span> Autocomplete current region
+                        </button>
                         <button type="button" class="btn btn-default btn-sm" onclick="clearMarkers()" data-toggle="tooltip" data-placement="right" title="You can also select a single marker and press delete to remove it!">
                           <span class="glyphicon glyphicon-trash"></span> Clear all markers
                         </button>
@@ -121,7 +124,6 @@
                     </p>
                     <p class="lead">
                         <a href="#" class="btn btn-lg btn-default" id="toPHP" onclick="writeToFile()">Save Annotations</a>
-                        <a href="#" class="btn btn-lg btn-default" id="toPHP" onclick="autocomplete()">Autocomplete</a>
                         <a href="#" id="infotext2" data-toggle="tooltip" data-placement="right" title="Click here when you are finished annotating. Your beat annotations will be saved on the server.">
                             <i class="material-icons">help_outline</i>
                         </a>
