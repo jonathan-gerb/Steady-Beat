@@ -743,7 +743,7 @@
             addMarker(time);
             time = time + avg;
         }
-
+        document.getElementById('loadingGif').style.display = "none";
         // neem de 8 timestamps uit de beatMarkers
         // bereken de gemiddelde tijd die ertussen zit
         // voeg zoveel beats toe als autocomplete (steeds gemiddeldeTijdErtussen uit elkaar)
