@@ -90,7 +90,7 @@ var SelectionState = (function (_BaseState) {
 
       var brush = document.createElementNS(_coreNamespace2['default'], 'rect');
       brush.style.fill = '#686868';
-      brush.style.opacity = 0.2;
+      brush.style.opacity = 0;
 
       track.$interactions.appendChild(brush);
       track.$brush = brush;
@@ -151,45 +151,45 @@ var SelectionState = (function (_BaseState) {
   }, {
     key: 'onMouseMove',
     value: function onMouseMove(e) {
-      var _this2 = this;
-
-      this._updateBrush(e, this._currentTrack);
-
-      this._currentTrack.layers.forEach(function (layer) {
-        var currentSelection = layer.selectedItems;
-        var currentItems = layer.getItemsInArea(e.area);
-
-        // if is not pressed
-        if (!e.originalEvent.shiftKey) {
-          layer.unselect(currentSelection);
-          layer.select(currentItems);
-        } else {
-          (function () {
-            var toSelect = [];
-            var toUnselect = [];
-            // use the selection from the previous drag
-            var previousSelection = _this2._layerSelectedItemsMap.get(layer);
-            // toUnselect = toUnselect.concat(previousSelectedItems);
-
-            currentItems.forEach(function (item) {
-              if (previousSelection.indexOf(item) === -1) {
-                toSelect.push(item);
-              } else {
-                toUnselect.push(item);
-              }
-            });
-
-            currentSelection.forEach(function (item) {
-              if (currentItems.indexOf(item) === -1 && previousSelection.indexOf(item) === -1) {
-                toUnselect.push(item);
-              }
-            });
-
-            layer.unselect(toUnselect);
-            layer.select(toSelect);
-          })();
-        }
-      });
+    //   var _this2 = this;
+      //
+    //   this._updateBrush(e, this._currentTrack);
+      //
+    //   this._currentTrack.layers.forEach(function (layer) {
+    //     var currentSelection = layer.selectedItems;
+    //     var currentItems = layer.getItemsInArea(e.area);
+      //
+    //     // if is not pressed
+    //     if (!e.originalEvent.shiftKey) {
+    //       layer.unselect(currentSelection);
+    //       layer.select(currentItems);
+    //     } else {
+    //       (function () {
+    //         var toSelect = [];
+    //         var toUnselect = [];
+    //         // use the selection from the previous drag
+    //         var previousSelection = _this2._layerSelectedItemsMap.get(layer);
+    //         // toUnselect = toUnselect.concat(previousSelectedItems);
+      //
+    //         currentItems.forEach(function (item) {
+    //           if (previousSelection.indexOf(item) === -1) {
+    //             toSelect.push(item);
+    //           } else {
+    //             toUnselect.push(item);
+    //           }
+    //         });
+      //
+    //         currentSelection.forEach(function (item) {
+    //           if (currentItems.indexOf(item) === -1 && previousSelection.indexOf(item) === -1) {
+    //             toUnselect.push(item);
+    //           }
+    //         });
+      //
+    //         layer.unselect(toUnselect);
+    //         layer.select(toSelect);
+    //       })();
+    //     }
+    //   });
     }
   }, {
     key: 'onMouseUp',
