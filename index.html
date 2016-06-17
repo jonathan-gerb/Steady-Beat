@@ -48,7 +48,6 @@ When this download is completed, there is an automatic redirect to the annotatio
         var webmpartExists = false;
         var m4aExists = false;
 
-
         // Checks if input is a youtube url
         function validateInput() {
             if (currentInterval != null) {
@@ -59,7 +58,15 @@ When this download is completed, there is an automatic redirect to the annotatio
             var ytStr2 = 'youtu.be';
             if (inputStr.match(ytStr1) == ytStr1) {
                 var idIdx = inputStr.search(/\?v=/);
+                document.getElementById('loadingGif').style.display = "inline-block";
+                document.getElementById('loadingText').style.display = "inline-block";
+                document.getElementById('yt-url').style.display = "none";
+                document.getElementById('submitBtn').style.display = "none";
             } else if (inputStr.match(ytStr2) == ytStr2) {
+                document.getElementById('loadingGif').style.display = "inline-block";
+                document.getElementById('loadingText').style.display = "inline-block";
+                document.getElementById('yt-url').style.display = "none";
+                document.getElementById('submitBtn').style.display = "none";
                 var idIdx = inputStr.search(/be\//);
             } else {
                 window.alert("You didn't input a Youtube URL.");
@@ -160,6 +167,7 @@ When this download is completed, there is an automatic redirect to the annotatio
                                         color: #424242;
                                     }
                                 </style>
+                                <div id="loadingText" style="display: none">Loading... This might take a while  </div><img src="loading1.gif" id="loadingGif" alt="loadingGif" height="50" width="50" style="display: none" >
                                 <input type="text" color="" placeholder="Youtube URL" id="yt-url">
                                 <button type="submit" class="pure-button pure-button-primary" id="submitBtn" onclick="validateInput()" value="Go">Start Tracking</button>
                             </fieldset>
