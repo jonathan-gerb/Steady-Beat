@@ -1,4 +1,15 @@
 <!DOCTYPE html>
+<!--
+File: index.html
+Authors: Adriaan de Vries, Arianne van Nieuwenhuijsen, Bart Laan, Clara Tump, Jonathan Gerbscheid
+Last edited: June 17th 2016
+
+This file is part of Project BEAT assigned by Chordify
+
+On this webpage the user can input a url of a Youtube video. The mp3 file of this video is downloaded.
+When this download is completed, there is an automatic redirect to the annotation page annotation.html
+
+-->
 <html lang="en">
 
 <head>
@@ -16,8 +27,6 @@
     <link href="./bootstrap/docs/assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
     <!-- Custom styles for this template -->
     <link href="./cover.css" rel="stylesheet">
-    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
-    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
     <script src="./bootstrap/docs/assets/js/ie-emulation-modes-warning.js"></script>
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -32,101 +41,111 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
 
     <script>
-    var currentInterval = null;
-    var mp3Exists = false;
-    var webmExists = false;
-    var partExists = false;
+        var currentInterval = null;
+        var mp3Exists = false;
+        var webmExists = false;
+        var mp4partExists = false;
+        var webmpartExists = false;
+        var m4aExists = false;
 
-    // Checks if input is a youtube url
-    function validateInput() {
-        if (currentInterval != null) {
-            clearInterval(currentInterval);
-        }
-        var inputStr = $("#yt-url").val();
-        var ytStr1 = 'youtube';
-        var ytStr2 = 'youtu.be';
-        if (inputStr.match(ytStr1) == ytStr1) {
-            var idIdx = inputStr.search(/\?v=/);
-            document.getElementById('loadingGif').style.display = "inline-block";
-            document.getElementById('loadingText').style.display = "inline-block";
-            document.getElementById('yt-url').style.display = "none";
-            document.getElementById('submitBtn').style.display = "none";
-        } else if (inputStr.match(ytStr2) == ytStr2) {
-            document.getElementById('loadingGif').style.display = "inline-block";
-            document.getElementById('loadingText').style.display = "inline-block";
-            document.getElementById('yt-url').style.display = "none";
-            document.getElementById('submitBtn').style.display = "none";
-            var idIdx = inputStr.search(/be\//);
-        } else {
-            window.alert("You didn't input a Youtube URL.");
-            return;
-        }
-        // Youtube id's are always 11 characters.
-        var ytID = inputStr.substring(idIdx + 3, idIdx + 14);
-        loadytID(ytID);
-        currentInterval = setInterval ( function(){assignIfDone(ytID)}, 300 );
-    };
-
-    // downloads wav file to server
-    function loadytID(ytID) {
-        // console.log(beatMarkers);
-        var xhttp;
-        var url = "downloadytmp3.php";
-        var params = "ID=" + ytID;
-        if (window.XMLHttpRequest) {
-            // code for modern browsers
-            xhttp = new XMLHttpRequest();
-        } else {
-            // code for IE6, IE5
-            xhttp = new ActiveXObject("Microsoft.XMLHTTP");
-        }
-        xhttp.open("POST", url, true);
-        //Send the proper header information along with the request
-        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-
-    xhttp.send(params);
-    }
-
-    function assignIfDone(ytID) {
-        file_exists('./mp3files/' + ytID + '.webm', 'webm');
-        file_exists('./mp3files/' + ytID + '.mp3', 'mp3');
-        file_exists('./mp3files/' + ytID + '.webm.part', 'part');
-        if (!webmExists && mp3Exists && !partExists) {
-            console.log('we have liftoff');
-            clearInterval(currentInterval);
-            window.location.assign('timelinetest.html?yt_ID=' + ytID);
-            console.log('wow. nee.');
-        }
-    }
-
-    function file_exists(url2, fileType) {
-        $.ajax({
-            url: url2,
-            type:'HEAD',
-            error: function()
-            {
-                if (fileType == 'webm') {
-                    webmExists = false;
-                } else if (fileType == 'mp3') {
-                    mp3Exists = false;
-                } else {
-                    partExists = false;
-                }
-            },
-            success: function()
-            {
-                if (fileType == 'webm') {
-                    webmExists = true;
-                } else if (fileType == 'mp3') {
-                    mp3Exists = true;
-                } else {
-                    partExists = true;
-                }
+        // Checks if input is a youtube url
+        function validateInput() {
+            if (currentInterval != null) {
+                clearInterval(currentInterval);
             }
-      });
-    }
+            var inputStr = $("#yt-url").val();
+            var ytStr1 = 'youtube';
+            var ytStr2 = 'youtu.be';
+            if (inputStr.match(ytStr1) == ytStr1) {
+                var idIdx = inputStr.search(/\?v=/);
+                document.getElementById('loadingGif').style.display = "inline-block";
+                document.getElementById('loadingText').style.display = "inline-block";
+                document.getElementById('yt-url').style.display = "none";
+                document.getElementById('submitBtn').style.display = "none";
+            } else if (inputStr.match(ytStr2) == ytStr2) {
+                document.getElementById('loadingGif').style.display = "inline-block";
+                document.getElementById('loadingText').style.display = "inline-block";
+                document.getElementById('yt-url').style.display = "none";
+                document.getElementById('submitBtn').style.display = "none";
+                var idIdx = inputStr.search(/be\//);
+            } else {
+                window.alert("You didn't input a Youtube URL.");
+                return;
+            }
+            // Youtube id's are always 11 characters.
+            var ytID = inputStr.substring(idIdx + 3, idIdx + 14);
+            downloadytID(ytID);
+            currentInterval = setInterval ( function(){assignIfDone(ytID)}, 300 );
+        };
+
+        // downloads mp3 file of the Youtube video to server
+        function downloadytID(ytID) {
+            var xhttp;
+            var url = "downloadytmp3.php";
+            var params = "ID=" + ytID;
+            if (window.XMLHttpRequest) {
+                // code for modern browsers
+                xhttp = new XMLHttpRequest();
+            } else {
+                // code for IE6, IE5
+                xhttp = new ActiveXObject("Microsoft.XMLHTTP");
+            }
+            xhttp.open("POST", url, true);
+            //Send the proper header information along with the request
+            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhttp.send(params);
+        }
+
+        function assignIfDone(ytID) {
+            file_exists('./mp3files/' + ytID + '.webm', 'webm');
+            file_exists('./mp3files/' + ytID + '.mp3', 'mp3');
+            file_exists('./mp3files/' + ytID + '.mp4.part', 'mp4part');
+            file_exists('./mp3files/' + ytID + '.webm.part', 'webmpart');
+            file_exists('./mp3files/' + ytID + '.m4a', 'm4a');
+            if (mp3Exists && !webmExists &&  !mp4partExists && !webmpartExists && !m4aExists) {
+                clearInterval(currentInterval);
+                window.location.assign('timelinetest.html?yt_ID=' + ytID);
+            }
+        }
+
+        // check if a file file_exists (for the download files)
+        function file_exists(url2, fileType) {
+            $.ajax({
+                url: url2,
+                type:'HEAD',
+                error: function()
+                {
+                    if (fileType == 'webm') {
+                        webmExists = false;
+                    } else if (fileType == 'mp3') {
+                        mp3Exists = false;
+                    } else if (fileType== 'mp4part') {
+                        mp4partExists = false;
+                    } else if (fileType== 'webmpart') {
+                        webmpartExists = false;
+                    } else {
+                        m4aExists = false;
+                    }
+                },
+                success: function()
+                {
+                    if (fileType == 'webm') {
+                        webmExists = true;
+                    } else if (fileType == 'mp3') {
+                        mp3Exists = true;
+                    } else if (fileType == 'mp4part') {
+                        mp4partExists = true;
+                    } else if (fileType == 'webmpart') {
+                        webmpartExists = true;
+                    } else {
+                        m4aExists = true;
+                    }
+                }
+          });
+        }
 
     </script>
+
     <div class="site-wrapper">
         <div class="site-wrapper-inner">
             <div class="cover-container">
@@ -144,9 +163,9 @@
                             <fieldset>
                                 <legend></legend>
                                 <style>
-                                #yt-url {
-                                    color: #424242;
-                                }
+                                    #yt-url {
+                                        color: #424242;
+                                    }
                                 </style>
                                 <div id="loadingText" style="display: none">Loading... This might take a while  </div><img src="loading1.gif" id="loadingGif" alt="loadingGif" height="50" width="50" style="display: none" >
                                 <input type="text" color="" placeholder="Youtube URL" id="yt-url">
@@ -169,7 +188,7 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script>
-    window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')
+        window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')
     </script>
     <script src="bootstrap/dist/js/bootstrap.min.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->

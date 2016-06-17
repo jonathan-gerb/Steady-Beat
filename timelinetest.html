@@ -65,6 +65,8 @@
         background-color: #444;
     }.item.annotated-marker.selected {
         color: PeachPuff;
+    }.btn-default {
+        margin: 3px;
     }
     </style>
 </head>
@@ -110,6 +112,10 @@
                         <button type="button" class="btn btn-default btn-sm" onclick="mergeSegmentsOnBeat()">
                           <span class="	glyphicon glyphicon-erase"></span> merge left on selected beat
                         </button>
+                        <button type="button" class="btn btn-default btn-sm" onclick="autocomplete()">
+                          <span class="	glyphicon glyphicon-check"></span> Autocomplete current region
+                        </button>
+                        <img src="loading1.gif" id="loadingGif" alt="loadingGif" height="20" width="20" style="display: none" >
                         <button type="button" class="btn btn-default btn-sm" onclick="clearMarkers()" data-toggle="tooltip" data-placement="right" title="You can also select a single marker and press delete to remove it!">
                           <span class="glyphicon glyphicon-trash"></span> Clear all markers
                         </button>
@@ -698,6 +704,7 @@
 
     // uses the average distance of markers to estimate the rest of the region
     function autocomplete() {
+        document.getElementById('loadingGif').style.display = "inline-block";
         begin = 0;
         end = 0;
         var selectedMarker = document.getElementsByClassName('item annotated-marker selected');
@@ -744,7 +751,7 @@
             addMarker(time);
             time = time + avg;
         }
-
+        document.getElementById('loadingGif').style.display = "none";
         // neem de 8 timestamps uit de beatMarkers
         // bereken de gemiddelde tijd die ertussen zit
         // voeg zoveel beats toe als autocomplete (steeds gemiddeldeTijdErtussen uit elkaar)
