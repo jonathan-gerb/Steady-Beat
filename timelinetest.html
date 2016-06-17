@@ -278,7 +278,7 @@
         segments = [{x: 0, width: duration, height: layerHeight, top: timeAxisHeight,
                 color: 'steelblue', opacity: 0.2, text: '4/4'}, ];
 
-        macroHighlight = [{x: 0, width: windowWidth, height: macroTimelineHeight, color: 'white', opacity: 0.2}];
+        macroHighlight = [{x: 0, width: 20, height: macroTimelineHeight, color: 'white', opacity: 0.2}, ];
 
         timeline = new wavesUI.core.Timeline(pixelsPerSecond, width);
         timelineMacro = new wavesUI.core.Timeline(pixelsPerSecond, width);
@@ -310,7 +310,7 @@
         segmentLayer = new wavesUI.helpers.SegmentLayer(segments, { height: layerHeight, top: timeAxisHeight, displayHandlers: false });
         timeline.addLayer(segmentLayer, 'main');
 
-        segmentLayerMacro = new wavesUI.helpers.SegmentLayer(segments, { height: macroTimelineHeight, displayHandlers: false });
+        segmentLayerMacro = new wavesUI.helpers.SegmentLayer(macroHighlight, { height: macroTimelineHeight, displayHandlers: true });
         timelineMacro.addLayer(segmentLayerMacro, 'macro');
 
         // create marker layer
@@ -338,6 +338,7 @@
         timelineMacro.addLayer(cursorLayerMacro, 'macro');
 
         timeline.state = new wavesUI.states.SelectionState(timeline);
+        timelineMacro.state = new wavesUI.states.SimpleEditionState(timelineMacro);
         segmentLayer.setContextEditable(false);
 
         finalDur = timeline.timeContext.visibleDuration;
@@ -359,11 +360,13 @@
                 updatePlugin(false);
                 setTimeout(requestAnimationFrame(loop), 20);
             } else {
-                refreshClickQueue()
+                refreshClickQueue();
+                macroHighlight[0].x = - timeline.timeContext.offset;
+                segmentLayerMacro.update();
+                timeline.tracks.update();
                 setTimeout(function() {
                     requestAnimationFrame(loop);
-                    timeline.tracks.update();
-                }, 200);
+                }, 50);
             }
         }());
 
@@ -381,17 +384,19 @@
 
             // when navigating the timeline
             } else if (!onTimeAxis && eventType == 'mousemove') {
+                seeking = true;
                 navigateTimeline(e, timeAxis);
 
             // when seeking or when done navigating the timeline
             } else if (!onTimeAxis && eventType == 'mouseup') {
                 if (newMousePos == null) {
-                  var newTime = timeAxis.timeToPixel.invert(e.x) - timeline.timeContext.offset;
-                  player.seekTo(newTime);
-                  seekTo(newTime);
+                    var newTime = timeAxis.timeToPixel.invert(e.x) - timeline.timeContext.offset;
+                    player.seekTo(newTime);
+                    seekTo(newTime);
                 } else {
-                  newMousePos = null;
-                  prevMousePos = null;
+                    seeking = false;
+                    newMousePos = null;
+                    prevMousePos = null;
                 }
 
             }
@@ -405,16 +410,13 @@
             // when seeking, only updates cursor location
             if (onTimeAxis && eType == 'mousemove') {
                 seeking = true;
-                var newTime = timeAxisMacro.timeToPixel.invert(e.x) - timelineMacro.timeContext.offset;
-                cursorLayerMacro.currentPosition = newTime;
-                cursorLayerMacro.update();
+                timeline.timeContext.offset = -macroHighlight[0].x;
 
             // when done seeking
-            } else if (onTimeAxis && eType == 'mouseup') {
+            } else if (onTimeAxis && eType == 'mouseup' && !seeking) {
                 var newTime = timeAxisMacro.timeToPixel.invert(e.x) - timelineMacro.timeContext.offset;
                 player.seekTo(newTime);
                 seekTo(newTime);
-                seeking = false;
             };
         });
     };
@@ -422,6 +424,7 @@
     // Renders all layers from the WavesJS plugin and plays a sound when
     // encountering a beat marker
     function updatePlugin(seeked) {
+        var offset = timeline.timeContext.offset;
 
         // updates cursor position
         if (!seeking) {
@@ -429,20 +432,25 @@
             cursorLayer.update();
             cursorLayerMacro.currentPosition = currentTime;
             cursorLayerMacro.update();
+
+        // updates the highlight on the upper timeline
+        } else {
+            macroHighlight[0].x = - offset;
+            segmentLayerMacro.update();
         }
         // updates lower timeline window position
-        var offset = timeline.timeContext.offset;
         var cursorTooFar = currentTime+2 > (windowWidth - offset) || currentTime+2 < -offset;
-        if (cursorTooFar) {
+        if (cursorTooFar && playSong) {
             timeline.timeContext.offset = 1.5-currentTime;
             timeline.tracks.update();
+            macroHighlight[0].x = - timeline.timeContext.offset;
+            segmentLayerMacro.update();
         }
         // plays a clicksound when going past a beatmarker
         if(currentTime >= markerQueue[0] && !seeked) {
             playClick(metronome);
             markerQueue.shift();
         }
-        macroHighlight.x = -timeline.timeContext.offset;
         // macroHighlight.width = windowWidth;
     }
 
@@ -471,7 +479,6 @@
     };
 
     window.addEventListener("keydown", checkKeyPressed, false);
-    window.addEventListener("mouseup", mouseUpOutOfBounds, false);
 
     // take action corresponding to the button press
     function checkKeyPressed(e) {
@@ -509,6 +516,8 @@
             document.getElementById('playButton').innerHTML = '<i class="glyphicon glyphicon-pause"></i> Pause';
         }
     }
+
+    window.addEventListener("mouseup", mouseUpOutOfBounds, false);
 
     // when a mouseup is registered when it doesn't hover above the WavesJS plugin
     function mouseUpOutOfBounds() {
