@@ -39,10 +39,6 @@
 
     // Checks if input is a youtube url
     function validateInput() {
-        document.getElementById('loadingGif').style.display = "inline-block";
-        document.getElementById('loadingText').style.display = "inline-block";
-        document.getElementById('yt-url').style.display = "none";
-        document.getElementById('submitBtn').style.display = "none";
         if (currentInterval != null) {
             clearInterval(currentInterval);
         }
@@ -51,7 +47,15 @@
         var ytStr2 = 'youtu.be';
         if (inputStr.match(ytStr1) == ytStr1) {
             var idIdx = inputStr.search(/\?v=/);
+            document.getElementById('loadingGif').style.display = "inline-block";
+            document.getElementById('loadingText').style.display = "inline-block";
+            document.getElementById('yt-url').style.display = "none";
+            document.getElementById('submitBtn').style.display = "none";
         } else if (inputStr.match(ytStr2) == ytStr2) {
+            document.getElementById('loadingGif').style.display = "inline-block";
+            document.getElementById('loadingText').style.display = "inline-block";
+            document.getElementById('yt-url').style.display = "none";
+            document.getElementById('submitBtn').style.display = "none";
             var idIdx = inputStr.search(/be\//);
         } else {
             window.alert("You didn't input a Youtube URL.");
