@@ -11,14 +11,14 @@
     <link rel="./icon" href="icon.jpg">
     <title>Welcome to the Steady Beat project</title>
     <!-- Bootstrap core CSS -->
-    <link href="./bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <link href="./bootstrap/docs/assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+    <link href="../bootstrap/docs/assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
     <!-- Custom styles for this template -->
-    <link href="./cover.css" rel="stylesheet">
+    <link href="../cover.css" rel="stylesheet">
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-    <script src="./bootstrap/docs/assets/js/ie-emulation-modes-warning.js"></script>
+    <script src="../bootstrap/docs/assets/js/ie-emulation-modes-warning.js"></script>
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -47,15 +47,7 @@
         var ytStr2 = 'youtu.be';
         if (inputStr.match(ytStr1) == ytStr1) {
             var idIdx = inputStr.search(/\?v=/);
-            document.getElementById('loadingGif').style.display = "inline-block";
-            document.getElementById('loadingText').style.display = "inline-block";
-            document.getElementById('yt-url').style.display = "none";
-            document.getElementById('submitBtn').style.display = "none";
         } else if (inputStr.match(ytStr2) == ytStr2) {
-            document.getElementById('loadingGif').style.display = "inline-block";
-            document.getElementById('loadingText').style.display = "inline-block";
-            document.getElementById('yt-url').style.display = "none";
-            document.getElementById('submitBtn').style.display = "none";
             var idIdx = inputStr.search(/be\//);
         } else {
             window.alert("You didn't input a Youtube URL.");
@@ -88,9 +80,9 @@
     }
 
     function assignIfDone(ytID) {
-        file_exists('./mp3files/' + ytID + '.webm', 'webm');
-        file_exists('./mp3files/' + ytID + '.mp3', 'mp3');
-        file_exists('./mp3files/' + ytID + '.webm.part', 'part');
+        file_exists('../mp3files/' + ytID + '.webm', 'webm');
+        file_exists('../mp3files/' + ytID + '.mp3', 'mp3');
+        file_exists('../mp3files/' + ytID + '.webm.part', 'part');
         if (!webmExists && mp3Exists && !partExists) {
             console.log('we have liftoff');
             clearInterval(currentInterval);
@@ -148,7 +140,6 @@
                                     color: #424242;
                                 }
                                 </style>
-                                <div id="loadingText" style="display: none">Loading... This might take a while  </div><img src="loading1.gif" id="loadingGif" alt="loadingGif" height="50" width="50" style="display: none" >
                                 <input type="text" color="" placeholder="Youtube URL" id="yt-url">
                                 <button type="submit" class="pure-button pure-button-primary" id="submitBtn" onclick="validateInput()" value="Go">Start Tracking</button>
                             </fieldset>
@@ -169,11 +160,11 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script>
-    window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')
+    window.jQuery || document.write('<script src="../../../assets/js/vendor/jquery.min.js"><\/script>')
     </script>
-    <script src="bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../bootstrap/dist/js/bootstrap.min.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="bootstrap/docs/assets/js/ie10-viewport-bug-workaround.js"></script>
+    <script src="../bootstrap/docs/assets/js/ie10-viewport-bug-workaround.js"></script>
 </body>
 
 </html>
