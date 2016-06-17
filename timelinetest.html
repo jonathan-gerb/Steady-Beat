@@ -231,6 +231,7 @@
     var beatMarkers = [];
     var markerCounter = 1;
     var segmentLayer;
+    var macroHighlight;
     var cursorLayerMacro;
     var cursorLayer;
     var playSong;
@@ -271,6 +272,8 @@
         segments = [{x: 0, width: duration, height: layerHeight, top: timeAxisHeight,
                 color: 'steelblue', opacity: 0.2, text: '4/4'}, ];
 
+        macroHighlight = [{x: 0, width: windowWidth, height: macroTimelineHeight, color: 'white', opacity: 0.2}];
+
         timeline = new wavesUI.core.Timeline(pixelsPerSecond, width);
         timelineMacro = new wavesUI.core.Timeline(pixelsPerSecond, width);
 
@@ -300,6 +303,9 @@
         // create segment layer
         segmentLayer = new wavesUI.helpers.SegmentLayer(segments, { height: layerHeight, top: timeAxisHeight, displayHandlers: false });
         timeline.addLayer(segmentLayer, 'main');
+
+        segmentLayerMacro = new wavesUI.helpers.SegmentLayer(segments, { height: macroTimelineHeight, displayHandlers: false });
+        timelineMacro.addLayer(segmentLayerMacro, 'macro');
 
         // create marker layer
         markerLayer = new wavesUI.core.Layer('collection', beatMarkers, { height: layerHeight, top: timeAxisHeight });
@@ -430,6 +436,8 @@
             playClick(metronome);
             markerQueue.shift();
         }
+        macroHighlight.x = -timeline.timeContext.offset;
+        // macroHighlight.width = windowWidth;
     }
 
     // moves the window of the lower timeline according to mouse movement
