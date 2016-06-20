@@ -52,6 +52,13 @@
         bottom: 0;
         left: 0;
         width: 240px;
+    }#sidebarRight {
+        background-color: DimGray ;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        width: 240px;
     }#bottombar {
         bottom: 0;
         position: absolute;
@@ -67,14 +74,17 @@
         color: PeachPuff;
     }.btn-default {
         margin: 3px;
+    }.panel-body {
+        color: Grey;
+        background-color: Black;
     }
     </style>
 </head>
 
 <body>
-    <!-- <script>
-    window.jQuery || document.write('<script src="bootstrap/docs/assets/js/vendor/jquery.min.js"><\/script>')
-    </script> -->
+    <script>
+    window.jQuery || document.write('<script src="../bootstrap/docs/assets/js/vendor/jquery.min.js"><\/script>')
+    </script>
     <div class="site-wrapper" id="pageAnchor">
         <div class="site-wrapper-inner">
             <div class="cover-container">
@@ -93,6 +103,83 @@
                     <div id="sidebar">
                         <a href="index.html">Song selection</a>
                         <div id="player"></div>
+                    </div>
+                    <div id="sidebarRight">
+                        <div class="panel-group" id="accordion">
+                            <div class="panel panel-default" style="border-color: Black;">
+                              <div class="panel-heading" style="background-color: Black;">
+                                <h4 class="panel-title">
+                                  <a style="color: Dimgrey;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse1">Play / Pause</a>
+                                </h4>
+                              </div>
+                              <div id="collapse1" class="panel-collapse collapse in">
+                                <div class="panel-body" >Play and pause the song using the Play/Pause-button or by pressing the spacebar. </div>
+                              </div>
+                            </div>
+                            <div class="panel panel-default" style="border: Black;">
+                              <div class="panel-heading" style="background-color: Black;">
+                                <h4 class="panel-title">
+                                  <a style="color: Dimgrey;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse2">Click ON/OFF</a>
+                                </h4>
+                              </div>
+                              <div id="collapse2" class="panel-collapse collapse">
+                                <div class="panel-body" >If the click is turned ON the click sound is played when adding a beat and during playback. If the click sound is turned OFF it is not played during playback.</div>
+                              </div>
+                            </div>
+                            <div class="panel panel-default" style="border-color: Black;">
+                              <div class="panel-heading" style="background-color: Black;">
+                                <h4 class="panel-title">
+                                  <a style="color: Dimgrey;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse3">Split region</a>
+                                </h4>
+                              </div>
+                              <div id="collapse3" class="panel-collapse collapse">
+                                <div class="panel-body" >Split the current region into two regions (initially the entire song is one  region)
+                                on the location of the selected beat. The selected beat becomes yellow to mark that it is
+                                the boundary between two regions. Use regions to mark regions of time signatures,
+                                regions with the same tempo, etc.</div>
+                              </div>
+                            </div>
+                            <div class="panel panel-default" style="border-color: Black;">
+                              <div class="panel-heading" style="background-color: Black;">
+                                <h4 class="panel-title">
+                                  <a style="color: Dimgrey;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse4">Merge regions</a>
+                                </h4>
+                              </div>
+                              <div id="collapse4" class="panel-collapse collapse">
+                                <div class="panel-body" >Merge a region with the region left it by selecting a beat in that region and clicking the button 'Merge region to the left'.</div>
+                              </div>
+                            </div>
+                            <div class="panel panel-default" style="border-color: Black;">
+                              <div class="panel-heading" style="background-color: Black;">
+                                <h4 class="panel-title">
+                                  <a style="color: Dimgrey;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse5">Autocomplete</a>
+                                </h4>
+                              </div>
+                              <div id="collapse5" class="panel-collapse collapse">
+                                <div class="panel-body" >When you press the Autocomplete-button the current region will be autocompleted. This means that the rest of the region will be filled with beats. These beats are spaced apart with the same distance as the beats you manually added.</div>
+                              </div>
+                            </div>
+                            <div class="panel panel-default" style="border-color: Black;">
+                              <div class="panel-heading" style="background-color: Black;">
+                                <h4 class="panel-title">
+                                  <a style="color: Dimgrey;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse6">Clear all beat markers</a>
+                                </h4>
+                              </div>
+                              <div id="collapse6" class="panel-collapse collapse">
+                                <div class="panel-body" >If you want to start over completely, you can click the button 'clear all beat markers'.</div>
+                              </div>
+                            </div>
+                            <div class="panel panel-default" style="border-color: Black;">
+                              <div class="panel-heading" style="background-color: Black;">
+                                <h4 class="panel-title">
+                                  <a style="color: Dimgrey;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse7">Save Annotations</a>
+                                </h4>
+                              </div>
+                                <div id="collapse7" class="panel-collapse collapse">
+                                  <div class="panel-body" >Save the annotations to the server when you are done annotating the song by clicking the 'Save Annotations-button' </div>
+                                </div>
+                          </div>
+                    </div>
                     </div>
                     <div class="macroTrack" id="macroTrack"></div>
                     <br>
@@ -120,17 +207,9 @@
                           <span class="glyphicon glyphicon-trash"></span> Clear all markers
                         </button>
                     </div>
-                    <p class="lead">Press the 'b' key on the beat to add a beat annotation.
-                        <a href="#" id="infotext1" data-toggle="tooltip" data-placement="right" title="Drag a beat marker to move it, or double click to delete it.">
-                            <i class="material-icons">help_outline</i>
-                        </a>
-                    </p>
+                    <p class="lead">Press the 'b' key on the beat to add a beat annotation. </p>
                     <p class="lead">
                         <a href="#" class="btn btn-lg btn-default" id="toPHP" onclick="writeToFile()">Save Annotations</a>
-                        <a href="#" class="btn btn-lg btn-default" id="toPHP" onclick="autocomplete()">Autocomplete</a>
-                        <a href="#" id="infotext2" data-toggle="tooltip" data-placement="right" title="Click here when you are finished annotating. Your beat annotations will be saved on the server.">
-                            <i class="material-icons">help_outline</i>
-                        </a>
                     </p>
                     <p id="showTimeStamps"></p>
                     <textarea rows="4" cols="50" id="markerInfo" style="color:black" hidden>nothing here</textarea>
@@ -254,7 +333,7 @@
     var markerQueue = [];
     var layerHeight = 170; // height of waveform
     var timeAxisHeight = 23; // height of text above waveform
-    var seeking = false;
+    var mouseMoving = false;
     var newMousePos = null;
     var prevMousePos = null;
     var audioplayer = document.getElementsByTagName("AUDIO")[0];
@@ -363,10 +442,9 @@
                 refreshClickQueue();
                 macroHighlight[0].x = - timeline.timeContext.offset;
                 segmentLayerMacro.update();
+                updatePlugin(true);
                 timeline.tracks.update();
-                setTimeout(function() {
-                    requestAnimationFrame(loop);
-                }, 50);
+                setTimeout(function() { requestAnimationFrame(loop); }, 50);
             }
         }());
 
@@ -384,22 +462,17 @@
 
             // when navigating the timeline
             } else if (!onTimeAxis && eventType == 'mousemove') {
-                seeking = true;
+                mouseMoving = true;
                 navigateTimeline(e, timeAxis);
 
             // when seeking or when done navigating the timeline
             } else if (!onTimeAxis && eventType == 'mouseup') {
                 if (newMousePos == null) {
-                    var newTime = timeAxis.timeToPixel.invert(e.x) - timeline.timeContext.offset;
+                    var newTime = timeline.timeToPixel.invert(e.x) - timeline.timeContext.offset;
                     player.seekTo(newTime);
                     seekTo(newTime);
-                } else {
-                    seeking = false;
-                    newMousePos = null;
-                    prevMousePos = null;
-                }
-
-            }
+                };
+            };
         });
 
         // WavesJS eventlistener for the upper (macro) timeline
@@ -409,14 +482,19 @@
 
             // when seeking, only updates cursor location
             if (onTimeAxis && eType == 'mousemove') {
-                seeking = true;
+                mouseMoving = true;
                 timeline.timeContext.offset = -macroHighlight[0].x;
 
             // when done seeking
-            } else if (onTimeAxis && eType == 'mouseup' && !seeking) {
+            } else if (onTimeAxis && eType == 'mouseup' && !mouseMoving) {
                 var newTime = timeAxisMacro.timeToPixel.invert(e.x) - timelineMacro.timeContext.offset;
                 player.seekTo(newTime);
                 seekTo(newTime);
+            } else if (eType == 'mouseup') {
+                refreshWindowMacro();
+                timeAxis.setTimeContext(timeline.timeContext);
+                // timeAxis.update();
+                timeline.tracks.update();
             };
         });
     };
@@ -427,7 +505,7 @@
         var offset = timeline.timeContext.offset;
 
         // updates cursor position
-        if (!seeking) {
+        if (!mouseMoving) {
             cursorLayer.currentPosition = currentTime;
             cursorLayer.update();
             cursorLayerMacro.currentPosition = currentTime;
@@ -439,19 +517,13 @@
             segmentLayerMacro.update();
         }
         // updates lower timeline window position
-        var cursorTooFar = currentTime+2 > (windowWidth - offset) || currentTime+2 < -offset;
-        if (cursorTooFar && playSong) {
-            timeline.timeContext.offset = 1.5-currentTime;
-            timeline.tracks.update();
-            macroHighlight[0].x = - timeline.timeContext.offset;
-            segmentLayerMacro.update();
-        }
+        refreshWindow();
+
         // plays a clicksound when going past a beatmarker
         if(currentTime >= markerQueue[0] && !seeked) {
             playClick(metronome);
             markerQueue.shift();
         }
-        // macroHighlight.width = windowWidth;
     }
 
     // moves the window of the lower timeline according to mouse movement
@@ -477,6 +549,37 @@
         audioplayer.currentTime = currentTime;
         updatePlugin(true);
     };
+
+    // refreshes the viewing window from the lower timeline automatically
+    function refreshWindow() {
+        var offset = timeline.timeContext.offset;
+        var padding = windowWidth/10;
+        var cursorTooFar = currentTime+padding > (windowWidth - offset) || currentTime+padding < -offset;
+        if (cursorTooFar && playSong) {
+            if (padding + currentTime + windowWidth <= finalDur) {
+                timeline.timeContext.offset = padding-currentTime;
+                timeline.tracks.update();
+            } else {
+                timeline.timeContext.offset = windowWidth - finalDur;
+                timeline.tracks.update();
+            }
+            macroHighlight[0].x = - timeline.timeContext.offset;
+            segmentLayerMacro.update();
+        }
+    }
+
+    // refreshes the viewing window manually
+    function refreshWindowMacro() {
+        var newWidth = macroHighlight[0].width;
+        var windowXPos = macroHighlight[0].x;
+        if (windowXPos < 0) {
+            macroHighlight[0].x = 0;
+        } else if ((windowXPos + newWidth) > finalDur) {
+            newWidth = finalDur - windowXPos;
+        }
+        windowWidth = newWidth;
+        timeline.timeContext.zoom = finalDur / windowWidth;
+    }
 
     window.addEventListener("keydown", checkKeyPressed, false);
 
@@ -521,9 +624,11 @@
 
     // when a mouseup is registered when it doesn't hover above the WavesJS plugin
     function mouseUpOutOfBounds() {
-        seeking = false;
-        setTimeout(function(){newMousePos=null},10)
-        prevMousePos = null;
+        setTimeout(function(){
+            newMousePos=null;
+            mouseMoving = false;
+            prevMousePos = null;
+        },20)
     }
 
     // creates a new beatmarker using the input time
@@ -536,6 +641,10 @@
         beatMarkers.push(newmarker);
         markerLayer.render();
         markerLayer.update();
+        var markers = document.getElementsByClassName('item annotated-marker');
+        for (var i=0; i<markers.length; i++) {
+            markers[i].getElementsByTagName('text')[0].style.visibility = "hidden";
+        };
     }
 
     // deletes a specified marker
@@ -556,6 +665,10 @@
 
     // delete all the beatmarkers
     function clearMarkers() {
+        var done = window.confirm("Are you sure you want to delete all beat markers? This means you will start over completely. ");
+        if(!done) {
+            return;
+        }
         beatMarkers.length = 0;
         markerLayer.render();
         markerLayer.update();
@@ -571,10 +684,10 @@
     function toggleClick() {
         if (metronome) {
             metronome = false;
-            document.getElementById('clickToggle').innerHTML = '<span class="glyphicon glyphicon-volume-off"></span> Click OFF'
+            document.getElementById('clickToggle').innerHTML = '<span class="	glyphicon glyphicon-volume-off"></span> Click OFF'
         } else {
             metronome = true;
-            document.getElementById('clickToggle').innerHTML = '<span class="glyphicon glyphicon-volume-up"></span> Click ON'
+            document.getElementById('clickToggle').innerHTML = '<span class="	glyphicon glyphicon-volume-up"></span> Click ON'
         }
     }
 
