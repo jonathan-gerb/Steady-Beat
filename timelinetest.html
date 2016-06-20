@@ -440,6 +440,7 @@
                 setTimeout(requestAnimationFrame(loop), 20);
             } else {
                 refreshClickQueue();
+                updatePlugin(true);
                 macroHighlight[0].x = - timeline.timeContext.offset;
                 segmentLayerMacro.update();
                 timeline.tracks.update();

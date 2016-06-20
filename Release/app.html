@@ -442,6 +442,7 @@
                 refreshClickQueue();
                 macroHighlight[0].x = - timeline.timeContext.offset;
                 segmentLayerMacro.update();
+                updatePlugin(true);
                 timeline.tracks.update();
                 setTimeout(function() { requestAnimationFrame(loop); }, 50);
             }
