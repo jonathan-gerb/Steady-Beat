@@ -1020,6 +1020,7 @@
                 return a-b;
             });
             var beatsToAdd = autocompleteAlgorithm(markerTimes, onsetData, begin, end);
+            addMarkerList(beatsToAdd);
             console.log("beatsToAdd", beatsToAdd);
         });
     }
@@ -1047,7 +1048,7 @@
             prevbeat = truebeats[i];
             while (truebeats[i+1] - prevbeat > interval * 1.5) { // 1.5 can be balanced
                 roughtime = truebeats+interval;
-                best = [roughtime, interval * 0.15]; // 0.15 can be balanced
+                var best = [roughtime, interval * 0.15]; // 0.15 can be balanced
                 for (var j = 0; j < onsetbeats.length; j++) {  //TODO: Dit kan veel, veel sneller met een beetje een intelligent zoekalgoritme. Maar is niet heel eenvoudig....
                     if (Math.abs(onsetbeats[j] - roughtime) < best[1]) {
                         best = [onsetbeats[j], Math.abs(onsetbeats[j] - roughtime)];
@@ -1057,12 +1058,14 @@
                 addedbeats.push(best[0]);
             }
         }
+        console.log("these beats were added.");
+        console.log(addedbeats);
 
         // last beat needs to be compared to the end, as it cannot be compared to the next beat. I'm just making a seperate code-block for that and copypasting most of it from above. sue me.
         prevbeat = truebeats[truebeats.length-1];
         while (end - prevbeat > interval * 1.5) { // 1.5 can be balanced
-            roughtime = truebeats+interval;
-            best = [roughtime, interval * 0.15]; // 0.15 can be balanced
+            roughtime = prevbeat+interval;
+            var best = [roughtime, interval * 0.15]; // 0.15 can be balanced
             for (var j = 0; j < onsetbeats.length; j++) {  //TODO: Dit kan veel, veel sneller met een beetje een intelligent zoekalgoritme. Maar is niet heel eenvoudig....
                 if (Math.abs(onsetbeats[j] - roughtime) < best[1]) {
                     best = [onsetbeats[j], Math.abs(onsetbeats[j] - roughtime)];
