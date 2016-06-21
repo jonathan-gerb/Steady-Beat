@@ -682,7 +682,7 @@
     // deletes a specified marker
     function deleteMarker(marker) {
         var idx = beatMarkers.indexOf(marker);
-        beatMarkers.splice(idx);
+        beatMarkers.splice(idx, 1);
         markerLayer.render();
         markerLayer.update();
     }
