@@ -94,7 +94,9 @@
                     <br>
                     <div id="sidebar">
                         <div style="background-color:Black;" class="panel-heading">
-                        <a style="color: White; text-decoration:none; " href="index.html"><h4> Song selection </h4> </a>
+                            <button type="button" onclick="gotoSongSelection()" data-toggle="tooltip" data-placement="center" title="SongSelection" style="background-color:Black;">
+                              <h4> Song Selection </h4>
+                            </button>
                         </div>
                         <div id="player"></div>
 
@@ -655,6 +657,15 @@
             }
 
         },20)
+    }
+
+    // after confirm popup: goes back to song selection page
+    function gotoSongSelection() {
+        var confirm = window.confirm("Are you sure you want to start on a new song? Your progress on this song will not be saved.");
+        if(!confirm) {
+            return;
+        }
+        window.location = "index.html";
     }
 
     // creates a new beatmarker using the input time
