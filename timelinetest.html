@@ -864,8 +864,9 @@
     function autocomplete() {
         begin = 0;
         end = 0;
-        var domSeg = segmentLayer.selectedItems[i];
-        begin = segmentLayer.getDatumFromItem(domMarker).x;
+        var domSeg = segmentLayer.selectedItems[0];
+        begin = segmentLayer.getDatumFromItem(domSeg).x;
+        end = segmentLayer.getDatumFromItem(domSeg).width + segmentLayer.getDatumFromItem(domSeg).x;
         document.getElementById('loadingGif').style.display = "inline-block";
 
         var markerTimes = [];
@@ -986,11 +987,112 @@
             type: "POST",
             url: 'autocomplete.php',
             data: {youtubeId: getYoutubeId()},
-             success:function(data) {
-            alert(data);
-             }
+            success: function(data) {
+                alert(data);
+            }
         });
         }
+        $.get("./onsets/lETmskoqh30_vamp_qm-vamp-plugins_qm-onsetdetector_onsets.csv", function(data, status){
+            alert(data);
+            var onsetData = data.split("\n");
+            alert(onsetData);
+            for (var i = 0; i < onsetData.length; i++) {
+                onsetData[i] = parseFloat(onsetData[i]);
+            }
+            console.log(typeof onsetData[1]);
+            console.log(onsetData);
+
+            // code from autocomplete to get the current segment begin and end time + all markers in that segment
+            begin = 0;
+            end = 0;
+            var domSeg = segmentLayer.selectedItems[0];
+            begin = segmentLayer.getDatumFromItem(domSeg).x;
+            end = segmentLayer.getDatumFromItem(domSeg).width + segmentLayer.getDatumFromItem(domSeg).x;
+            document.getElementById('loadingGif').style.display = "inline-block";
+
+            var markerTimes = [];
+            for (i = 0; i < beatMarkers.length; i++) {
+                if(begin < beatMarkers[i].time && beatMarkers[i].time < end) {
+                    markerTimes.push(beatMarkers[i].time);
+                }
+            }
+            markerTimes.sort(function(a,b) {
+                return a-b;
+            });
+            var beatsToAdd = autocompleteAlgorithm(markerTimes, onsetData, begin, end);
+            console.log("beatsToAdd", beatsToAdd);
+        });
+    }
+
+    function autocompleteAlgorithm(userbeats, onsetbeats, begin, end) {
+        console.log("begin ", begin);
+        console.log("end", end);
+        truebeats = []
+        for(var i = 0; i < userbeats.length; i++) {
+            if (userbeats[i] <= end && userbeats[i] >= begin) {
+                truebeats.push(userbeats[i]);
+            }
+        }
+        console.log('truebeats', truebeats);
+        if (truebeats.length < 4) {
+            alert("You need to annotate some more beats yourself, before it can be completed.");
+        }
+
+        interval = get_interval(truebeats);
+        console.log('interval',interval)
+
+        addedbeats = [];
+        for (var i = 0; i < truebeats.length-1; i++) {
+            // if two beats are too far apart, we fill in the gap
+            prevbeat = truebeats[i];
+            while (truebeats[i+1] - prevbeat > interval * 1.5) { // 1.5 can be balanced
+                roughtime = truebeats+interval;
+                best = [roughtime, interval * 0.15]; // 0.15 can be balanced
+                for (var j = 0; j < onsetbeats.length; j++) {  //TODO: Dit kan veel, veel sneller met een beetje een intelligent zoekalgoritme. Maar is niet heel eenvoudig....
+                    if (Math.abs(onsetbeats[j] - roughtime) < best[1]) {
+                        best = [onsetbeats[j], Math.abs(onsetbeats[j] - roughtime)];
+                    }
+                }
+                prevbeat = best[0];
+                addedbeats.push(best[0]);
+            }
+        }
+
+        // last beat needs to be compared to the end, as it cannot be compared to the next beat. I'm just making a seperate code-block for that and copypasting most of it from above. sue me.
+        prevbeat = truebeats[truebeats.length-1];
+        while (end - prevbeat > interval * 1.5) { // 1.5 can be balanced
+            roughtime = truebeats+interval;
+            best = [roughtime, interval * 0.15]; // 0.15 can be balanced
+            for (var j = 0; j < onsetbeats.length; j++) {  //TODO: Dit kan veel, veel sneller met een beetje een intelligent zoekalgoritme. Maar is niet heel eenvoudig....
+                if (Math.abs(onsetbeats[j] - roughtime) < best[1]) {
+                    best = [onsetbeats[j], Math.abs(onsetbeats[j] - roughtime)];
+                }
+            }
+            prevbeat = best[0];
+            addedbeats.push(best[0]);
+        }
+        return addedbeats;
+    }
+
+    function get_interval(times) {
+        intervals = [];
+        for(var i = 0; i < times.length-1; i++) {
+            intervals[i] = times[i+1] - times[i];
+        }
+        intervals.sort(function(a,b) {
+            return a-b;
+        });
+        middlepart = [];
+        for(var i = Math.floor(intervals.length/4); i < Math.floor(intervals.length/4)*3; i++) {
+            middlepart.push(intervals[i]);
+        }
+        var sum = 0;
+        for( var i = 0; i < middlepart.length; i++ ){
+            sum += middlepart[i];
+        }
+
+        var pseudoAvg = sum/middlepart.length;
+        return pseudoAvg;
     }
 
     </script>
