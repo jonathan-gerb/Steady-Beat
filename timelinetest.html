@@ -32,14 +32,6 @@
     <![endif]-->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
-    #infotext1,
-    #infobutton1 {
-        float: bottom-right;
-    }
-
-    #infobutton2 {
-        float: bottom-right;
-    }
     #player {
         position: fixed;
         left: 0;
@@ -51,7 +43,7 @@
         top: 0;
         bottom: 0;
         left: 0;
-        width: 240px;
+        width: 300px;
     }#sidebarRight {
         background-color: DimGray ;
         position: absolute;
@@ -101,86 +93,84 @@
                     <h1 class="cover-heading"></h1>
                     <br>
                     <div id="sidebar">
-                        <a href="index.html">Song selection</a>
+                        <div style="background-color:Black;" class="panel-heading">
+                        <a style="color: White; text-decoration:none; " href="index.html"><h4> Song selection </h4> </a>
+                        </div>
                         <div id="player"></div>
-                    </div>
-                    <div id="sidebarRight">
-                        <div class="panel-group" id="accordion">
-                            <div class="panel panel-default" style="border-color: Black;">
-                              <div class="panel-heading" style="background-color: Black;">
-                                <h4 class="panel-title">
-                                  <a style="color: Dimgrey;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse1">Play / Pause</a>
-                                </h4>
-                              </div>
-                              <div id="collapse1" class="panel-collapse collapse in">
-                                <div class="panel-body" >Play and pause the song using the Play/Pause-button or by pressing the spacebar. </div>
-                              </div>
-                            </div>
+
+                        <div class="panel-group" id="accordionAbove"  >
                             <div class="panel panel-default" style="border: Black;">
-                              <div class="panel-heading" style="background-color: Black;">
-                                <h4 class="panel-title">
-                                  <a style="color: Dimgrey;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse2">Click ON/OFF</a>
-                                </h4>
-                              </div>
-                              <div id="collapse2" class="panel-collapse collapse">
-                                <div class="panel-body" >If the click is turned ON the click sound is played when adding a beat and during playback. If the click sound is turned OFF it is not played during playback.</div>
-                              </div>
-                            </div>
-                            <div class="panel panel-default" style="border-color: Black;">
-                              <div class="panel-heading" style="background-color: Black;">
-                                <h4 class="panel-title">
-                                  <a style="color: Dimgrey;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse3">Split region</a>
-                                </h4>
-                              </div>
-                              <div id="collapse3" class="panel-collapse collapse">
-                                <div class="panel-body" >Split the current region into two regions (initially the entire song is one  region)
-                                on the location of the selected beat. The selected beat becomes yellow to mark that it is
-                                the boundary between two regions. Use regions to mark regions of time signatures,
-                                regions with the same tempo, etc.</div>
-                              </div>
-                            </div>
-                            <div class="panel panel-default" style="border-color: Black;">
-                              <div class="panel-heading" style="background-color: Black;">
-                                <h4 class="panel-title">
-                                  <a style="color: Dimgrey;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse4">Merge regions</a>
-                                </h4>
-                              </div>
-                              <div id="collapse4" class="panel-collapse collapse">
-                                <div class="panel-body" >Merge a region with the region left it by selecting a beat in that region and clicking the button 'Merge region to the left'.</div>
-                              </div>
-                            </div>
-                            <div class="panel panel-default" style="border-color: Black;">
-                              <div class="panel-heading" style="background-color: Black;">
-                                <h4 class="panel-title">
-                                  <a style="color: Dimgrey;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse5">Autocomplete</a>
-                                </h4>
-                              </div>
-                              <div id="collapse5" class="panel-collapse collapse">
-                                <div class="panel-body" >When you press the Autocomplete-button the current region will be autocompleted. This means that the rest of the region will be filled with beats. These beats are spaced apart with the same distance as the beats you manually added.</div>
-                              </div>
-                            </div>
-                            <div class="panel panel-default" style="border-color: Black;">
-                              <div class="panel-heading" style="background-color: Black;">
-                                <h4 class="panel-title">
-                                  <a style="color: Dimgrey;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse6">Clear all beat markers</a>
-                                </h4>
-                              </div>
-                              <div id="collapse6" class="panel-collapse collapse">
-                                <div class="panel-body" >If you want to start over completely, you can click the button 'clear all beat markers'.</div>
-                              </div>
-                            </div>
-                            <div class="panel panel-default" style="border-color: Black;">
-                              <div class="panel-heading" style="background-color: Black;">
-                                <h4 class="panel-title">
-                                  <a style="color: Dimgrey;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse7">Save Annotations</a>
-                                </h4>
-                              </div>
-                                <div id="collapse7" class="panel-collapse collapse">
-                                  <div class="panel-body" >Save the annotations to the server when you are done annotating the song by clicking the 'Save Annotations-button' </div>
+                                <div class="panel-heading" style="background-color: Black;">
+                                    <h4 class="panel-title">
+                                        <a style="color: White;text-decoration:none" data-toggle="collapse" data-parent="#accordionAbove" href="#collapseAll"><h4>Information</h4></a>
+                                    </h4>
                                 </div>
-                          </div>
+                                <div id="collapseAll" class="panel-collapse collapse">
+                                    <div class="panel-body" >
+
+                                        <div class="panel-group" id="accordion" style="overflow-y:auto; direction:rtl; height:40vh;">
+                                            <div class="panel panel-default" style="border-color: Black;">
+                                                <div class="panel-heading" style="background-color: Black;">
+                                                    <h4 class="panel-title">
+                                                        <a style="color: Dimgrey;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse1">Play / Pause</a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapse1" class="panel-collapse collapse">
+                                                    <div class="panel-body" >Play and pause the song using the Play/Pause-button or by pressing the spacebar. </div>
+                                                </div>
+                                            </div>
+                                            <div class="panel panel-default" style="border: Black;">
+                                                <div class="panel-heading" style="background-color: Black;">
+                                                    <h4 class="panel-title">
+                                                        <a style="color: Dimgrey;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse2">Click ON/OFF</a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapse2" class="panel-collapse collapse">
+                                                    <div class="panel-body" >Use this button to determine whether a click sound is played during playback. </div>
+                                                </div>
+                                            </div>
+                                            <div class="panel panel-default" style="border-color: Black;">
+                                                <div class="panel-heading" style="background-color: Black;">
+                                                    <h4 class="panel-title"
+                                                        <a style="color: Dimgrey;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse3">Split region</a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapse3" class="panel-collapse collapse">
+                                                    <div class="panel-body" >Split the current region into two regions (initially the entire song is one  region)
+                                                    on the location of the selected beat. The selected beat becomes yellow to mark that it is
+                                                    the boundary between two regions. Use regions to mark regions of time signatures,
+                                                    regions with the same tempo, etc.</div>
+                                                </div>
+                                            </div>
+                                            <div class="panel panel-default" style="border-color: Black;">
+                                                <div class="panel-heading" style="background-color: Black;">
+                                                    <h4 class="panel-title">
+                                                        <a style="color: Dimgrey;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse4">Merge regions</a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapse4" class="panel-collapse collapse">
+                                                    <div class="panel-body" >Merge a region with the region left it by selecting a beat in that region and clicking the button 'Merge region to the left'.</div>
+                                                </div>
+                                            </div>
+                                            <div class="panel panel-default" style="border-color: Black;">
+                                                <div class="panel-heading" style="background-color: Black;">
+                                                    <h4 class="panel-title">
+                                                        <a style="color: Dimgrey;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse5">Autocomplete</a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapse5" class="panel-collapse collapse">
+                                                    <div class="panel-body" >When you press the Autocomplete-button the current region will be autocompleted. This means that the rest of the region will be filled with beats. These beats are spaced apart with the same distance as the beats you manually added.</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    </div>
+
+
                     <div class="macroTrack" id="macroTrack"></div>
                     <br>
                     <div class="track" id="track-1"></div>
@@ -197,7 +187,7 @@
                           <span class="glyphicon glyphicon-scissors"></span> split on selected beat
                         </button>
                         <button type="button" class="btn btn-default btn-sm" onclick="mergeSegmentsOnBeat()">
-                          <span class="	glyphicon glyphicon-erase"></span> merge left on selected beat
+                          <span class="	glyphicon glyphicon-erase"></span> merge left on selected region
                         </button>
                         <!-- <button type="button" class="btn btn-default btn-sm" onclick="autocomplete()"> -->
                         <button type="button" class="btn btn-default btn-sm" onclick="autocompletePHP()">
@@ -207,6 +197,15 @@
                         <button type="button" class="btn btn-default btn-sm" onclick="clearMarkers()" data-toggle="tooltip" data-placement="right" title="You can also select a single marker and press delete to remove it!">
                           <span class="glyphicon glyphicon-trash"></span> Clear all markers
                         </button>
+                        <select id="timeSel" onchange="timeSigChange()" style="visibility:hidden">
+                            <option value="4/4">4/4</option>
+                            <option value="6/8">6/8</option>
+                            <option value="8/8">8/8</option>
+                            <option value="3/4">3/4</option>
+                            <option value="7/8">7/8</option>
+                            <option value="5/4">5/4</option>
+                            <option value="12/8">12/8</option>
+                        </select>
                     </div>
                     <p class="lead">Press the 'b' key on the beat to add a beat annotation. </p>
                     <p class="lead">
@@ -248,7 +247,7 @@
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('player', {
             height: '240',
-            width: '240',
+            width: '300',
             videoId: getYoutubeId(),
             playerVars: {
                 'controls': 0,
@@ -315,7 +314,6 @@
     var data;
     var markerLayer;
     var beatMarkers = [];
-    var markerCounter = 1;
     var segmentLayer;
     var macroHighlight;
     var cursorLayerMacro;
@@ -328,7 +326,7 @@
     var timeContextMacro;
     var timeContext;
     var startTime;
-    var currentTime;
+    var currentTime = 0;
     var finalDur;
     var windowWidth = 20;
     var markerQueue = [];
@@ -356,7 +354,7 @@
         var pixelsPerSecond = width / duration;
 
         segments = [{x: 0, width: duration, height: layerHeight, top: timeAxisHeight,
-                color: 'steelblue', opacity: 0.2, text: '4/4'}, ];
+                color: 'steelblue', opacity: 0, text: '4/4'}, ];
 
         macroHighlight = [{x: 0, width: 20, height: macroTimelineHeight, color: 'white', opacity: 0.2}, ];
 
@@ -388,6 +386,11 @@
 
         // create segment layer
         segmentLayer = new wavesUI.helpers.SegmentLayer(segments, { height: layerHeight, top: timeAxisHeight, displayHandlers: false });
+        segmentLayer.configureShape(wavesUI.shapes.AnnotatedSegment, {
+            opacity: function(d,v) {
+                return segmentOpacity(d);
+            }
+        })
         timeline.addLayer(segmentLayer, 'main');
 
         segmentLayerMacro = new wavesUI.helpers.SegmentLayer(macroHighlight, { height: macroTimelineHeight, displayHandlers: true });
@@ -444,7 +447,7 @@
                 setTimeout(requestAnimationFrame(loop), 20);
             } else {
                 refreshClickQueue();
-                updatePlugin(true);
+                updatePlugin(false);
                 macroHighlight[0].x = - timeline.timeContext.offset;
                 segmentLayerMacro.update();
                 timeline.tracks.update();
@@ -457,15 +460,16 @@
             var eventType = e.type;
             var segment = segmentLayer.getItemFromDOMElement(e.target);
             var onTimeAxis = $.inArray(timeAxis, timeline.getHitLayers(e));
+            var onSegment = $.inArray(segmentLayer, timeline.getHitLayers(e));
 
             // highlight a region when hovering above it
             if (segment !== null && (eventType == 'mouseover' || eventType == 'mouseout')) {
                 var datum = segmentLayer.getDatumFromItem(segment);
-                datum.opacity = eventType == 'mouseout' ? 0.2 : 0.5;
+                hoverSeg = eventType == 'mouseover' ? datum : null;
                 segmentLayer.updateShapes();
 
             // when navigating the timeline
-            } else if (!onTimeAxis && eventType == 'mousemove') {
+            } else if ((!onTimeAxis || onSegment) && eventType == 'mousemove') {
                 mouseMoving = true;
                 navigateTimeline(e, timeAxis);
 
@@ -506,7 +510,11 @@
     // Renders all layers from the WavesJS plugin and plays a sound when
     // encountering a beat marker
     function updatePlugin(seeked) {
-        var offset = timeline.timeContext.offset;
+        // plays a clicksound when going past a beatmarker
+        if(currentTime >= markerQueue[0] && !seeked) {
+            playClick(metronome);
+            markerQueue.shift();
+        }
 
         // updates cursor position
         if (!mouseMoving) {
@@ -517,17 +525,12 @@
 
         // updates the highlight on the upper timeline
         } else {
-            macroHighlight[0].x = - offset;
+            macroHighlight[0].x = - timeline.timeContext.offset;
             segmentLayerMacro.update();
         }
         // updates lower timeline window position
         refreshWindow();
 
-        // plays a clicksound when going past a beatmarker
-        if(currentTime >= markerQueue[0] && !seeked) {
-            playClick(metronome);
-            markerQueue.shift();
-        }
     }
 
     // moves the window of the lower timeline according to mouse movement
@@ -585,6 +588,13 @@
         timeline.timeContext.zoom = finalDur / windowWidth;
     }
 
+    function timeSigChange() {
+        var domSeg = segmentLayer.selectedItems[0];
+        var segment = segmentLayer.getDatumFromItem(domSeg);
+        segment.text = document.getElementById('timeSel').value;
+        segmentLayer.update();
+    }
+
     window.addEventListener("keydown", checkKeyPressed, false);
 
     // take action corresponding to the button press
@@ -605,9 +615,11 @@
 
         // on 'delete' press
         } else if (e.keyCode == "46") {
-            var selectedMarker = document.getElementsByClassName('item annotated-marker selected');
-            if (selectedMarker != undefined) {
-                deleteMarker(selectedMarker);
+            var domMarker = markerLayer.selectedItems[0];
+            if (domMarker != undefined) {
+                deleteMarker(markerLayer.getDatumFromItem(domMarker));
+            } else {
+                console.log('Error: no marker was selected. Ignoring deletion.');
             }
         }
     }
@@ -624,59 +636,55 @@
         }
     }
 
-    window.addEventListener("mouseup", mouseUpOutOfBounds, false);
+    window.addEventListener("mouseup", mouseUp, false);
 
-    // when a mouseup is registered when it doesn't hover above the WavesJS plugin
-    function mouseUpOutOfBounds() {
+    // when a mouseup is registered
+    function mouseUp() {
         setTimeout(function(){
             newMousePos=null;
             mouseMoving = false;
             prevMousePos = null;
+
+            var domSeg = segmentLayer.selectedItems[0];
+            if (domSeg != undefined) {
+                dropdown = document.getElementById("timeSel");
+                dropdown.style.visibility = "visible";
+                dropdown.value = segmentLayer.getDatumFromItem(domSeg).x;
+            } else {
+                document.getElementById("timeSel").style.visibility = "hidden";
+            }
+
         },20)
     }
 
     // creates a new beatmarker using the input time
     function addMarker(markerTime) {
-        var newmarker = {
+        var newMarker = {
             time: markerTime,
-            text: markerCounter.toString(),
+            text: ' ',
         }
-        markerCounter++;
-        beatMarkers.push(newmarker);
+        beatMarkers.push(newMarker);
         markerLayer.render();
         markerLayer.update();
-        var markers = document.getElementsByClassName('item annotated-marker');
-        for (var i=0; i<markers.length; i++) {
-            markers[i].getElementsByTagName('text')[0].style.visibility = "hidden";
-        };
     }
 
     // deletes a specified marker
     function deleteMarker(marker) {
-        for (var i = 0; i < beatMarkers.length; i++) {
-            if (beatMarkers[i].text == marker[0].childNodes[2].innerHTML) {
-                // put the element to be deleted at the end, and pop it off
-                var temp = beatMarkers[i];
-                beatMarkers[i] = beatMarkers[beatMarkers.length - 1];
-                beatMarkers[beatMarkers.length - 1] = temp;
-                beatMarkers.pop();
-                break;
-            }
-        }
+        var idx = beatMarkers.indexOf(marker);
+        beatMarkers.splice(idx);
         markerLayer.render();
         markerLayer.update();
     }
 
     // delete all the beatmarkers
     function clearMarkers() {
-        var done = window.confirm("Are you sure you want to delete all beat markers? This means you will start over completely. ");
-        if(!done) {
+        var confirm = window.confirm("Are you sure you want to delete all beat markers? This means you will start over completely. ");
+        if(!confirm) {
             return;
         }
         beatMarkers.length = 0;
         markerLayer.render();
         markerLayer.update();
-        markerCounter = 1;
     }
 
     var currentClick = 1;
@@ -722,18 +730,13 @@
 
     // Creates a segment on selected marker and shortens the previous segment
     function splitSegOnBeat() {
-        var selectedMarker = document.getElementsByClassName('item annotated-marker selected');
-        var j;
-        for (var j = 0; j < beatMarkers.length; j++) {
-            if (beatMarkers[j].text == selectedMarker[0].childNodes[2].innerHTML) {
-
-                // put the element to be deleted at the end, and pop it off
-                var dataSelectedMarker = beatMarkers[j];
-                startTime = dataSelectedMarker.time;
-                break;
-            }
+        var domMarker = markerLayer.selectedItems[0];
+        if (domMarker != undefined) {
+            var startTime = markerLayer.getDatumFromItem(domMarker).time;
+            splitSegments(segments, startTime);
+        } else {
+            console.log('Error: no beat selected. Split ignored.');
         }
-        splitSegments(segments, startTime);
     }
 
     // Creates the new segment
@@ -744,14 +747,15 @@
             height: layerHeight,
             top: timeAxisHeight,
             color: 'steelblue',
-            opacity: 0.2,
+            opacity: 0,
             text: '4/4'
         };
         for (var i = 0; i < segments.length; i++) {
-            if (segments[i].x < splitTime && splitTime < (segments[i].x + segments[i].width)){
-                oldWidth = segments[i].width;
-                segments[i].width = splitTime - segments[i].x;
-                newSegment.width = oldWidth - segments[i].width;
+            var currentSeg = segments[i];
+            if (currentSeg.x < splitTime && splitTime < (currentSeg.x + currentSeg.width)){
+                oldWidth = currentSeg.width;
+                currentSeg.width = splitTime - currentSeg.x;
+                newSegment.width = oldWidth - currentSeg.width;
                 segments.push(newSegment);
                 break;
             }
@@ -762,23 +766,28 @@
 
     // merge 2 regions by removing selected region and extending the previous
     function mergeSegmentsOnBeat() {
-        var selectedMarker = document.getElementsByClassName('item annotated-marker selected');
-        var j;
-        for (var j = 0; j < beatMarkers.length; j++) {
-            if (beatMarkers[j].text == selectedMarker[0].childNodes[2].innerHTML) {
+        var domSeg = segmentLayer.selectedItems[0];
+        if (domSeg != undefined) {
+            var selectedSeg = segmentLayer.getDatumFromItem(domSeg);
+            var mergeTime = selectedSeg.x;
 
-                // put the element to be deleted at the end, and pop it off
-                var dataSelectedMarker = beatMarkers[j];
-                mergeTime = dataSelectedMarker.time;
-                break;
+            for (var i = 0; i < segments.length; i++) {
+                var currentSeg = segments[i];
+                if (mergeTime == (currentSeg.x + currentSeg.width)) {
+                    selectedSeg.x = currentSeg.x;
+                    selectedSeg.width = selectedSeg.width + currentSeg.width;
+                    segments.splice(i,1);
+                    break;
+                }
             }
-        }
-        mergeSegmentsLeft(segments, mergeTime);
-        segmentLayer.render();
-        segmentLayer.update();
+            segmentLayer.render();
+            segmentLayer.update();
+        } else {
+            console.log('Error: no segment was selected. Ignoring merge.');
+        };
     }
 
-    // Merges segment that contains mergeTime with the previous segment
+    // Merges segment that contains mergeTime with the previous segment NO LONGER USED
     function mergeSegmentsLeft(segments, mergeTime) {
         var selectedSegment;
         var endTimePreviousSeg;
@@ -802,25 +811,35 @@
         }
       }
 
-    // change color of marker if it's the start of a region or if it's selected
-    function markerColor(d) {
-        // SELECTION DOESNT WORK
-        var selected = false;
-        if ($.inArray(d, markerLayer.selectedItems)) {
-            selected = true;
+    var hoverSeg = null;
+    function segmentOpacity(seg) {
+        var hovered = false;
+        if (hoverSeg != null && hoverSeg == seg) {
+            hovered = true;
         }
+        var domSeg = segmentLayer.selectedItems[0];
+        if (domSeg != undefined && segmentLayer.getDatumFromItem(domSeg) == seg) {
+            return hovered ? 0.6 : 0.4;
+        } else {
+            return hovered ? 0.2 : 0;
+        }
+    }
+
+    // change color of marker if it's the start of a region or if it's selected
+    function markerColor(marker) {
+        var selected = false;
+        var domMarker = markerLayer.selectedItems[0];
+        if (domMarker != undefined && markerLayer.getDatumFromItem(domMarker) == marker) {
+            selected = true;
+        };
+
         for (var i = 0; i<segments.length; i++) {
-            var diff = Math.abs(segments[i].x - d.time);
-            if (selected && diff < 0.0001) {
-                return '#cccc00';
-            } else if (diff < 0.0001) {
-                return 'yellow';
+            sameAsSegment = segments[i].x == marker.time;
+            if (sameAsSegment) {
+                return selected ? 'yellow' : '#cccc00';
             }
         }
-        if (selected) {
-            return '#cc0000'
-        }
-        return 'red';
+        return selected ? '#ff0000' : '#bb0000';
     }
 
     // cleans the Segments array (doesn't work yet)
@@ -832,24 +851,9 @@
     function autocomplete() {
         begin = 0;
         end = 0;
-        var selectedMarker = document.getElementsByClassName('item annotated-marker selected');
+        var domSeg = segmentLayer.selectedItems[i];
+        begin = segmentLayer.getDatumFromItem(domMarker).x;
         document.getElementById('loadingGif').style.display = "inline-block";
-        var j;
-        for (var j = 0; j < beatMarkers.length; j++) {
-            if (beatMarkers[j].text == selectedMarker[0].childNodes[2].innerHTML) {
-                var dataSelectedMarker = beatMarkers[j];
-                begin = dataSelectedMarker.time;
-                break;
-            }
-        }
-
-        for (var i = 0; i < segments.length; i++) {
-            if(segments[i].x <= begin && begin < (segments[i].x + segments[i].width)) {
-                end = segments[i].x + segments[i].width;
-                begin = segments[i].x;
-                break;
-            }
-        }
 
         var markerTimes = [];
         for (i = 0; i < beatMarkers.length; i++) {
