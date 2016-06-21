@@ -7289,12 +7289,6 @@ var SelectionState = (function (_BaseState) {
         case 'mousedown':
           this.onMouseDown(e);
           break;
-        case 'mousemove':
-          this.onMouseMove(e);
-          break;
-        case 'mouseup':
-          this.onMouseUp(e);
-          break;
         case 'click':
           this.onClick(e);
           break;
@@ -7305,50 +7299,6 @@ var SelectionState = (function (_BaseState) {
           this.onKey(e);
           break;
       }
-    }
-  }, {
-    key: '_addBrush',
-    value: function _addBrush(track) {
-      if (track.$brush) {
-        return;
-      }
-
-      var brush = document.createElementNS(_coreNamespace2['default'], 'rect');
-      brush.style.fill = '#686868';
-      brush.style.opacity = 0.2;
-
-      track.$interactions.appendChild(brush);
-      track.$brush = brush;
-    }
-  }, {
-    key: '_removeBrush',
-    value: function _removeBrush(track) {
-      if (track.$brush === null) {
-        return;
-      }
-
-      this._resetBrush(track);
-      track.$interactions.removeChild(track.$brush);
-      delete track.$brush;
-    }
-  }, {
-    key: '_resetBrush',
-    value: function _resetBrush(track) {
-      var $brush = track.$brush;
-      // reset brush element
-      $brush.setAttributeNS(null, 'transform', 'translate(0, 0)');
-      $brush.setAttributeNS(null, 'width', 0);
-      $brush.setAttributeNS(null, 'height', 0);
-    }
-  }, {
-    key: '_updateBrush',
-    value: function _updateBrush(e, track) {
-      var $brush = track.$brush;
-      var translate = 'translate(' + e.area.left + ', ' + e.area.top + ')';
-
-      $brush.setAttributeNS(null, 'transform', translate);
-      $brush.setAttributeNS(null, 'width', e.area.width);
-      $brush.setAttributeNS(null, 'height', e.area.height);
     }
   }, {
     key: 'onKey',
@@ -7365,61 +7315,12 @@ var SelectionState = (function (_BaseState) {
         return;
       }
 
-      this._addBrush(this._currentTrack);
 
       // recreate the map
       this._layerSelectedItemsMap = new _Map();
       this._currentTrack.layers.forEach(function (layer) {
         _this._layerSelectedItemsMap.set(layer, layer.selectedItems.slice(0));
       });
-    }
-  }, {
-    key: 'onMouseMove',
-    value: function onMouseMove(e) {
-      var _this2 = this;
-
-      this._updateBrush(e, this._currentTrack);
-
-      this._currentTrack.layers.forEach(function (layer) {
-        var currentSelection = layer.selectedItems;
-        var currentItems = layer.getItemsInArea(e.area);
-
-        // if is not pressed
-        if (!e.originalEvent.shiftKey) {
-          layer.unselect(currentSelection);
-          layer.select(currentItems);
-        } else {
-          (function () {
-            var toSelect = [];
-            var toUnselect = [];
-            // use the selection from the previous drag
-            var previousSelection = _this2._layerSelectedItemsMap.get(layer);
-            // toUnselect = toUnselect.concat(previousSelectedItems);
-
-            currentItems.forEach(function (item) {
-              if (previousSelection.indexOf(item) === -1) {
-                toSelect.push(item);
-              } else {
-                toUnselect.push(item);
-              }
-            });
-
-            currentSelection.forEach(function (item) {
-              if (currentItems.indexOf(item) === -1 && previousSelection.indexOf(item) === -1) {
-                toUnselect.push(item);
-              }
-            });
-
-            layer.unselect(toUnselect);
-            layer.select(toSelect);
-          })();
-        }
-      });
-    }
-  }, {
-    key: 'onMouseUp',
-    value: function onMouseUp(e) {
-      this._removeBrush(this._currentTrack);
     }
   }, {
     key: 'onClick',
