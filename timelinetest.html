@@ -65,8 +65,10 @@
     }.btn-default {
         margin: 3px;
     }.panel-body {
-        color: Grey;
+        color: White;
         background-color: Black;
+    }.dropdown {
+        color:black;
     }
     </style>
 </head>
@@ -169,7 +171,7 @@
                                                     </h4>
                                                 </div>
                                                 <div id="collapse6" class="panel-collapse collapse">
-                                                    <div class="panel-body" ><p>Waveform generation by <a href="http://wavesjs.github.io/">WavesJS-UI</a>, Project Members <a href="#">@rockforr</a>, <a href="#">@blane</a>, <a href="#">@nindia</a>, <a href="#">@clarayeah__</a>, <a href="#">@adrivri</a>.</p></div>
+                                                    <div class="panel-body" ><p>Waveform generation by <a href="http://wavesjs.github.io/">WavesJS-UI</a>, Project Members <a href="https://nl.linkedin.com/in/jonathan-gerbscheid-501aa0112">Jonathan Gerbscheid</a>, <a href="#">Bart Laan</a>, <a href="https://nl.linkedin.com/in/arianne-van-nieuwenhuijsen-aa1a9a112">Arianne van Nieuwenhuijsen</a>, <a href="https://hm.linkedin.com/in/clara-tump-4bb841b4">Clara Tump</a>, <a href="#">Adriaan de Vries</a>.</p></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -206,15 +208,21 @@
                         <button type="button" class="btn btn-default btn-sm" onclick="clearMarkers()" data-toggle="tooltip" data-placement="right" title="You can also select a single marker and press delete to remove it!">
                           <span class="glyphicon glyphicon-trash"></span> Clear all markers
                         </button>
-                        <select id="timeSel" onchange="timeSigChange()" style="visibility:hidden">
-                            <option value="4/4">4/4</option>
-                            <option value="6/8">6/8</option>
-                            <option value="8/8">8/8</option>
-                            <option value="3/4">3/4</option>
-                            <option value="7/8">7/8</option>
-                            <option value="5/4">5/4</option>
-                            <option value="12/8">12/8</option>
-                        </select>
+                        <div id="timeSigSelect" style="visibility:hidden">
+                            <br>
+                            <p id="timeSigText">Time signature of selected region: </p>
+                            <select class="dropdown" id="timeSel" onchange="timeSigChange()">
+                                <option value="4/4">4/4</option>
+                                <option value="3/4">3/4</option>
+                                <option value="8/8">8/8</option>
+                                <option value="6/8">6/8</option>
+                                <option value="5/4">5/4</option>
+                                <option value="7/8">7/8</option>
+                                <option value="9/8">9/8</option>
+                                <option value="10/8">10/8</option>
+                                <option value="12/8">12/8</option>
+                            </select>
+                        </div>
                     </div>
                     <p class="lead">Press the 'b' key on the beat to add a beat annotation. </p>
                     <p class="lead">
@@ -652,11 +660,10 @@
             // what to do with the time sig dropdown when a click is registered
             var domSeg = segmentLayer.selectedItems[0];
             if (domSeg != undefined) {
-                dropdown = document.getElementById("timeSel");
-                dropdown.style.visibility = "visible";
-                dropdown.value = segmentLayer.getDatumFromItem(domSeg).text;
+                document.getElementById("timeSigSelect").style.visibility = "visible";
+                document.getElementById("timeSel").value = segmentLayer.getDatumFromItem(domSeg).text;
             } else {
-                document.getElementById("timeSel").style.visibility = "hidden";
+                document.getElementById("timeSigSelect").style.visibility = "hidden";
             }
         },20)
     }
