@@ -134,24 +134,24 @@
                                             <div class="panel panel-default" style="border-color: Black;">
                                                 <div class="panel-heading" style="background-color: Black;">
                                                     <h4 class="panel-title"
-                                                        <a style="color: White;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse3">Split region</a>
+                                                        <a style="color: White;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse3">Split segment</a>
                                                     </h4>
                                                 </div>
                                                 <div id="collapse3" class="panel-collapse collapse">
-                                                    <div class="panel-body" >Split the current region into two regions (initially the entire song is one  region)
+                                                    <div class="panel-body" >Split the current segment into two segment (initially the entire song is one segment)
                                                     on the location of the selected beat. The selected beat becomes yellow to mark that it is
-                                                    the boundary between two regions. Use regions to mark regions of time signatures,
-                                                    regions with the same tempo, etc.</div>
+                                                    the boundary between two segments. Use segments to mark segments of time signatures,
+                                                    segments with the same tempo, etc.</div>
                                                 </div>
                                             </div>
                                             <div class="panel panel-default" style="border-color: Black;">
                                                 <div class="panel-heading" style="background-color: Black;">
                                                     <h4 class="panel-title">
-                                                        <a style="color: White;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse4">Merge regions</a>
+                                                        <a style="color: White;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse4">Merge segments</a>
                                                     </h4>
                                                 </div>
                                                 <div id="collapse4" class="panel-collapse collapse">
-                                                    <div class="panel-body" >Merge a region with the region left it by selecting a beat in that region and clicking the button 'Merge region to the left'.</div>
+                                                    <div class="panel-body" >Merge a segment with the segments left of it by selecting a beat in that segment and clicking the button with an eraser icon.</div>
                                                 </div>
                                             </div>
                                             <div class="panel panel-default" style="border-color: Black;">
@@ -161,7 +161,7 @@
                                                     </h4>
                                                 </div>
                                                 <div id="collapse5" class="panel-collapse collapse">
-                                                    <div class="panel-body" >When you press the Autocomplete-button the current region will be autocompleted. This means that the rest of the region will be filled with beats. These beats are spaced apart with the same distance as the beats you manually added.</div>
+                                                    <div class="panel-body" >When you press the Autocomplete button (the button with a checkmark) the beat timings of the current segment will be estimated. This means that your beat timings will be used to fill the rest of the segment with beats.</div>
                                                 </div>
                                             </div>
                                             <div class="panel panel-default" style="border-color: Black;">
@@ -181,36 +181,35 @@
                             </div>
                         </div>
                     </div>
-
+                    <p class="lead" id="ytTitle"></p>
                     <div class="macroTrack" id="macroTrack"></div>
                     <br>
                     <div class="track" id="track-1"></div>
                     <div class="lead" id="loading"><img src="loading.gif" alt="loadingGif" height="50" width="50"></div>
                     <div class="waveform-box" id="waveform"></div>
                     <div style="text-align: center">
-                        <button type="button" class="btn btn-default btn-sm" id="playButton" onclick="playOrPause()">
-                          <span class="glyphicon glyphicon-play"></span> Play
+                        <button type="button" class="btn btn-default btn-sm" id="playButton" title="Play/pause" onclick="playOrPause()">
+                          <span class="glyphicon glyphicon-play"></span>
                         </button>
-                        <button type="button" class="btn btn-default btn-sm" id="clickToggle" onclick="toggleClick()">
-                          <span class="	glyphicon glyphicon-volume-up"></span> Click ON
+                        <button type="button" class="btn btn-default btn-sm" id="clickToggle" title="Toggle the clicksound of existing beats" onclick="toggleClick()">
+                          <span class="	glyphicon glyphicon-volume-up"></span>
                         </button>
-                        <button type="button" class="btn btn-default btn-sm" onclick="splitSegOnBeat()">
-                          <span class="glyphicon glyphicon-scissors"></span> split on selected beat
+                        <button type="button" class="btn btn-default btn-sm" title="Split a segment in two on the selected beat" onclick="splitSegOnBeat()">
+                          <span class="glyphicon glyphicon-scissors"></span>
                         </button>
-                        <button type="button" class="btn btn-default btn-sm" onclick="mergeSegmentsOnBeat()">
-                          <span class="	glyphicon glyphicon-erase"></span> merge left on selected region
+                        <button type="button" class="btn btn-default btn-sm" title="Merge the selected segment with the previous segment" onclick="mergeSegments()">
+                          <span class="	glyphicon glyphicon-erase"></span>
                         </button>
                         <!-- <button type="button" class="btn btn-default btn-sm" onclick="autocomplete()"> -->
-                        <button type="button" class="btn btn-default btn-sm" onclick="autocompletePHP()">
-                          <span class="	glyphicon glyphicon-check"></span> Autocomplete current region
+                        <button type="button" class="btn btn-default btn-sm" title="Autocomplete the selected segment" onclick="autocompletePHP()">
+                          <span class="	glyphicon glyphicon-check"></span>
                         </button>
                         <img src="loading1.gif" id="loadingGif" alt="loadingGif" height="20" width="20" style="display: none" >
-                        <button type="button" class="btn btn-default btn-sm" onclick="clearMarkers()" data-toggle="tooltip" data-placement="right" title="You can also select a single marker and press delete to remove it!">
-                          <span class="glyphicon glyphicon-trash"></span> Clear all markers
+                        <button type="button" class="btn btn-default btn-sm" onclick="clearMarkers()" data-toggle="tooltip" data-placement="right" title="Remove beats in the selected segment. You can also select a marker and press to delete it">
+                          <span class="glyphicon glyphicon-trash"></span>
                         </button>
                         <div id="timeSigSelect" style="visibility:hidden">
-                            <br>
-                            <p id="timeSigText">Time signature of selected region: </p>
+                            <p id="timeSigText">Time signature of selected segment: </p>
                             <select class="dropdown" id="timeSel" onchange="timeSigChange()">
                                 <option value="4/4">4/4</option>
                                 <option value="3/4">3/4</option>
@@ -268,10 +267,15 @@
                 'disablekb': 0
             },
             events: {
+                'onReady': onPlayerReady,
                 'onStateChange': onPlayerStateChange
             }
         });
     };
+
+    function onPlayerReady(event) {
+        document.getElementById( "ytTitle" ).innerText = player.getVideoData().title;
+    }
 
     // Take action when the youtube player changes state. This is used to play
     // or pause the html5 audioplayer and the visual plugin
@@ -288,6 +292,7 @@
             audioplayer.currentTime = currentTime;
             refreshClickQueue();
             playSong = true;
+            document.getElementById('playButton').innerHTML = '<i class="glyphicon glyphicon-pause"></i>';
             done = true;
 
         // when youtube player pauses
@@ -360,7 +365,7 @@
         var macroTimelineHeight = 68; // height of zoomed out view
         duration = buffer.duration;
         if (duration > 900) {
-            window.alert('Sorry, this song is too long for this application for to handle');
+            window.alert('Sorry, this song is too long for this application to handle');
             window.location.assign('index.html')
         }
         var pixelsPerSecond = width / duration;
@@ -474,7 +479,7 @@
             var onTimeAxis = $.inArray(timeAxis, timeline.getHitLayers(e));
             var onSegment = $.inArray(segmentLayer, timeline.getHitLayers(e));
 
-            // highlight a region when hovering above it
+            // highlight a segment when hovering above it
             if (segment !== null && (eventType == 'mouseover' || eventType == 'mouseout')) {
                 var datum = segmentLayer.getDatumFromItem(segment);
                 hoverSeg = eventType == 'mouseover' ? datum : null;
@@ -608,7 +613,7 @@
         var segment = segmentLayer.getDatumFromItem(domSeg);
         segment.text = document.getElementById('timeSel').value;
         segmentLayer.update();
-    }
+    };
 
     window.addEventListener("keydown", checkKeyPressed, false);
 
@@ -634,7 +639,7 @@
             if (domMarker != undefined) {
                 deleteMarker(markerLayer.getDatumFromItem(domMarker));
             } else {
-                console.log('Error: no marker was selected. Ignoring deletion.');
+                alert('Please select a beatmarker to delete');
             }
         }
     }
@@ -643,11 +648,11 @@
     function playOrPause() {
         if (player.getPlayerState() == 1) {
             player.pauseVideo();
-            document.getElementById('playButton').innerHTML = '<i class="glyphicon glyphicon-play"></i> Play'
+            document.getElementById('playButton').innerHTML = '<i class="glyphicon glyphicon-play"></i>'
         } else {
             refreshClickQueue();
             player.playVideo();
-            document.getElementById('playButton').innerHTML = '<i class="glyphicon glyphicon-pause"></i> Pause';
+            document.getElementById('playButton').innerHTML = '<i class="glyphicon glyphicon-pause"></i>';
         }
     }
 
@@ -701,11 +706,21 @@
 
     // delete all the beatmarkers
     function clearMarkers() {
-        var confirm = window.confirm("Are you sure you want to delete all beat markers? This means you will start over completely. ");
+        var domSeg = segmentLayer.selectedItems[0];
+        if (domSeg == undefined) {
+            window.alert('Please select a segment to clear the markers from.');
+            return;
+        }
+
+        var confirm = window.confirm("Are you sure you want to delete all beat markers in this segment?");
         if(!confirm) {
             return;
         }
-        beatMarkers.length = 0;
+
+        var segment = segmentLayer.getDatumFromItem(domSeg);
+        var begin = segment.x;
+        var end = begin+segment.width;
+        deleteMarkersInRange(begin,end);
         markerLayer.render();
         markerLayer.update();
     }
@@ -719,10 +734,10 @@
     function toggleClick() {
         if (metronome) {
             metronome = false;
-            document.getElementById('clickToggle').innerHTML = '<span class="	glyphicon glyphicon-volume-off"></span> Click OFF'
+            document.getElementById('clickToggle').innerHTML = '<span class="	glyphicon glyphicon-volume-off"></span>'
         } else {
             metronome = true;
-            document.getElementById('clickToggle').innerHTML = '<span class="	glyphicon glyphicon-volume-up"></span> Click ON'
+            document.getElementById('clickToggle').innerHTML = '<span class="	glyphicon glyphicon-volume-up"></span>'
         }
     }
 
@@ -754,12 +769,13 @@
     // Creates a segment on selected marker and shortens the previous segment
     function splitSegOnBeat() {
         var domMarker = markerLayer.selectedItems[0];
-        if (domMarker != undefined) {
-            var startTime = markerLayer.getDatumFromItem(domMarker).time;
-            splitSegments(segments, startTime);
-        } else {
-            console.log('Error: no beat selected. Split ignored.');
-        }
+        if (domMarker == undefined) {
+            alert('Please select the beat to split a segment on');
+            return;
+        };
+
+        var startTime = markerLayer.getDatumFromItem(domMarker).time;
+        splitSegments(segments, startTime);
     }
 
     // Creates the new segment
@@ -787,52 +803,29 @@
         segmentLayer.update();
     }
 
-    // merge 2 regions by removing selected region and extending the previous
-    function mergeSegmentsOnBeat() {
+    // merge 2 segments by removing selected segment and extending the previous
+    function mergeSegments() {
         var domSeg = segmentLayer.selectedItems[0];
-        if (domSeg != undefined) {
-            var selectedSeg = segmentLayer.getDatumFromItem(domSeg);
-            var mergeTime = selectedSeg.x;
-
-            for (var i = 0; i < segments.length; i++) {
-                var currentSeg = segments[i];
-                if (mergeTime == (currentSeg.x + currentSeg.width)) {
-                    selectedSeg.x = currentSeg.x;
-                    selectedSeg.width = selectedSeg.width + currentSeg.width;
-                    segments.splice(i,1);
-                    break;
-                }
-            }
-            segmentLayer.render();
-            segmentLayer.update();
-        } else {
-            console.log('Error: no segment was selected. Ignoring merge.');
+        if (domSeg == undefined) {
+            alert('Please select a segment to merge');
+            return;
         };
-    }
 
-    // Merges segment that contains mergeTime with the previous segment NO LONGER USED
-    function mergeSegmentsLeft(segments, mergeTime) {
-        var selectedSegment;
-        var endTimePreviousSeg;
+        var selectedSeg = segmentLayer.getDatumFromItem(domSeg);
+        var mergeTime = selectedSeg.x;
 
-        // find the selected segment
         for (var i = 0; i < segments.length; i++) {
-            if(segments[i].x <= mergeTime && mergeTime < (segments[i].width + segments[i].x)) {
-                selectedSegment = i;
-                endTimePreviousSeg = segments[i].x;
-                break;
-            }
-        }
-        // find the segment to merge to
-        for (var i = 0; i < segments.length; i++) {
-            if(endTimePreviousSeg == (segments[i].x + segments[i].width)) {
-                segments[selectedSegment].x = segments[i].x;
-                segments[selectedSegment].width = segments[selectedSegment].width + segments[i].width;
+            var currentSeg = segments[i];
+            if (mergeTime == (currentSeg.x + currentSeg.width)) {
+                selectedSeg.x = currentSeg.x;
+                selectedSeg.width = selectedSeg.width + currentSeg.width;
                 segments.splice(i,1);
                 break;
             }
         }
-      }
+        segmentLayer.render();
+        segmentLayer.update();
+    }
 
     var hoverSeg = null;
     function segmentOpacity(seg) {
@@ -848,7 +841,7 @@
         }
     }
 
-    // change color of marker if it's the start of a region or if it's selected
+    // change color of marker if it's the start of a segment or if it's selected
     function markerColor(marker) {
         var selected = false;
         var domMarker = markerLayer.selectedItems[0];
@@ -866,57 +859,17 @@
     }
 
     // given a begin and end time, deletes all the markers between these times
-    function deleteMarkers(begin, end) {
-        var newMarkers = [];
-        for(var i = 0; i < beatMarkers.length; i++){
-            if(beatMarkers[i].time <= begin || beatMarkers[i].time >= end){
-                newMarkers.push(beatMarkers[i])
-            }
-        }
-        beatMarkers = newMarkers;
-    }
-
-    // uses the average distance of markers to estimate the rest of the region
-    function autocomplete() {
-        begin = 0;
-        end = 0;
-        var domSeg = segmentLayer.selectedItems[0];
-        begin = segmentLayer.getDatumFromItem(domSeg).x;
-        end = segmentLayer.getDatumFromItem(domSeg).width + segmentLayer.getDatumFromItem(domSeg).x;
-        document.getElementById('loadingGif').style.display = "inline-block";
-
-        var markerTimes = [];
-        for (i = 0; i < beatMarkers.length; i++) {
-            if(begin < beatMarkers[i].time && beatMarkers[i].time < end) {
-                markerTimes.push(beatMarkers[i].time);
-            }
-        }
-        markerTimes.sort(function(a,b) {
-            return a-b;
+    function deleteMarkersInRange(begin, end) {
+        beatMarkers.sort(function(a,b){
+            return a.time - b.time;
         });
-
-        var betweenTimes = [];
-        for (var i = 1; i < markerTimes.length; i++) {
-            betweenTimes.push(markerTimes[i] - markerTimes[i - 1]);
+        for(var i = 0; i < beatMarkers.length && beatMarkers[i].time < end; i++){
+            if(beatMarkers[i].time > begin){
+                beatMarkers.splice(i,1);
+                i--;
+            }
         }
-
-        var sum = 0;
-        for(var i = 0; i < betweenTimes.length; i++) {
-            sum += betweenTimes[i];
-        }
-        var avg = sum / betweenTimes.length;
-        var time = markerTimes[markerTimes.length - 1] + avg;
-
-        while(time < end) {
-            addMarker(time);
-            time = time + avg;
-        }
-        document.getElementById('loadingGif').style.display = "none";
-        // neem de 8 timestamps uit de beatMarkers
-        // bereken de gemiddelde tijd die ertussen zit
-        // voeg zoveel beats toe als autocomplete (steeds gemiddeldeTijdErtussen uit elkaar)
     }
-
 
     // shows the registered beatmarkers on the page. No longer used
     function writeToPage() {
@@ -991,12 +944,14 @@
         return dataStr;
     }
 
-    function addMarkerList(uglyList) {
-        for (var i = 0; i < uglyList.length; i++) {
-            addMarker(uglyList[i]);
+    // loops through a list with markers and adds them
+    function addMarkerList(list) {
+        for (var i = 0; i < list.length; i++) {
+            addMarker(list[i]);
         }
     }
 
+    // Use existing beats to estimate the rest
     function autocompletePHP() {
         {
         jQuery.ajax({
@@ -1012,16 +967,17 @@
             for (var i = 0; i < onsetData.length; i++) {
                 onsetData[i] = parseFloat(onsetData[i]);
             }
-            console.log(typeof onsetData[1]);
-            console.log(onsetData);
 
-            // code from autocomplete to get the current segment begin and end time + all markers in that segment
+            // get the current segment begin and end time + all markers in that segment
             begin = 0;
             end = 0;
             var domSeg = segmentLayer.selectedItems[0];
+            if (domSeg == undefined) {
+                alert('Please select a segment to autocomplete');
+                return;
+            }
             begin = segmentLayer.getDatumFromItem(domSeg).x;
             end = segmentLayer.getDatumFromItem(domSeg).width + segmentLayer.getDatumFromItem(domSeg).x;
-            document.getElementById('loadingGif').style.display = "inline-block";
 
             var markerTimes = [];
             for (i = 0; i < beatMarkers.length; i++) {
@@ -1033,29 +989,30 @@
                 return a-b;
             });
             var beatsToAdd = autocompleteAlgorithm(markerTimes, onsetData, begin, end);
+            if (!beatsToAdd) {
+                return;
+            }
             addMarkerList(beatsToAdd);
-            console.log("beatsToAdd", beatsToAdd);
         });
     }
 
+    // The algorithm used to autocomplete segments
     function autocompleteAlgorithm(userbeats, onsetbeats, begin, end) {
-        console.log("begin ", begin);
-        console.log("end", end);
         truebeats = []
         for(var i = 0; i < userbeats.length; i++) {
             if (userbeats[i] <= end && userbeats[i] >= begin) {
                 truebeats.push(userbeats[i]);
             }
         }
-        console.log('truebeats', truebeats);
-        if (truebeats.length < 4) {
+        if (truebeats.length < 6) {
             alert("You need to annotate some more beats yourself, before it can be completed.");
+            return false;
         }
 
         interval = get_interval(truebeats);
-        console.log('interval',interval)
 
         addedbeats = [];
+        // looks for gaps to add beats
         for (var i = 0; i < truebeats.length-1; i++) {
             // if two beats are too far apart, we fill in the gap
             prevbeat = truebeats[i];
@@ -1071,10 +1028,8 @@
                 addedbeats.push(best[0]);
             }
         }
-        console.log("these beats were added.");
-        console.log(addedbeats);
 
-        // last beat needs to be compared to the end, as it cannot be compared to the next beat. I'm just making a seperate code-block for that and copypasting most of it from above. sue me.
+        // last beat needs to be compared to the end, as it cannot be compared to the next beat. I'm just making a seperate code-block for that and copypasting most of it from above.
         prevbeat = truebeats[truebeats.length-1];
         while (end - prevbeat > interval * 1.5) { // 1.5 can be balanced
             roughtime = prevbeat+interval;
