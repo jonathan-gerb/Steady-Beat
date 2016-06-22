@@ -994,14 +994,11 @@
             url: 'autocomplete.php',
             data: {youtubeId: getYoutubeId()},
             success: function(data) {
-                alert(data);
             }
         });
         }
-        $.get("./onsets/lETmskoqh30_vamp_qm-vamp-plugins_qm-onsetdetector_onsets.csv", function(data, status){
-            alert(data);
+        $.get("./onsets/"+ getYoutubeId() + "_vamp_qm-vamp-plugins_qm-onsetdetector_onsets.csv", function(data, status){
             var onsetData = data.split("\n");
-            alert(onsetData);
             for (var i = 0; i < onsetData.length; i++) {
                 onsetData[i] = parseFloat(onsetData[i]);
             }
