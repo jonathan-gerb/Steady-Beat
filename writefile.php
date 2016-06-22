@@ -9,7 +9,7 @@
 	    $beat = $_POST['beat'];
 	    $ytID = $_POST['ytID'];
 		$annotations = fopen("./txtfiles/" . $ytID . "-" . time() . ".txt", "w+") or die("Unable to open file!");
-		$regionArray = explode(",", "$beat");
+		$regionArray = explode(";", "$beat");
 		foreach ($regionArray as $line){
 			fwrite($annotations, $line . "\n");
 		}

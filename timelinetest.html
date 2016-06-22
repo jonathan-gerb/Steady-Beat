@@ -67,6 +67,8 @@
     }.panel-body {
         color: White;
         background-color: Black;
+    }.dropdown {
+        color:black;
     }
     </style>
 </head>
@@ -206,15 +208,21 @@
                         <button type="button" class="btn btn-default btn-sm" onclick="clearMarkers()" data-toggle="tooltip" data-placement="right" title="You can also select a single marker and press delete to remove it!">
                           <span class="glyphicon glyphicon-trash"></span> Clear all markers
                         </button>
-                        <select id="timeSel" onchange="timeSigChange()" style="visibility:hidden">
-                            <option value="4/4">4/4</option>
-                            <option value="6/8">6/8</option>
-                            <option value="8/8">8/8</option>
-                            <option value="3/4">3/4</option>
-                            <option value="7/8">7/8</option>
-                            <option value="5/4">5/4</option>
-                            <option value="12/8">12/8</option>
-                        </select>
+                        <div id="timeSigSelect" style="visibility:hidden">
+                            <br>
+                            <p id="timeSigText">Time signature of selected region: </p>
+                            <select class="dropdown" id="timeSel" onchange="timeSigChange()">
+                                <option value="4/4">4/4</option>
+                                <option value="3/4">3/4</option>
+                                <option value="8/8">8/8</option>
+                                <option value="6/8">6/8</option>
+                                <option value="5/4">5/4</option>
+                                <option value="7/8">7/8</option>
+                                <option value="9/8">9/8</option>
+                                <option value="10/8">10/8</option>
+                                <option value="12/8">12/8</option>
+                            </select>
+                        </div>
                     </div>
                     <p class="lead">Press the 'b' key on the beat to add a beat annotation. </p>
                     <p class="lead">
@@ -652,11 +660,10 @@
             // what to do with the time sig dropdown when a click is registered
             var domSeg = segmentLayer.selectedItems[0];
             if (domSeg != undefined) {
-                dropdown = document.getElementById("timeSel");
-                dropdown.style.visibility = "visible";
-                dropdown.value = segmentLayer.getDatumFromItem(domSeg).text;
+                document.getElementById("timeSigSelect").style.visibility = "visible";
+                document.getElementById("timeSel").value = segmentLayer.getDatumFromItem(domSeg).text;
             } else {
-                document.getElementById("timeSel").style.visibility = "hidden";
+                document.getElementById("timeSigSelect").style.visibility = "hidden";
             }
         },20)
     }
@@ -855,17 +862,24 @@
         return selected ? '#ff0000' : '#bb0000';
     }
 
-    // cleans the Segments array (doesn't work yet)
-    function cleanSegments(segments) {
-
+    // given a begin and end time, deletes all the markers between these times
+    function deleteMarkers(begin, end) {
+        var newMarkers = [];
+        for(var i = 0; i < beatMarkers.length; i++){
+            if(beatMarkers[i].time <= begin || beatMarkers[i].time >= end){
+                newMarkers.push(beatMarkers[i])
+            }
+        }
+        beatMarkers = newMarkers;
     }
 
     // uses the average distance of markers to estimate the rest of the region
     function autocomplete() {
         begin = 0;
         end = 0;
-        var domSeg = segmentLayer.selectedItems[i];
-        begin = segmentLayer.getDatumFromItem(domMarker).x;
+        var domSeg = segmentLayer.selectedItems[0];
+        begin = segmentLayer.getDatumFromItem(domSeg).x;
+        end = segmentLayer.getDatumFromItem(domSeg).width + segmentLayer.getDatumFromItem(domSeg).x;
         document.getElementById('loadingGif').style.display = "inline-block";
 
         var markerTimes = [];
@@ -927,7 +941,7 @@
         }
         var xhttp;
         var url = "writefile.php";
-        var params = "beat="  + dataToArray();
+        var params = "beat="  + dataToString();
         // var params = "beat=" + toSend.toString();
         var ytID = "ytID=" + getYoutubeId();
         if (window.XMLHttpRequest) {
@@ -964,14 +978,14 @@
         for (var i = 0; i<segments.length; i++) {
             segTime = segments[i].x;
             segWidth = segments[i].width;
-            dataArr = dataArr + ';' + segments[i].text;
+            dataStr = dataStr + ';' + segments[i].text;
 
             while (j < beatMarkers.length && beatMarkers[j].time < (segTime + segWidth)) {
-                dataArr[i] = dataArr[i] + ',' + beatMarkers[j].time.toString();
+                dataStr = dataStr + ',' + beatMarkers[j].time.toString();
                 j++;
             }
         }
-        return dataArr;
+        return dataStr;
     }
 
     function addMarkerList(uglyList) {
@@ -986,11 +1000,115 @@
             type: "POST",
             url: 'autocomplete.php',
             data: {youtubeId: getYoutubeId()},
-             success:function(data) {
-            alert(data);
-             }
+            success: function(data) {
+                alert(data);
+            }
         });
         }
+        $.get("./onsets/lETmskoqh30_vamp_qm-vamp-plugins_qm-onsetdetector_onsets.csv", function(data, status){
+            alert(data);
+            var onsetData = data.split("\n");
+            alert(onsetData);
+            for (var i = 0; i < onsetData.length; i++) {
+                onsetData[i] = parseFloat(onsetData[i]);
+            }
+            console.log(typeof onsetData[1]);
+            console.log(onsetData);
+
+            // code from autocomplete to get the current segment begin and end time + all markers in that segment
+            begin = 0;
+            end = 0;
+            var domSeg = segmentLayer.selectedItems[0];
+            begin = segmentLayer.getDatumFromItem(domSeg).x;
+            end = segmentLayer.getDatumFromItem(domSeg).width + segmentLayer.getDatumFromItem(domSeg).x;
+            document.getElementById('loadingGif').style.display = "inline-block";
+
+            var markerTimes = [];
+            for (i = 0; i < beatMarkers.length; i++) {
+                if(begin < beatMarkers[i].time && beatMarkers[i].time < end) {
+                    markerTimes.push(beatMarkers[i].time);
+                }
+            }
+            markerTimes.sort(function(a,b) {
+                return a-b;
+            });
+            var beatsToAdd = autocompleteAlgorithm(markerTimes, onsetData, begin, end);
+            addMarkerList(beatsToAdd);
+            console.log("beatsToAdd", beatsToAdd);
+        });
+    }
+
+    function autocompleteAlgorithm(userbeats, onsetbeats, begin, end) {
+        console.log("begin ", begin);
+        console.log("end", end);
+        truebeats = []
+        for(var i = 0; i < userbeats.length; i++) {
+            if (userbeats[i] <= end && userbeats[i] >= begin) {
+                truebeats.push(userbeats[i]);
+            }
+        }
+        console.log('truebeats', truebeats);
+        if (truebeats.length < 4) {
+            alert("You need to annotate some more beats yourself, before it can be completed.");
+        }
+
+        interval = get_interval(truebeats);
+        console.log('interval',interval)
+
+        addedbeats = [];
+        for (var i = 0; i < truebeats.length-1; i++) {
+            // if two beats are too far apart, we fill in the gap
+            prevbeat = truebeats[i];
+            while (truebeats[i+1] - prevbeat > interval * 1.5) { // 1.5 can be balanced
+                roughtime = prevbeat+interval;
+                var best = [roughtime, interval * 0.15]; // 0.15 can be balanced
+                for (var j = 0; j < onsetbeats.length; j++) {  //TODO: Dit kan veel, veel sneller met een beetje een intelligent zoekalgoritme. Maar is niet heel eenvoudig....
+                    if (Math.abs(onsetbeats[j] - roughtime) < best[1]) {
+                        best = [onsetbeats[j], Math.abs(onsetbeats[j] - roughtime)];
+                    }
+                }
+                prevbeat = best[0];
+                addedbeats.push(best[0]);
+            }
+        }
+        console.log("these beats were added.");
+        console.log(addedbeats);
+
+        // last beat needs to be compared to the end, as it cannot be compared to the next beat. I'm just making a seperate code-block for that and copypasting most of it from above. sue me.
+        prevbeat = truebeats[truebeats.length-1];
+        while (end - prevbeat > interval * 1.5) { // 1.5 can be balanced
+            roughtime = prevbeat+interval;
+            var best = [roughtime, interval * 0.15]; // 0.15 can be balanced
+            for (var j = 0; j < onsetbeats.length; j++) {  //TODO: Dit kan veel, veel sneller met een beetje een intelligent zoekalgoritme. Maar is niet heel eenvoudig....
+                if (Math.abs(onsetbeats[j] - roughtime) < best[1]) {
+                    best = [onsetbeats[j], Math.abs(onsetbeats[j] - roughtime)];
+                }
+            }
+            prevbeat = best[0];
+            addedbeats.push(best[0]);
+        }
+        return addedbeats;
+    }
+
+    function get_interval(times) {
+        intervals = [];
+        for(var i = 0; i < times.length-1; i++) {
+            intervals[i] = times[i+1] - times[i];
+        }
+        intervals.sort(function(a,b) {
+            return a-b;
+        });
+        middlepart = [];
+        for(var i = Math.floor(intervals.length/4); i < Math.floor(intervals.length/4)*3; i++) {
+            middlepart.push(intervals[i]);
+        }
+        var sum = 0;
+        for( var i = 0; i < middlepart.length; i++ ){
+            sum += middlepart[i];
+        }
+
+        var pseudoAvg = sum/middlepart.length;
+        return pseudoAvg;
     }
 
     </script>
