@@ -502,8 +502,12 @@
 
             // when seeking, only updates viewing window
             if (onTimeAxis && eType == 'mousemove') {
-                mouseMoving = true;
-                timeline.timeContext.offset = -macroHighlight[0].x;
+                if (prevMousePos == null) {
+                    prevMousePos = timeAxisMacro.timeToPixel.invert(e.x);
+                } else {
+                    mouseMoving = true;
+                    timeline.timeContext.offset = -macroHighlight[0].x;
+                }
 
             // when done seeking
             } else if (onTimeAxis && eType == 'mouseup' && !mouseMoving) {
@@ -513,7 +517,6 @@
             } else if (eType == 'mouseup') {
                 refreshWindowMacro();
                 timeAxis.setTimeContext(timeline.timeContext);
-                // timeAxis.update();
                 timeline.tracks.update();
             };
         });
