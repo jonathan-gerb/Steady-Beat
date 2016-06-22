@@ -14,7 +14,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="./icon.jpg">
-    <title>Waveform generation page</title>
+    <title>BEAT app</title>
     <script src="./bootstrap/dist/js/bootstrap.min.js" ></script>
     <!-- Bootstrap core CSS -->
     <link href="bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -38,14 +38,14 @@
         bottom: 0;
     }
     #sidebar {
-        background-color: DimGray ;
+        background-color: #565656 ;
         position: absolute;
         top: 0;
         bottom: 0;
         left: 0;
         width: 300px;
     }#sidebarRight {
-        background-color: DimGray ;
+        background-color: #565656 ;
         position: absolute;
         top: 0;
         bottom: 0;
@@ -55,18 +55,20 @@
         bottom: 0;
         position: absolute;
     }#timelines {
-        background-color: DimGray;
+        background-color: #505050;
         padding-bottom: 10px;
     }#macroTrack {
-        background-color: #444;
+        background-color: #575757;
         /*opacity: 0.5*/
     }#track-1 {
-        background-color: #444;
+        background-color: #666666;
+    }#playButton {
+        width: 6em;  height: 3em;
     }.btn-default {
         margin: 3px;
     }.panel-body {
         color: White;
-        background-color: Black;
+        background-color: #444;
     }.dropdown {
         color:black;
     }
@@ -93,16 +95,16 @@
                     <h1 class="cover-heading"></h1>
                     <br>
                     <div id="sidebar">
-                        <div style="background-color:Black;" class="panel-heading">
-                            <button type="button" onclick="gotoSongSelection()" data-toggle="tooltip" data-placement="center" title="SongSelection" style="background-color:Black; border:none;">
+                        <div style="background-color:#444;" class="panel-heading">
+                            <button type="button" onclick="gotoSongSelection()" data-toggle="tooltip" data-placement="center" title="SongSelection" style="background-color:#444; border:none;">
                               <h4> Home </h4>
                             </button>
                         </div>
                         <div id="player"></div>
 
                         <div class="panel-group" id="accordionAbove"  >
-                            <div class="panel panel-default" style="border: Black;">
-                                <div class="panel-heading" style="background-color: Black;">
+                            <div class="panel panel-default" style="border:#444;">
+                                <div class="panel-heading" style="background-color: #444;">
                                     <h4 class="panel-title">
                                         <a style="color: White;text-decoration:none" data-toggle="collapse" data-parent="#accordionAbove" href="#collapseAll"><h4> Help &amp Info</h4></a>
                                     </h4>
@@ -111,8 +113,8 @@
                                     <div class="panel-body" >
 
                                         <div class="panel-group" id="accordion" style="overflow-y:auto; direction:rtl; height:40vh;">
-                                            <div class="panel panel-default" style="border-color: Black;">
-                                                <div class="panel-heading" style="background-color: Black;">
+                                            <div class="panel panel-default" style="border-color: #222;">
+                                                <div class="panel-heading" style="background-color: #222;">
                                                     <h4 class="panel-title">
                                                         <a style="color: White;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse1">Play / Pause</a>
                                                     </h4>
@@ -121,8 +123,8 @@
                                                     <div class="panel-body" >Play or pause the song using the Play/Pause-button or by pressing the spacebar </div>
                                                 </div>
                                             </div>
-                                            <div class="panel panel-default" style="border: Black;">
-                                                <div class="panel-heading" style="background-color: Black;">
+                                            <div class="panel panel-default" style="border: #222;">
+                                                <div class="panel-heading" style="background-color: #222;">
                                                     <h4 class="panel-title">
                                                         <a style="color: White;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse2">Click ON/OFF</a>
                                                     </h4>
@@ -131,8 +133,8 @@
                                                     <div class="panel-body" >Use this button to determine whether a click sound is played during playback when encountering exisiting beat markers </div>
                                                 </div>
                                             </div>
-                                            <div class="panel panel-default" style="border-color: Black;">
-                                                <div class="panel-heading" style="background-color: Black;">
+                                            <div class="panel panel-default" style="border-color: #222;">
+                                                <div class="panel-heading" style="background-color: #222;">
                                                     <h4 class="panel-title"
                                                         <a style="color: White;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse3">Split segment</a>
                                                     </h4>
@@ -144,8 +146,8 @@
                                                     segments with the same tempo, etc</div>
                                                 </div>
                                             </div>
-                                            <div class="panel panel-default" style="border-color: Black;">
-                                                <div class="panel-heading" style="background-color: Black;">
+                                            <div class="panel panel-default" style="border-color: #222;">
+                                                <div class="panel-heading" style="background-color: #222;">
                                                     <h4 class="panel-title">
                                                         <a style="color: White;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse4">Merge segments</a>
                                                     </h4>
@@ -154,8 +156,8 @@
                                                     <div class="panel-body" >Merge a segment with the segments left of it by selecting a beat in that segment and clicking the button with an eraser icon</div>
                                                 </div>
                                             </div>
-                                            <div class="panel panel-default" style="border-color: Black;">
-                                                <div class="panel-heading" style="background-color: Black;">
+                                            <div class="panel panel-default" style="border-color: #222;">
+                                                <div class="panel-heading" style="background-color: #222;">
                                                     <h4 class="panel-title">
                                                         <a style="color: White;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse5">Autocomplete</a>
                                                     </h4>
@@ -164,8 +166,8 @@
                                                     <div class="panel-body" >When you press the Autocomplete button (the button with a checkmark) the beat timings of the current segment will be estimated. This means that your beat timings will be used to fill the rest of the segment with beats</div>
                                                 </div>
                                             </div>
-                                            <div class="panel panel-default" style="border-color: Black;">
-                                                <div class="panel-heading" style="background-color: Black;">
+                                            <div class="panel panel-default" style="border-color: #222;">
+                                                <div class="panel-heading" style="background-color: #222;">
                                                     <h4 class="panel-title">
                                                         <a style="color: White;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse6">Credits</a>
                                                     </h4>
@@ -191,6 +193,7 @@
                         <button type="button" class="btn btn-default btn-sm" id="playButton" title="Play/pause" onclick="playOrPause()">
                           <span class="glyphicon glyphicon-play"></span>
                         </button>
+                        <br> <br>
                         <button type="button" class="btn btn-default btn-sm" id="clickToggle" title="Toggle the clicksound of existing beats" onclick="toggleClick()">
                           <span class="	glyphicon glyphicon-volume-up"></span>
                         </button>
@@ -205,10 +208,11 @@
                           <span class="	glyphicon glyphicon-check"></span>
                         </button>
                         <img src="loading1.gif" id="loadingGif" alt="loadingGif" height="20" width="20" style="display: none" >
-                        <button type="button" class="btn btn-default btn-sm" onclick="clearMarkers()" data-toggle="tooltip" data-placement="right" title="Remove beats in the selected segment. You can also select a marker and press to delete it">
+                        <button type="button" class="btn btn-default btn-sm" onclick="clearMarkers()" data-toggle="tooltip" data-placement="right" title="Remove beats in the selected segment. You can also select a marker and press delete to remove it">
                           <span class="glyphicon glyphicon-trash"></span>
                         </button>
-                        <div id="timeSigSelect" style="visibility:hidden">
+                        <div id="timeSigSelect" style="display:none">
+                            <br>
                             <p id="timeSigText">Time signature of selected segment: </p>
                             <select class="dropdown" id="timeSel" onchange="timeSigChange()">
                                 <option value="4/4">4/4</option>
@@ -221,11 +225,15 @@
                                 <option value="10/8">10/8</option>
                                 <option value="12/8">12/8</option>
                             </select>
+                            <br>
                         </div>
                     </div>
                     <p class="lead">Press the 'b' key on the beat to add a beat annotation. </p>
                     <p class="lead">
-                        <a href="#" class="btn btn-lg btn-default" id="toPHP" onclick="writeToFile()">Save Annotations</a>
+                        <a href="#" class="btn btn-default" id="toPHP" onclick="writeToFile()">
+                            <span class="glyphicon glyphicon-save"></span>
+                            Upload Annotations
+                        </a>
                     </p>
                     <p id="showTimeStamps"></p>
                     <textarea rows="4" cols="50" id="markerInfo" style="color:black" hidden>nothing here</textarea>
@@ -397,7 +405,7 @@
         trackMacro.add(timeAxisMacro);
 
         // create waveform layer
-        var waveformLayer = new wavesUI.helpers.WaveformLayer(buffer, { height: layerHeight, top: timeAxisHeight, color: 'CadetBlue' });
+        var waveformLayer = new wavesUI.helpers.WaveformLayer(buffer, { height: layerHeight, top: timeAxisHeight, color: '#B4C3BD' });
         waveformLayer.setTimeContext(new wavesUI.core.LayerTimeContext(timeline.timeContext));
         track.add(waveformLayer);
 
@@ -460,11 +468,11 @@
             if (playSong) {
                 var d = new Date();
                 currentTime = (d.getTime() / 1000) - startTime;
-                updatePlugin(false);
+                updatePlugin();
                 setTimeout(requestAnimationFrame(loop), 20);
             } else {
                 refreshClickQueue();
-                updatePlugin(false);
+                updatePlugin();
                 macroHighlight[0].x = - timeline.timeContext.offset;
                 segmentLayerMacro.update();
                 timeline.tracks.update();
@@ -529,9 +537,9 @@
 
     // Renders all layers from the WavesJS plugin and plays a sound when
     // encountering a beat marker
-    function updatePlugin(seeked) {
+    function updatePlugin() {
         // plays a clicksound when going past a beatmarker
-        if(currentTime >= markerQueue[0] && !seeked) {
+        if(currentTime >= markerQueue[0]) {
             playClick(metronome);
             markerQueue.shift();
         }
@@ -574,7 +582,7 @@
         startTime = d.getTime()/1000 - currentTime;
         refreshClickQueue();
         audioplayer.currentTime = currentTime;
-        updatePlugin(true);
+        updatePlugin();
     };
 
     // refreshes the viewing window from the lower timeline automatically
@@ -661,18 +669,19 @@
     // when a mouseup is registered
     function mouseUp() {
         setTimeout(function(){
+            // what to do with the time sig dropdown when a click is registered
+            var domSeg = segmentLayer.selectedItems[0];
+            if (domSeg != undefined) {
+                document.getElementById("timeSigSelect").style.display = "inline";
+                document.getElementById("timeSel").value = segmentLayer.getDatumFromItem(domSeg).text;
+            } else {
+                document.getElementById("timeSigSelect").style.display = "none";
+            }
+
             newMousePos=null;
             mouseMoving = false;
             prevMousePos = null;
 
-            // what to do with the time sig dropdown when a click is registered
-            var domSeg = segmentLayer.selectedItems[0];
-            if (domSeg != undefined) {
-                document.getElementById("timeSigSelect").style.visibility = "visible";
-                document.getElementById("timeSel").value = segmentLayer.getDatumFromItem(domSeg).text;
-            } else {
-                document.getElementById("timeSigSelect").style.visibility = "hidden";
-            }
         },20)
     }
 
