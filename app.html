@@ -113,66 +113,88 @@
                                     <div class="panel-body" >
 
                                         <div class="panel-group" id="accordion" style="overflow-y:auto; direction:rtl; height:40vh;">
-                                            <div class="panel panel-default" style="border-color: #222;">
-                                                <div class="panel-heading" style="background-color: #222;">
+                                            <div class="panel panel-default" style="border-color: #333;">
+                                                <div class="panel-heading" style="background-color: #333;">
                                                     <h4 class="panel-title">
-                                                        <a style="color: White;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse1">Play / Pause</a>
+                                                        <a style="color: White;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse1"> Navigation </a>
                                                     </h4>
                                                 </div>
                                                 <div id="collapse1" class="panel-collapse collapse">
-                                                    <div class="panel-body" >Play or pause the song using the Play/Pause-button or by pressing the spacebar </div>
+                                                    <div class="panel-body" >To navigate the song, you can use the upper timeline to seek over the whole song, and the lower timeline to seek with a zoomed in view. On the upper timeline: click to seek and drag the grey box to move the viewing window. Also try to drag the borders to zoom in/out!
+                                                        On the lower timeline: click and drag anywhere to move the viewing window, and click the time axis to seek. </div>
                                                 </div>
                                             </div>
-                                            <div class="panel panel-default" style="border: #222;">
-                                                <div class="panel-heading" style="background-color: #222;">
+                                            <div class="panel panel-default" style="border-color: #333;">
+                                                <div class="panel-heading" style="background-color: #333;">
                                                     <h4 class="panel-title">
-                                                        <a style="color: White;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse2">Click ON/OFF</a>
+                                                        <a style="color: White;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse2"> Markers and segments </a>
                                                     </h4>
                                                 </div>
                                                 <div id="collapse2" class="panel-collapse collapse">
-                                                    <div class="panel-body" >Use this button to determine whether a click sound is played during playback when encountering exisiting beat markers </div>
+                                                    <div class="panel-body" > The red and yellow markers are beat markers, the yellow markers also mark the start of a segment. The regions that light up on mouseover are segments, use them to mark sections of time signatures, song structure, etc.
+                                                        To select something, just click on it. </div>
                                                 </div>
                                             </div>
-                                            <div class="panel panel-default" style="border-color: #222;">
-                                                <div class="panel-heading" style="background-color: #222;">
-                                                    <h4 class="panel-title"
-                                                        <a style="color: White;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse3">Split segment</a>
+                                            <div class="panel panel-default" style="border-color: #333;">
+                                                <div class="panel-heading" style="background-color: #333;">
+                                                    <h4 class="panel-title">
+                                                        <a style="color: White;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse3"><span class="glyphicon glyphicon-play">    Play / Pause</span></a>
                                                     </h4>
                                                 </div>
                                                 <div id="collapse3" class="panel-collapse collapse">
-                                                    <div class="panel-body" >Split the current segment into two segment (initially the entire song is one segment)
-                                                    on the location of the selected beat. The selected beat becomes yellow to mark that it is
-                                                    the boundary between two segments. Use segments to mark segments of time signatures,
-                                                    segments with the same tempo, etc</div>
+                                                    <div class="panel-body" >Play or pause the song using the Play/Pause-button or by pressing the spacebar </div>
                                                 </div>
                                             </div>
-                                            <div class="panel panel-default" style="border-color: #222;">
-                                                <div class="panel-heading" style="background-color: #222;">
+                                            <div class="panel panel-default" style="border: #333;">
+                                                <div class="panel-heading" style="background-color: #333;">
                                                     <h4 class="panel-title">
-                                                        <a style="color: White;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse4">Merge segments</a>
+                                                        <a style="color: White;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse4"><span class="glyphicon glyphicon-volume-up">     Click on/off</span></a>
                                                     </h4>
                                                 </div>
                                                 <div id="collapse4" class="panel-collapse collapse">
-                                                    <div class="panel-body" >Merge a segment with the segments left of it by selecting a beat in that segment and clicking the button with an eraser icon</div>
+                                                    <div class="panel-body" >Use this button to select whether a click sound should play during playback when encountering exisiting beat markers </div>
                                                 </div>
                                             </div>
-                                            <div class="panel panel-default" style="border-color: #222;">
-                                                <div class="panel-heading" style="background-color: #222;">
-                                                    <h4 class="panel-title">
-                                                        <a style="color: White;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse5">Autocomplete</a>
+                                            <div class="panel panel-default" style="border-color: #333;">
+                                                <div class="panel-heading" style="background-color: #333;">
+                                                    <h4 class="panel-title"
+                                                        <a style="color: White;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse5"><span class="glyphicon glyphicon-scissors">     Split segment</span></a>
                                                     </h4>
                                                 </div>
                                                 <div id="collapse5" class="panel-collapse collapse">
-                                                    <div class="panel-body" >When you press the Autocomplete button (the button with a checkmark) the beat timings of the current segment will be estimated. This means that your beat timings will be used to fill the rest of the segment with beats</div>
+                                                    <div class="panel-body" >Split the current segment into two segments (initially the entire song is one segment)
+                                                    on the location of the selected beat. The selected beat becomes yellow to mark that it is
+                                                    the boundary between two segments. Use segments to mark sections of time signatures,
+                                                    song structure, etc</div>
                                                 </div>
                                             </div>
-                                            <div class="panel panel-default" style="border-color: #222;">
-                                                <div class="panel-heading" style="background-color: #222;">
+                                            <div class="panel panel-default" style="border-color: #333;">
+                                                <div class="panel-heading" style="background-color: #333;">
                                                     <h4 class="panel-title">
-                                                        <a style="color: White;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse6">Credits</a>
+                                                        <a style="color: White;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse6"><span class="glyphicon glyphicon-erase">     Merge segments</span></a>
                                                     </h4>
                                                 </div>
                                                 <div id="collapse6" class="panel-collapse collapse">
+                                                    <div class="panel-body" >Merge a segment with the segment left of it by selecting a beat in that segment and clicking the button with an eraser icon</div>
+                                                </div>
+                                            </div>
+                                            <div class="panel panel-default" style="border-color: #333;">
+                                                <div class="panel-heading" style="background-color: #333;">
+                                                    <h4 class="panel-title">
+                                                        <a style="color: White;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse7"><span class="glyphicon glyphicon-check">     Autocomplete</span></a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapse7" class="panel-collapse collapse">
+                                                    <div class="panel-body" >When you press the Autocomplete button (the button with a checkmark) the beat timings of the current segment will be estimated. This means that your beat timings will be used to fill the rest of the segment with beats</div>
+                                                </div>
+                                            </div>
+                                            <div class="panel panel-default" style="border-color: #333;">
+                                                <div class="panel-heading" style="background-color: #333;">
+                                                    <h4 class="panel-title">
+                                                        <a style="color: White;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse8">Credits</a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapse8" class="panel-collapse collapse">
                                                     <div class="panel-body" ><p>Waveform generation by <a href="http://wavesjs.github.io/">WavesJS-UI</a>, Project Members <a href="https://nl.linkedin.com/in/jonathan-gerbscheid-501aa0112">Jonathan Gerbscheid</a>, <a href="https://www.linkedin.com/in/bart-laan-47364599">Bart Laan</a>, <a href="https://nl.linkedin.com/in/arianne-van-nieuwenhuijsen-aa1a9a112">Arianne van Nieuwenhuijsen</a>, <a href="https://hm.linkedin.com/in/clara-tump-4bb841b4">Clara Tump</a>, <a href="#">Adriaan de Vries</a>.</p></div>
                                                 </div>
                                             </div>
@@ -212,9 +234,8 @@
                           <span class="glyphicon glyphicon-trash"></span>
                         </button>
                         <div id="timeSigSelect" style="display:none">
-                            <br>
-                            <p id="timeSigText">Time signature of selected segment: </p>
-                            <select class="dropdown" id="timeSel" onchange="timeSigChange()">
+                            <br> <br>
+                            Time signature of selected segment:    <select class="dropdown" id="timeSel" onchange="timeSigChange()">
                                 <option value="4/4">4/4</option>
                                 <option value="3/4">3/4</option>
                                 <option value="8/8">8/8</option>
@@ -225,7 +246,7 @@
                                 <option value="10/8">10/8</option>
                                 <option value="12/8">12/8</option>
                             </select>
-                            <br>
+                            <br> 
                         </div>
                     </div>
                     <p class="lead">Press the 'b' key on the beat to add a beat annotation. </p>
@@ -320,8 +341,8 @@
 
     // Initialize the WavesJS plugin, the main user interface
     var loader = new wavesLoaders.AudioBufferLoader();
-    // var ytAudio = './wavfiles/' + getYoutubeId() + '.wav';
-    var ytAudio = './mp3files/' + getYoutubeId() + '.mp3';
+    var ytAudio = './wavfiles/' + getYoutubeId() + '.wav';
+    // var ytAudio = './mp3files/' + getYoutubeId() + '.mp3';
     loader.load(ytAudio).then(function(buffer) {
         initialize(buffer);
     });
@@ -520,6 +541,7 @@
                 } else {
                     mouseMoving = true;
                     timeline.timeContext.offset = -macroHighlight[0].x;
+                    timeline.tracks.update();
                 }
 
             // when done seeking
@@ -559,6 +581,10 @@
         // updates lower timeline window position
         refreshWindow();
 
+        if (currentTime >= finalDur) {
+            player.pauseVideo();
+            document.getElementById('playButton').innerHTML = '<i class="glyphicon glyphicon-pause"></i>'
+        }
     }
 
     // moves the window of the lower timeline according to mouse movement
@@ -589,7 +615,7 @@
     function refreshWindow() {
         var offset = timeline.timeContext.offset;
         var padding = windowWidth/10;
-        var cursorTooFar = currentTime+padding > (windowWidth - offset) || currentTime+padding < -offset;
+        var cursorTooFar = currentTime+padding > (windowWidth - offset) || currentTime-padding < -offset;
         if (cursorTooFar && playSong) {
             if (padding + currentTime + windowWidth <= finalDur) {
                 timeline.timeContext.offset = padding-currentTime;
@@ -632,8 +658,6 @@
         if (e.keyCode == "32") {
             e.preventDefault();
             playOrPause();
-            player.seekTo(currentTime, true);
-            audioplayer.currentTime = currentTime;
             return false;
 
         // on 'b' press
@@ -1007,7 +1031,7 @@
 
     // The algorithm used to autocomplete segments
     function autocompleteAlgorithm(userbeats, onsetbeats, begin, end) {
-        truebeats = []
+        truebeats = [];
         for(var i = 0; i < userbeats.length; i++) {
             if (userbeats[i] <= end && userbeats[i] >= begin) {
                 truebeats.push(userbeats[i]);

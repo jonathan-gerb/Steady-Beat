@@ -6,7 +6,7 @@ Last edited: June 17th 2016
 
 This file is part of Project BEAT assigned by Chordify
 
-On this webpage the user can input a url of a Youtube video. The mp3 file of this video is downloaded.
+On this webpage the user can input a url of a Youtube video. The audio file of this video is downloaded.
 When this download is completed, there is an automatic redirect to the annotation page annotation.html
 
 -->
@@ -47,6 +47,7 @@ When this download is completed, there is an automatic redirect to the annotatio
         var mp4partExists = false;
         var webmpartExists = false;
         var m4aExists = false;
+        var wavExists = false;
 
         // Checks if input is a youtube url
         function validateInput() {
@@ -78,10 +79,10 @@ When this download is completed, there is an automatic redirect to the annotatio
             currentInterval = setInterval ( function(){assignIfDone(ytID)}, 300 );
         };
 
-        // downloads mp3 file of the Youtube video to server
+        // downloads audio file of the Youtube video to server
         function downloadytID(ytID) {
             var xhttp;
-            var url = "downloadytmp3.php";
+            var url = "downloadytwav.php";
             var params = "ID=" + ytID;
             if (window.XMLHttpRequest) {
                 // code for modern browsers
@@ -97,12 +98,14 @@ When this download is completed, there is an automatic redirect to the annotatio
         }
 
         function assignIfDone(ytID) {
-            file_exists('./mp3files/' + ytID + '.webm', 'webm');
-            file_exists('./mp3files/' + ytID + '.mp3', 'mp3');
-            file_exists('./mp3files/' + ytID + '.mp4.part', 'mp4part');
-            file_exists('./mp3files/' + ytID + '.webm.part', 'webmpart');
-            file_exists('./mp3files/' + ytID + '.m4a', 'm4a');
-            if (mp3Exists && !webmExists &&  !mp4partExists && !webmpartExists && !m4aExists) {
+            file_exists('./wavfiles/' + ytID + '.webm', 'webm');
+            file_exists('./wavfiles/' + ytID + '.mp3', 'mp3');
+            file_exists('./wavfiles/' + ytID + '.mp4.part', 'mp4part');
+            file_exists('./wavfiles/' + ytID + '.webm.part', 'webmpart');
+            file_exists('./wavfiles/' + ytID + '.m4a', 'm4a');
+            file_exists('./wavfiles/' + ytID + '.wav', 'wav');
+
+            if (wavExists && !webmExists &&  !mp4partExists && !webmpartExists && !m4aExists) {
                 clearInterval(currentInterval);
                 window.location.assign('app.html?yt_ID=' + ytID);
             }
@@ -123,8 +126,10 @@ When this download is completed, there is an automatic redirect to the annotatio
                         mp4partExists = false;
                     } else if (fileType== 'webmpart') {
                         webmpartExists = false;
-                    } else {
+                    } else if (fileType == 'm4a'){
                         m4aExists = false;
+                    } else {
+                        wavExists = false;
                     }
                 },
                 success: function()
@@ -137,8 +142,10 @@ When this download is completed, there is an automatic redirect to the annotatio
                         mp4partExists = true;
                     } else if (fileType == 'webmpart') {
                         webmpartExists = true;
-                    } else {
+                    } else if (fileType == 'm4a') {
                         m4aExists = true;
+                    } else {
+                        wavExists = true;
                     }
                 }
           });
