@@ -67,6 +67,8 @@
     }.panel-body {
         color: Grey;
         background-color: Black;
+    }.dropdown {
+        color:black;
     }
     </style>
 </head>
@@ -206,15 +208,21 @@
                         <button type="button" class="btn btn-default btn-sm" onclick="clearMarkers()" data-toggle="tooltip" data-placement="right" title="You can also select a single marker and press delete to remove it!">
                           <span class="glyphicon glyphicon-trash"></span> Clear all markers
                         </button>
-                        <select id="timeSel" onchange="timeSigChange()" style="visibility:hidden">
-                            <option value="4/4">4/4</option>
-                            <option value="6/8">6/8</option>
-                            <option value="8/8">8/8</option>
-                            <option value="3/4">3/4</option>
-                            <option value="7/8">7/8</option>
-                            <option value="5/4">5/4</option>
-                            <option value="12/8">12/8</option>
-                        </select>
+                        <div id="timeSigSelect" style="visibility:hidden">
+                            <br>
+                            <p id="timeSigText">Time signature of selected region: </p>
+                            <select class="dropdown" id="timeSel" onchange="timeSigChange()">
+                                <option value="4/4">4/4</option>
+                                <option value="3/4">3/4</option>
+                                <option value="8/8">8/8</option>
+                                <option value="6/8">6/8</option>
+                                <option value="5/4">5/4</option>
+                                <option value="7/8">7/8</option>
+                                <option value="9/8">9/8</option>
+                                <option value="10/8">10/8</option>
+                                <option value="12/8">12/8</option>
+                            </select>
+                        </div>
                     </div>
                     <p class="lead">Press the 'b' key on the beat to add a beat annotation. </p>
                     <p class="lead">
@@ -652,11 +660,10 @@
             // what to do with the time sig dropdown when a click is registered
             var domSeg = segmentLayer.selectedItems[0];
             if (domSeg != undefined) {
-                dropdown = document.getElementById("timeSel");
-                dropdown.style.visibility = "visible";
-                dropdown.value = segmentLayer.getDatumFromItem(domSeg).text;
+                document.getElementById("timeSigSelect").style.visibility = "visible";
+                document.getElementById("timeSel").value = segmentLayer.getDatumFromItem(domSeg).text;
             } else {
-                document.getElementById("timeSel").style.visibility = "hidden";
+                document.getElementById("timeSigSelect").style.visibility = "hidden";
             }
         },20)
     }
