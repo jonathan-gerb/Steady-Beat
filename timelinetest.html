@@ -862,9 +862,15 @@
         return selected ? '#ff0000' : '#bb0000';
     }
 
-    // cleans the Segments array (doesn't work yet)
-    function cleanSegments(segments) {
-
+    // given a begin and end time, deletes all the markers between these times
+    function deleteMarkers(begin, end) {
+        var newMarkers = [];
+        for(var i = 0; i < beatMarkers.length; i++){
+            if(beatMarkers[i].time <= begin || beatMarkers[i].time >= end){
+                newMarkers.push(beatMarkers[i])
+            }
+        }
+        beatMarkers = newMarkers;
     }
 
     // uses the average distance of markers to estimate the rest of the region
