@@ -928,7 +928,7 @@
         }
         var xhttp;
         var url = "writefile.php";
-        var params = "beat="  + dataToArray();
+        var params = "beat="  + dataToString();
         // var params = "beat=" + toSend.toString();
         var ytID = "ytID=" + getYoutubeId();
         if (window.XMLHttpRequest) {
@@ -965,14 +965,14 @@
         for (var i = 0; i<segments.length; i++) {
             segTime = segments[i].x;
             segWidth = segments[i].width;
-            dataArr = dataArr + ';' + segments[i].text;
+            dataStr = dataStr + ';' + segments[i].text;
 
             while (j < beatMarkers.length && beatMarkers[j].time < (segTime + segWidth)) {
-                dataArr[i] = dataArr[i] + ',' + beatMarkers[j].time.toString();
+                dataStr = dataStr + ',' + beatMarkers[j].time.toString();
                 j++;
             }
         }
-        return dataArr;
+        return dataStr;
     }
 
     function addMarkerList(uglyList) {
