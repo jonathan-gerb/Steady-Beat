@@ -48,6 +48,7 @@ When this download is completed, there is an automatic redirect to the annotatio
         var webmpartExists = false;
         var m4aExists = false;
         var wavExists = false;
+        var ytID;
 
         // Checks if input is a youtube url
         function validateInput() {
@@ -74,16 +75,18 @@ When this download is completed, there is an automatic redirect to the annotatio
                 return;
             }
             // Youtube id's are always 11 characters.
-            var ytID = inputStr.substring(idIdx + 3, idIdx + 14);
-            file_exists('./wavfiles/' + ytID + '.wav', 'wav');
-            setTimeout(function(){
+            ytID = inputStr.substring(idIdx + 3, idIdx + 14);
+            var wavString = 'wav';
+            file_exists(wavString, function() {
                 if (wavExists == false) {
+                    console.log('downloading');
                     downloadytID(ytID);
                     currentInterval = setInterval ( function(){ assignIfDone(ytID) }, 300 );
-                };
-            },50);
-
-            window.location.assign('app.html?yt_ID=' + ytID);
+                } else {
+                    console.log('already there');
+                    window.location.assign('app.html?yt_ID=' + ytID);
+                }
+            });
         };
 
         // downloads audio file of the Youtube video to server
@@ -106,12 +109,12 @@ When this download is completed, there is an automatic redirect to the annotatio
 
         // redirects to the main page (app.html) when the audio file finished downloading
         function assignIfDone(ytID) {
-            file_exists('./wavfiles/' + ytID + '.webm', 'webm');
-            file_exists('./wavfiles/' + ytID + '.mp3', 'mp3');
-            file_exists('./wavfiles/' + ytID + '.mp4.part', 'mp4part');
-            file_exists('./wavfiles/' + ytID + '.webm.part', 'webmpart');
-            file_exists('./wavfiles/' + ytID + '.m4a', 'm4a');
-            file_exists('./wavfiles/' + ytID + '.wav', 'wav');
+            file_exists('webm',function(){});
+            file_exists('mp3',function(){});
+            file_exists('mp4.part',function(){});
+            file_exists('webm.part',function(){});
+            file_exists('m4a',function(){});
+            file_exists('wav',function(){});
 
             if (wavExists && !webmExists &&  !mp4partExists && !webmpartExists && !m4aExists) {
                 clearInterval(currentInterval);
@@ -120,9 +123,10 @@ When this download is completed, there is an automatic redirect to the annotatio
         }
 
         // check if a file file_exists (for the download files)
-        function file_exists(url2, fileType) {
+        function file_exists(fileType, _callback) {
+            var filePath = './wavfiles/' + ytID + '.' + fileType;
             $.ajax({
-                url: url2,
+                url: filePath,
                 type:'HEAD',
                 error: function()
                 {
@@ -139,6 +143,7 @@ When this download is completed, there is an automatic redirect to the annotatio
                     } else {
                         wavExists = false;
                     }
+                    _callback();
                 },
                 success: function()
                 {
@@ -155,6 +160,7 @@ When this download is completed, there is an automatic redirect to the annotatio
                     } else {
                         wavExists = true;
                     }
+                    _callback();
                 }
           });
         }
