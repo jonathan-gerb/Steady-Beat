@@ -76,10 +76,14 @@ When this download is completed, there is an automatic redirect to the annotatio
             // Youtube id's are always 11 characters.
             var ytID = inputStr.substring(idIdx + 3, idIdx + 14);
             file_exists('./wavfiles/' + ytID + '.wav', 'wav');
-            if (!wavExists) {
-                downloadytID(ytID);
-                currentInterval = setInterval ( function(){ assignIfDone(ytID) }, 300 );
-            };
+            setTimeout(function(){
+                if (wavExists == false) {
+                    downloadytID(ytID);
+                    currentInterval = setInterval ( function(){ assignIfDone(ytID) }, 300 );
+                };
+            },50);
+
+            window.location.assign('app.html?yt_ID=' + ytID);
         };
 
         // downloads audio file of the Youtube video to server
@@ -100,6 +104,7 @@ When this download is completed, there is an automatic redirect to the annotatio
             xhttp.send(params);
         }
 
+        // redirects to the main page (app.html) when the audio file finished downloading
         function assignIfDone(ytID) {
             file_exists('./wavfiles/' + ytID + '.webm', 'webm');
             file_exists('./wavfiles/' + ytID + '.mp3', 'mp3');
@@ -165,7 +170,7 @@ When this download is completed, there is an automatic redirect to the annotatio
                         </nav>
                     </div>
                 </div>
-                <h1 class="cover-heading">Welcome to the Steady Beat project, please paste the URL of the youtube video you want to annotate below.</h1>
+                <h1 class="cover-heading">Welcome project BEAT (Beat Edit &amp Annotation Tool). Please paste the URL of the youtube video you want to annotate below.</h1>
                 <div class="inner cover">
                     <h1 class="cover-heading"></h1>
                     <p class="lead">

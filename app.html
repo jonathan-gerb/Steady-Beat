@@ -945,12 +945,13 @@
         //Send the proper header information along with the request
         xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         xhttp.onreadystatechange = function() {
-        if (xhttp.readyState == 4 && xhttp.status == 200) {
-            document.getElementById("demo").innerHTML = xhttp.responseText;
+            if (xhttp.readyState == 4 && xhttp.status == 200) {
+                console.log(xhttp.responseText);
             }
         };
         xhttp.send(params + "&" + ytID);
         window.alert("Thank you! Your beat annotations are saved to the server.");
+        window.location.assign('index.html');
     }
 
     // returns the data in the file format we want
@@ -1043,7 +1044,7 @@
             return false;
         }
 
-        interval = get_interval(truebeats);
+        interval = getInterval(truebeats);
 
         addedbeats = [];
         // looks for gaps to add beats
@@ -1052,8 +1053,7 @@
             prevbeat = truebeats[i];
             while (truebeats[i+1] - prevbeat > interval * 1.5) { // 1.5 can be balanced
                 roughtime = prevbeat+interval;
-                console.log(interval*0.02);
-                var best = [roughtime, 0.005]; // 0.02 can be balanced
+                var best = [roughtime, 0.01]; // 0.02 can be balanced
                 for (var j = 0; j < onsetbeats.length; j++) {  //TODO: Dit kan veel, veel sneller met een beetje een intelligent zoekalgoritme. Maar is niet heel eenvoudig....
                     if (Math.abs(onsetbeats[j] - roughtime) < best[1]) {
                         best = [onsetbeats[j], Math.abs(onsetbeats[j] - roughtime)];
@@ -1068,7 +1068,7 @@
         prevbeat = truebeats[truebeats.length-1];
         while (end - prevbeat > interval * 1.5) { // 1.5 can be balanced
             roughtime = prevbeat+interval;
-            var best = [roughtime, interval * 0.02]; // 0.02 can be balanced
+            var best = [roughtime, 0.01]; // 0.02 can be balanced
             for (var j = 0; j < onsetbeats.length; j++) {  //TODO: Dit kan veel, veel sneller met een beetje een intelligent zoekalgoritme. Maar is niet heel eenvoudig....
                 if (Math.abs(onsetbeats[j] - roughtime) < best[1]) {
                     best = [onsetbeats[j], Math.abs(onsetbeats[j] - roughtime)];
@@ -1080,7 +1080,8 @@
         return addedbeats;
     }
 
-    function get_interval(times) {
+    // returns average interval between the input timings
+    function getInterval(times) {
         intervals = [];
         for(var i = 0; i < times.length-1; i++) {
             intervals[i] = times[i+1] - times[i];
