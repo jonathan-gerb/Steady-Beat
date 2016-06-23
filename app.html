@@ -233,8 +233,8 @@
                         <button type="button" class="btn btn-default btn-sm" onclick="clearMarkers()" data-toggle="tooltip" data-placement="right" title="Remove beats in the selected segment. You can also select a marker and press delete to remove it">
                           <span class="glyphicon glyphicon-trash"></span>
                         </button>
-                        <div id="timeSigSelect" style="display:none">
-                            <br> <br>
+                        <div id="timeSigSelect" style="visibility:hidden">
+                            <br>
                             Time signature of selected segment:    <select class="dropdown" id="timeSel" onchange="timeSigChange()">
                                 <option value="4/4">4/4</option>
                                 <option value="3/4">3/4</option>
@@ -696,10 +696,10 @@
             // what to do with the time sig dropdown when a click is registered
             var domSeg = segmentLayer.selectedItems[0];
             if (domSeg != undefined) {
-                document.getElementById("timeSigSelect").style.display = "inline";
+                document.getElementById("timeSigSelect").style.visibility = "visible";
                 document.getElementById("timeSel").value = segmentLayer.getDatumFromItem(domSeg).text;
             } else {
-                document.getElementById("timeSigSelect").style.display = "none";
+                document.getElementById("timeSigSelect").style.visibility = "hidden";
             }
 
             newMousePos=null;
@@ -754,6 +754,7 @@
         var begin = segment.x;
         var end = begin+segment.width;
         deleteMarkersInRange(begin,end);
+
         markerLayer.render();
         markerLayer.update();
     }
@@ -1051,7 +1052,8 @@
             prevbeat = truebeats[i];
             while (truebeats[i+1] - prevbeat > interval * 1.5) { // 1.5 can be balanced
                 roughtime = prevbeat+interval;
-                var best = [roughtime, interval * 0.09]; // 0.09 can be balanced
+                console.log(interval*0.02);
+                var best = [roughtime, 0.005]; // 0.02 can be balanced
                 for (var j = 0; j < onsetbeats.length; j++) {  //TODO: Dit kan veel, veel sneller met een beetje een intelligent zoekalgoritme. Maar is niet heel eenvoudig....
                     if (Math.abs(onsetbeats[j] - roughtime) < best[1]) {
                         best = [onsetbeats[j], Math.abs(onsetbeats[j] - roughtime)];
@@ -1066,7 +1068,7 @@
         prevbeat = truebeats[truebeats.length-1];
         while (end - prevbeat > interval * 1.5) { // 1.5 can be balanced
             roughtime = prevbeat+interval;
-            var best = [roughtime, interval * 0.09]; // 0.09 can be balanced
+            var best = [roughtime, interval * 0.02]; // 0.02 can be balanced
             for (var j = 0; j < onsetbeats.length; j++) {  //TODO: Dit kan veel, veel sneller met een beetje een intelligent zoekalgoritme. Maar is niet heel eenvoudig....
                 if (Math.abs(onsetbeats[j] - roughtime) < best[1]) {
                     best = [onsetbeats[j], Math.abs(onsetbeats[j] - roughtime)];
