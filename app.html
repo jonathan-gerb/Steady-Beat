@@ -245,6 +245,7 @@
                                 <option value="9/8">9/8</option>
                                 <option value="10/8">10/8</option>
                                 <option value="12/8">12/8</option>
+                                <option value="-/-">-/-</option>
                             </select>
                             <br>
                         </div>
@@ -484,20 +485,20 @@
         var uglyList = [1,2,3,42]; // placeholder thingy for pasting the giant document.
         // addMarkerList(uglyList);
 
-        // updates the timeline every 20 ms when playing, every 200 ms when paused
+        // updates the timeline every 16 ms
         (function loop() {
             if (playSong) {
                 var d = new Date();
                 currentTime = (d.getTime() / 1000) - startTime;
                 updatePlugin();
-                setTimeout(requestAnimationFrame(loop), 20);
+                setTimeout(requestAnimationFrame(loop), 16);
             } else {
                 refreshClickQueue();
                 updatePlugin();
                 macroHighlight[0].x = - timeline.timeContext.offset;
                 segmentLayerMacro.update();
                 timeline.tracks.update();
-                setTimeout(function() { requestAnimationFrame(loop); }, 50);
+                setTimeout(function() { requestAnimationFrame(loop); }, 16);
             }
         }());
 
@@ -1054,7 +1055,7 @@
 
             // THIS is arguably the most important parameter of this algorithm.
             // It determines how close an onset should be to the average interval
-            // before it snaps to that onset. 
+            // before it snaps to that onset.
             var snapThreshold = 0.01;
 
             // if two beats are too far apart, we fill in the gap
