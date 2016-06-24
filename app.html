@@ -181,11 +181,11 @@
                                             <div class="panel panel-default" style="border-color: #333;">
                                                 <div class="panel-heading" style="background-color: #333;">
                                                     <h4 class="panel-title">
-                                                        <a style="color: White;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse7"><span class="glyphicon glyphicon-check">     Auto-complete</span></a>
+                                                        <a style="color: White;text-decoration:none" data-toggle="collapse" data-parent="#accordion" href="#collapse7"><span class="glyphicon glyphicon-stats">     Autocomplete</span></a>
                                                     </h4>
                                                 </div>
                                                 <div id="collapse7" class="panel-collapse collapse">
-                                                    <div class="panel-body" >When you press the Auto-complete button (the button with a checkmark) the beat timings of the current segment will be estimated. This means that your beat timings will be used to fill the rest of the segment with beats</div>
+                                                    <div class="panel-body" >When you press the Autocomplete button the beat timings of the current segment will be estimated. This means that your beat timings will be used to fill the rest of the segment with beats</div>
                                                 </div>
                                             </div>
                                             <div class="panel panel-default" style="border-color: #333;">
@@ -226,8 +226,8 @@
                           <span class="	glyphicon glyphicon-erase"></span>
                         </button>
                         <!-- <button type="button" class="btn btn-default btn-sm" onclick="autocomplete()"> -->
-                        <button type="button" class="btn btn-default btn-sm" title="Auto-complete the selected segment" onclick="autocompletePHP()">
-                          <span class="	glyphicon glyphicon-check"></span>
+                        <button type="button" class="btn btn-default btn-sm" title="Autocomplete the selected segment" onclick="autocompletePHP()">
+                          <span class="	glyphicon glyphicon-stats"></span>
                         </button>
                         <img src="loading1.gif" id="loadingGif" alt="loadingGif" height="20" width="20" style="display: none" >
                         <button type="button" class="btn btn-default btn-sm" onclick="clearMarkers()" data-toggle="tooltip" data-placement="right" title="Remove beats in the selected segment. You can also select a marker and press delete to remove it">
@@ -663,6 +663,8 @@
         // on 'b' press
         } else if (e.keyCode == "66") {
             playClick(true);
+            var d = new Date();
+            currentTime = (d.getTime()/1000) - startTime;
             addMarker(currentTime);
 
         // on 'delete' press
@@ -754,7 +756,7 @@
         var begin = segment.x;
         var end = begin+segment.width;
         deleteMarkersInRange(begin,end);
-
+        refreshClickQueue();
         markerLayer.render();
         markerLayer.update();
     }
@@ -1008,7 +1010,7 @@
             end = 0;
             var domSeg = segmentLayer.selectedItems[0];
             if (domSeg == undefined) {
-                alert('Please select a segment to auto-complete');
+                alert('Please select a segment to autocomplete');
                 return;
             }
             begin = segmentLayer.getDatumFromItem(domSeg).x;
@@ -1031,7 +1033,7 @@
         });
     }
 
-    // The algorithm used to auto-complete segments
+    // The algorithm used to autocomplete segments
     function autocompleteAlgorithm(userbeats, onsetbeats, begin, end) {
         truebeats = [];
         for(var i = 0; i < userbeats.length; i++) {
@@ -1049,11 +1051,17 @@
         addedbeats = [];
         // looks for gaps to add beats
         for (var i = 0; i < truebeats.length-1; i++) {
+
+            // THIS is arguably the most important parameter of this algorithm.
+            // It determines how close an onset should be to the average interval
+            // before it snaps to that onset. 
+            var snapThreshold = 0.01;
+
             // if two beats are too far apart, we fill in the gap
             prevbeat = truebeats[i];
             while (truebeats[i+1] - prevbeat > interval * 1.5) { // 1.5 can be balanced
                 roughtime = prevbeat+interval;
-                var best = [roughtime, 0.01]; // 0.02 can be balanced
+                var best = [roughtime, snapThreshold];
                 for (var j = 0; j < onsetbeats.length; j++) {  //TODO: Dit kan veel, veel sneller met een beetje een intelligent zoekalgoritme. Maar is niet heel eenvoudig....
                     if (Math.abs(onsetbeats[j] - roughtime) < best[1]) {
                         best = [onsetbeats[j], Math.abs(onsetbeats[j] - roughtime)];
@@ -1068,7 +1076,7 @@
         prevbeat = truebeats[truebeats.length-1];
         while (end - prevbeat > interval * 1.5) { // 1.5 can be balanced
             roughtime = prevbeat+interval;
-            var best = [roughtime, 0.01]; // 0.02 can be balanced
+            var best = [roughtime, snapThreshold];
             for (var j = 0; j < onsetbeats.length; j++) {  //TODO: Dit kan veel, veel sneller met een beetje een intelligent zoekalgoritme. Maar is niet heel eenvoudig....
                 if (Math.abs(onsetbeats[j] - roughtime) < best[1]) {
                     best = [onsetbeats[j], Math.abs(onsetbeats[j] - roughtime)];

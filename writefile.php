@@ -14,8 +14,8 @@
 			fwrite($annotations, $line . "\n");
 		}
 		fclose($annotations);
-		$mp3File = "./mp3files/" . $ytID . ".mp3";
-		unlink($mp3File);
+		// $wavFile = "./wavfiles/" . $ytID . ".wav";
+		// unlink($wavFile);
 
 	} else {
 		echo "No beats and youtube ID received.";

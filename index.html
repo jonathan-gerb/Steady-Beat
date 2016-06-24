@@ -76,14 +76,11 @@ When this download is completed, there is an automatic redirect to the annotatio
             }
             // Youtube id's are always 11 characters.
             ytID = inputStr.substring(idIdx + 3, idIdx + 14);
-            var wavString = 'wav';
-            file_exists(wavString, function() {
+            file_exists('wav', function() {
                 if (wavExists == false) {
-                    console.log('downloading');
                     downloadytID(ytID);
                     currentInterval = setInterval ( function(){ assignIfDone(ytID) }, 300 );
                 } else {
-                    console.log('already there');
                     window.location.assign('app.html?yt_ID=' + ytID);
                 }
             });
